@@ -1,0 +1,13 @@
+---
+repos:
+  - repo: https://github.com/norwoodj/helm-docs
+    rev: "v1.13.1"
+    hooks:
+      - id: helm-docs
+        args:
+          # Make the tool search for charts only under the `charts` directory
+          - --chart-search-root=charts
+  - repo: https://github.com/gruntwork-io/pre-commit
+    rev: v0.1.23 # Get the latest from: https://github.com/gruntwork-io/pre-commit/releases
+    hooks:
+      - id: helmlint
