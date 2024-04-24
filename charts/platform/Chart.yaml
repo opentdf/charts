@@ -1,7 +1,6 @@
 apiVersion: v2
-name: OpenTDF Platform
+name: platform
 description: A Helm Chart for OpenTDF Platform
-icon: https://avatars.githubusercontent.com/u/90051847?s=96&v=4 # Probably should point to actual image somewhere.
 
 # A chart can be either an 'application' or a 'library' chart.
 #
@@ -23,3 +22,6 @@ version: 0.1.0
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
 appVersion: "0.2.0"
+
+maintainers:
+  - name: Opentdf
