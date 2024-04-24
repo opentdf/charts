@@ -4,9 +4,25 @@
 
 A Helm Chart for OpenTDF Platform
 
+## Requirements
+
+In order to run the platform you need a supported identity provider and postgres database. Below are links if you need a place to start.
+
+- [Keycloak](https://www.keycloak.org/guides)
+  - https://artifacthub.io/packages/helm/codecentric/keycloak
+  - https://artifacthub.io/packages/helm/bitnami/keycloak
+
+- [Postgres](https://www.postgresql.org/)
+  - https://artifacthub.io/packages/helm/bitnami/postgresql
+  - https://artifacthub.io/packages/olm/community-operators/postgresql
+
 ## Pre-Requisites
 
-### Creating TLS Certificate
+### Configuring the Identity Provider
+
+TBD...
+
+### TLS Certificate
 
 The chart will attempt to generate a TLS certificate if `tls.enabled` is set to `true` and no `tls.secretName` is provided.
 
@@ -16,7 +32,7 @@ Alternatively, you can also provide your own certificate as well. Once you have 
 kubectl create secret tls <tls-secret-name> --cert <path-to-cert-file> --key <path-to-key-file>
 ```
 
-### Creating KAS Secret
+### KAS Secret
 
 In order to run the KAS server, you need to provide the KAS with a set a keys. This will allow the KAS to support nanotdf and tdf3 rewrap functionality.
 
