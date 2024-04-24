@@ -20,8 +20,8 @@ jobs:
         shell: bash
         working-directory: '${{ runner.temp }}'
         env:
-          HELM_VERSION: 'v3.10.3' # v3.10.3 = December 14 2022
-          HELM_SHA256SUM: '950439759ece902157cf915b209b8d694e6f675eaab5099fb7894f30eeaee9a2'
+          HELM_VERSION: 'v3.14.4' # v3.14.4 = April 10 2024
+          HELM_SHA256SUM: 'a5844ef2c38ef6ddf3b5a8f7d91e7e0e8ebc39a38bb3fc8013d629c1ef29c259'
         run: |
           curl -sSLO "https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz"
           echo "${HELM_SHA256SUM}  helm-${HELM_VERSION}-linux-amd64.tar.gz" | sha256sum -c --quiet --strict
