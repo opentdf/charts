@@ -1,5 +1,9 @@
 # OpenTDF Helm Charts
 
+## Charts
+
+- [Platform](charts/platform/README.md)
+
 ## Development
 
 ### Prerequisites

@@ -135,14 +135,14 @@ logger:
   output: stdout
 
 db:
-  # -- The database host
+  # --  The database host
   host:
   # -- The database port
   port: 5432
   # -- The database name
-  database: opentdf
+  name: opentdf
   # -- The database user
-  user:
+  user: opentdf
   # -- The database ssl mode ( disable, prefer, require, verify-ca, verify-full )
   sslmode: prefer
   password:
@@ -162,7 +162,7 @@ server:
     # -- Enables tls
     enabled: true
     # -- The server tls certificate. If not set, a self-signed certificate is generated
-    secret: opentdf-tls
+    secret:
   auth:
     # -- Audience of provided by the identity provider
     audience:

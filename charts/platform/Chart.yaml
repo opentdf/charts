@@ -1,6 +1,7 @@
 apiVersion: v2
-name: opentdf
+name: OpenTDF Platform
 description: A Helm Chart for OpenTDF Platform
+icon: https://avatars.githubusercontent.com/u/90051847?s=96&v=4 # Probably should point to actual image somewhere.
 
 # A chart can be either an 'application' or a 'library' chart.
 #
