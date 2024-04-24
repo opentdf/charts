@@ -1,0 +1,54 @@
+name: Helm Lint
+
+on:
+
+  workflow_dispatch:
+
+  pull_request:
+    branches:
+      - main
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - id: 'download-helm'
+        shell: bash
+        working-directory: '${{ runner.temp }}'
+        env:
+          HELM_VERSION: 'v3.10.3' # v3.10.3 = December 14 2022
+          HELM_SHA256SUM: '950439759ece902157cf915b209b8d694e6f675eaab5099fb7894f30eeaee9a2'
+        run: |
+          curl -sSLO "https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz"
+          echo "${HELM_SHA256SUM}  helm-${HELM_VERSION}-linux-amd64.tar.gz" | sha256sum -c --quiet --strict
+          mkdir -p helm
+          tar xf "helm-${HELM_VERSION}-linux-amd64.tar.gz" -C helm
+          mkdir -p "$HOME/.local/bin"
+          mv ./helm/linux-amd64/helm "$HOME/.local/bin"
+
+          helm version
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+          check-latest: true
+
+      - name: Set up chart-testing
+        uses: helm/chart-testing-action@v2.6.1
+
+      - name: Run chart-testing (list-changed)
+        id: list-changed
+        run: |
+          changed=$(ct list-changed --target-branch ${{ github.event.repository.default_branch }})
+          if [[ -n "$changed" ]]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Run chart-testing (lint)
+        if: steps.list-changed.outputs.changed == 'true'
+        run: ct lint --target-branch ${{ github.event.repository.default_branch }}
+      
