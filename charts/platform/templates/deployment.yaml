@@ -89,7 +89,7 @@ spec:
         {{- if .Values.server.tls.enabled }}
         - name: tls
           secret:
-            secretName: {{ .Values.server.tls.secret | default (printf "%s-tls" .Release.Name) }}
+            secretName: {{ .Values.server.tls.secret | default (printf "%s-tls" (include "chart.fullname" .)) }}
         {{- end -}}
         {{- with .Values.volumes }}
         {{- toYaml . | nindent 8 }}
