@@ -1,0 +1,9 @@
+dependencies:
+- name: postgresql
+  repository: oci://registry-1.docker.io/bitnamicharts
+  version: 15.2.4
+- name: keycloak
+  repository: oci://registry-1.docker.io/bitnamicharts
+  version: 21.0.3
+digest: sha256:6ef4a57275edd84099476b12b23bcb5cda473f35d7d63921671b29ce9028f132
+generated: "2024-04-25T08:22:33.368962-04:00"

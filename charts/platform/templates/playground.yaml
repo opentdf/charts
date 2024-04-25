@@ -1,0 +1,12 @@
+{{- if .Values.playground -}}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{.Values.db.password.secret.name }}
+  labels:
+    {{- include "chart.labels" . | nindent 4 }}
+type: Opaque
+data:
+  password: {{ .Values.postgresql.auth.postgresPassword | b64enc }}
+{{- end }}

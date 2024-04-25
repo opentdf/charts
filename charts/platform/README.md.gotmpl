@@ -7,15 +7,15 @@
 
 ## Requirements
 
-In order to run the platform you need a supported identity provider and postgres database. Below are links if you need a place to start.
+In order to run the platform you need a supported identity provider and postgres database. We have included the following charts as dependencies:
 
 - [Keycloak](https://www.keycloak.org/guides)
-  - https://artifacthub.io/packages/helm/codecentric/keycloak
-  - https://artifacthub.io/packages/helm/bitnami/keycloak
+  - <https://artifacthub.io/packages/helm/bitnami/keycloak>
 
 - [Postgres](https://www.postgresql.org/)
-  - https://artifacthub.io/packages/helm/bitnami/postgresql
-  - https://artifacthub.io/packages/olm/community-operators/postgresql
+  - <https://artifacthub.io/packages/helm/bitnami/postgresql>
+
+If you want to deploy keycloak and postgresql as part of the platform deployment make sure to follow [Playground Configuration](#playground-configuration-optional) section.
 
 ## Pre-Requisites
 
@@ -80,6 +80,31 @@ ingress:
               number: 9000
           path: ""
           pathType: ImplementationSpecific
+```
+
+### Playground Configuration (Optional)
+
+If you want to test the platform quickly without having to worry about setting up a database and identity provider, you can use the following configuration:
+
+```yaml
+playground: true # Enable playground mode
+
+# Only need to configure keycloak ingress and adminIngress
+keycloak:
+  proxy: edge # Your keycloak proxy (edge, passthrough, reencrypt)
+  ingress:
+    enabled: true
+    selfSigned: true
+    annotations: {}
+      # route.openshift.io/termination: edge
+    hostname: # Your keycloak hostname (e.g. keycloak.example.com)
+  adminIngress:
+    enabled: true
+    selfSigned: true
+    annotations: {}
+      # route.openshift.io/termination: edge
+    hostname: # Your keycloak admin hostname (e.g. keycloak-admin.example.com)
+
 ```
 
 {{ template "chart.homepageLine" . }}
