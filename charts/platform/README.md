@@ -48,8 +48,9 @@ kubectl create secret generic kas-private-keys --from-file=./kas-cert.pem --from
 
 ### HTTP/2 Support
 
-The platform exposes a gRPC and Restful interface. gRPC requires HTTP/2 support so you will need to ensure providing the proper ingress annotations.
-Below is the start of examples for different ingress providers.
+The platform provides both gRPC and RESTful interfaces. Since gRPC requires HTTP/2 support, it's essential to configure your ingress with the appropriate annotations to handle this requirement.
+
+Below are starting examples for configuring various ingress providers:
 
 #### Openshift
 
