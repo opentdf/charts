@@ -60,8 +60,6 @@ Below is the start of examples for different ingress providers.
 Check to see if you have HTTP/2 enabled on your ingress routers
 - https://docs.openshift.com/container-platform/4.15/networking/ingress-operator.html#nw-http2-haproxy_configuring-ingress
 
-TBD
-
 If no HTTP/2 support is enabled. You can still leverage gRPC by using a passthrough route.
 
 Example values.yaml for passthrough route:
@@ -104,6 +102,15 @@ keycloak:
       # route.openshift.io/termination: edge
     hostname: # Your keycloak admin hostname (e.g. keycloak-admin.example.com)
 
+```
+
+## Post Install
+
+If everything is healthy you should be able to access the platform at the hostname you provided in the `ingress.hostname` field.
+
+```sh
+export PLATFORM_HOST=$(kubectl get ingress -l app.kubernetes.io/name=platform -o jsonpath='{.items[0].spec.rules[0].host}'  ) 
+grpcurl -insecure $PLATFORM_HOST:443 kas.AccessService/PublicKey
 ```
 
 ## Maintainers
