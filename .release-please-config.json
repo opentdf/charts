@@ -1,6 +1,6 @@
 {
     "packages": {
-        "platform": {
+        "charts/platform": {
             "package-name": "platform",
             "changelog-path": "CHANGELOG.md",
             "release-type": "helm",
