@@ -1,0 +1,122 @@
+{{ template "chart.header" . }}
+{{ template "chart.deprecationWarning" . }}
+
+{{ template "chart.badgesSection" . }}
+
+{{ template "chart.description" . }}
+
+## Requirements
+
+In order to run the platform you need a supported identity provider and postgres database. We have included the following charts as dependencies:
+
+- [Keycloak](https://www.keycloak.org/guides)
+  - <https://artifacthub.io/packages/helm/bitnami/keycloak>
+
+- [Postgres](https://www.postgresql.org/)
+  - <https://artifacthub.io/packages/helm/bitnami/postgresql>
+
+If you want to deploy keycloak and postgresql as part of the platform deployment make sure to follow [Playground Configuration](#playground-configuration-optional) section.
+
+## Pre-Requisites
+
+### TLS Certificate
+
+The chart will attempt to generate a TLS certificate if `tls.enabled` is set to `true` and no `tls.secretName` is provided.
+
+Alternatively, you can also provide your own certificate as well. Once you have the certificate and key, you can create a TLS secret with the following command:
+
+```bash
+kubectl create secret tls <tls-secret-name> --cert <path-to-cert-file> --key <path-to-key-file>
+```
+
+### KAS Secret
+
+In order to run the KAS server, you need to provide the KAS with a set a keys. This will allow the KAS to support nanotdf and tdf3 rewrap functionality.
+
+#### Generate a set of KAS keys
+
+```bash
+openssl req -x509 -nodes -newkey RSA:2048 -subj "/CN=kas" -keyout kas-private.pem -out kas-cert.pem -days 365
+openssl ecparam -name prime256v1 >ecparams.tmp
+openssl req -x509 -nodes -newkey ec:ecparams.tmp -subj "/CN=kas" -keyout kas-ec-private.pem -out kas-ec-cert.pem -days 365
+```
+
+To create a secret with the keys, run the following command:
+
+```bash
+kubectl create secret generic kas-private-keys --from-file=./kas-cert.pem --from-file=./kas-ec-cert.pem --from-file=./kas-ec-private.pem --from-file=kas-private.pem
+```
+
+### HTTP/2 Support
+
+The platform provides both gRPC and RESTful interfaces. Since gRPC requires HTTP/2 support, it's essential to configure your ingress with the appropriate annotations to handle this requirement.
+
+Below are starting examples for configuring various ingress providers:
+
+#### Openshift
+
+Check to see if you have HTTP/2 enabled on your ingress routers
+- https://docs.openshift.com/container-platform/4.15/networking/ingress-operator.html#nw-http2-haproxy_configuring-ingress
+
+
+If no HTTP/2 support is enabled. You can still leverage gRPC by using a passthrough route.
+
+Example values.yaml for passthrough route:
+```yaml
+ingress:
+  enabled: true
+  annotations:
+    route.openshift.io/termination: "passthrough"
+  hosts:
+    - host: platform.apps.okd.example.com
+      paths:
+        - backend:
+            name: platform
+            port:
+              number: 9000
+          path: ""
+          pathType: ImplementationSpecific
+```
+
+### Playground Configuration (Optional)
+
+If you want to test the platform quickly without having to worry about setting up a database and identity provider, you can use the following configuration:
+
+```yaml
+playground: true # Enable playground mode
+
+# Only need to configure keycloak ingress and adminIngress
+keycloak:
+  proxy: edge # Your keycloak proxy (edge, passthrough, reencrypt)
+  ingress:
+    enabled: true
+    selfSigned: true
+    annotations: {}
+      # route.openshift.io/termination: edge
+    hostname: # Your keycloak hostname (e.g. keycloak.example.com)
+  adminIngress:
+    enabled: true
+    selfSigned: true
+    annotations: {}
+      # route.openshift.io/termination: edge
+    hostname: # Your keycloak admin hostname (e.g. keycloak-admin.example.com)
+
+```
+
+## Post Install
+
+If everything is healthy you should be able to access the platform at the hostname you provided in the `ingress.hostname` field.
+
+```sh
+export PLATFORM_HOST=$(kubectl get ingress -l app.kubernetes.io/name=platform -o jsonpath='{.items[0].spec.rules[0].host}'  )  
+grpcurl -insecure $PLATFORM_HOST:443 kas.AccessService/PublicKey
+```
+{{ template "chart.homepageLine" . }}
+
+{{ template "chart.maintainersSection" . }}
+
+{{ template "chart.sourcesSection" . }}
+
+{{ template "chart.requirementsSection" . }}
+
+{{ template "chart.valuesSection" . }}

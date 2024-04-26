@@ -2,4 +2,4 @@
 rules:
   comments:
     require-starting-space: true
-    min-spaces-from-content: -1
+    min-spaces-from-content: 1

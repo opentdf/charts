@@ -1,0 +1,34 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "chart.fullname" . }}
+  labels:
+    {{- include "chart.labels" . | nindent 4 }}
+data:
+  opentdf.yaml: |-
+    logger: 
+    {{- .Values.logger | toYaml | nindent 6 }}
+    db:
+    {{- omit .Values.db "password" | toYaml | nindent 6 }}
+      password: # loaded from env
+    services:
+      kas:
+        enabled: {{ .Values.services.kas.enabled }}
+      authorization:
+        {{- .Values.services.authorization | toYaml | nindent 8 }}
+    server:
+      port: {{ .Values.server.port }}
+      grpc:
+        reflectionEnabled: {{ .Values.server.grpc.reflectionEnabled }} # Default is false
+      tls:
+        enabled: {{ .Values.server.tls.enabled }}
+        cert: /etc/opentdf/certs/tls.crt
+        key: /etc/opentdf/certs/tls.key
+      auth:
+        enabled: true
+        {{- .Values.server.auth | toYaml | nindent 8 }}
+      cryptoProvider:
+        {{- .Values.server.cryptoProvider | toYaml | nindent 8 }}
+      
+    opa:
+      embedded: {{ .Values.opa.embedded }}
