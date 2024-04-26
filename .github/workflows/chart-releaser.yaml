@@ -1,0 +1,42 @@
+name: Release Charts
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  release:
+    permissions:
+      contents: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Configure Git
+        run: |
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+
+      - id: 'download-helm'
+        shell: bash
+        working-directory: '${{ runner.temp }}'
+        env:
+          HELM_VERSION: 'v3.14.4' # v3.14.4 = April 10 2024
+          HELM_SHA256SUM: 'a5844ef2c38ef6ddf3b5a8f7d91e7e0e8ebc39a38bb3fc8013d629c1ef29c259'
+        run: |
+          curl -sSLO "https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz"
+          echo "${HELM_SHA256SUM}  helm-${HELM_VERSION}-linux-amd64.tar.gz" | sha256sum -c --quiet --strict
+          mkdir -p helm
+          tar xf "helm-${HELM_VERSION}-linux-amd64.tar.gz" -C helm
+          mkdir -p "$HOME/.local/bin"
+          mv ./helm/linux-amd64/helm "$HOME/.local/bin"
+
+          helm version
+
+      - name: Run chart-releaser
+        uses: helm/chart-releaser-action@v1.6.0
+        env:
+          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
