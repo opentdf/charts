@@ -19,5 +19,5 @@ jobs:
       - uses: google-github-actions/release-please-action@v4
         with:
           token: "${{ steps.generate_token.outputs.token }}"
-          config-file: .release-please.json
+          config-file: .release-please-config.json
           manifest-file: .release-please-manifest.json
