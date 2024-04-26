@@ -1,6 +1,7 @@
 {
     "packages": {
         "charts/platform": {
+            "release-type": "helm",
             "package-name": "platform",
             "changelog-path": "CHANGELOG.md",
             "bump-minor-pre-major": true,
