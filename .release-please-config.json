@@ -3,9 +3,9 @@
         "charts/platform": {
             "package-name": "platform",
             "changelog-path": "CHANGELOG.md",
-            "release-type": "helm",
-            "bump-minor-pre-major": false,
-            "bump-patch-for-minor-pre-major": false,
+            "bump-minor-pre-major": true,
+            "separate-pull-requests": true,
+            "include-component-in-tag": true,
             "include-v-in-tag": true
         }
     },
