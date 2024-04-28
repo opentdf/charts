@@ -1,20 +1,32 @@
+<p align="center">
+    <img width="200px" height=auto src="https://avatars.githubusercontent.com/u/90051847?s=280&v=4" />
+</p>
+
+<p align="center">
+    <a href="https://join.slack.com/t/opentdf/shared_invite/zt-2h6j6n5ly-BVUq~bIPoMeSu~20XQswFw"><img src="https://img.shields.io/badge/Join%20Our%20Community-Slack-blue" /></a>
+    <a href="https://github.com/opentdf/charts"><img src="https://badgen.net/github/stars/opentdf/charts?icon=github" /></a>
+    <a href="https://github.com/opentdf/charts"><img src="https://badgen.net/github/forks/opentdf/charts?icon=github" /></a>
+    <!-- <a href="https://artifacthub.io/packages/search?repo=opentdf"><img src="https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/opentdf" /></a> -->
+    <a href="https://github.com/opentdf/charts/actions/workflows/chart-releaser.yaml"><img src="https://github.com/opentdf/charts/actions/workflows/chart-releaser.yaml/badge.svg" /></a>
+</p>
+
 # OpenTDF Helm Charts
 
-## Charts
+## Usage
+
+[Helm](https://helm.sh) must be installed to use the charts.  Please refer to
+Helm's [documentation](https://helm.sh/docs) to get started
+
+Once Helm has been set up correctly, add the repo as follows:
+
+    helm repo add opentdf https://opentdf.github.io/charts
+
+If you had already added this repo earlier, run `helm repo update` to retrieve
+the latest versions of the packages.  You can then run `helm search repo
+opentdf` to see the charts.
+
+For chart specific documentation, please refer to the README.md files in the respective chart directories.
+
+### Charts
 
 - [Platform](charts/platform/README.md)
-
-## Development
-
-### Prerequisites
-
-- [Helm](https://helm.sh/docs/intro/install/)
-- [Helm Docs](https://github.com/norwoodj/helm-docs)
-- [Pre-commit](https://pre-commit.com/index.html#installation)
-
-### Install pre-commit hooks
-
- ```sh
-  pre-commit install
-  pre-commit install-hooks
- ```
