@@ -1,6 +1,6 @@
 # platform
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
+![Version: 0.2.1](https://img.shields.io/badge/Version-0.2.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
 
 A Helm Chart for OpenTDF Platform
 
@@ -9,10 +9,10 @@ A Helm Chart for OpenTDF Platform
 In order to run the platform you need a supported identity provider and postgres database. We have included the following charts as dependencies:
 
 - [Keycloak](https://www.keycloak.org/guides)
-  - <https://artifacthub.io/packages/helm/bitnami/keycloak>
+  - [Helm Chart](https://artifacthub.io/packages/helm/bitnami/keycloak)
 
 - [Postgres](https://www.postgresql.org/)
-  - <https://artifacthub.io/packages/helm/bitnami/postgresql>
+  - [Helm Chart](https://artifacthub.io/packages/helm/bitnami/postgresql)
 
 If you want to deploy keycloak and postgresql as part of the platform deployment make sure to follow [Playground Configuration](#playground-configuration-optional) section.
 
