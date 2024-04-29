@@ -4,8 +4,6 @@
 
 A Helm Chart for OpenTDF Platform
 
-**_NOTE:_** This chart is in alpha state and is not recommended for production use. Breaking changes may occur frequently.
-
 **_NOTE:_** Until a stable platform release is available, set the `image.tag` to `nightly` to use the latest nightly build.
 
 ## Requirements
