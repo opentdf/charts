@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.2](https://github.com/opentdf/charts/compare/platform-0.2.1...platform-v0.2.2) (2024-05-02)
+
+
+### Bug Fixes
+
+* platform optional health check ([#28](https://github.com/opentdf/charts/issues/28)) ([4a977d1](https://github.com/opentdf/charts/commit/4a977d1577b02056e63e68809c8580dc57a01a89))
+
 ## [0.2.1](https://github.com/opentdf/charts/compare/platform-0.2.0...platform-v0.2.1) (2024-04-26)
 
 
