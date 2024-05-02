@@ -198,6 +198,7 @@ grpcurl -insecure $PLATFORM_HOST:443 kas.AccessService/PublicKey
 | server.port | int | `9000` | The server port |
 | server.tls.enabled | bool | `true` | Enables tls |
 | server.tls.secret | string | `nil` | The server tls certificate. If not set, a self-signed certificate is generated |
+| server.healthCheckz | bool | `true` | Enables liveness and readiness probe health check to server |
 | service.port | int | `9000` | The port of the service |
 | service.type | string | `"ClusterIP"` | The type of service to create |
 | serviceAccount.annotations | object | `{}` | Extra annotations to add to the service account |

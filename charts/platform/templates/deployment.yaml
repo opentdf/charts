@@ -46,6 +46,7 @@ spec:
             - name: http
               containerPort: {{ .Values.server.port }}
               protocol: TCP
+          {{ if .Values.server.healthCheckz }}
           livenessProbe:
             httpGet:
               scheme: {{ if .Values.server.tls.enabled }}HTTPS{{ else }}HTTP{{ end }}              
@@ -56,6 +57,7 @@ spec:
               scheme: {{ if .Values.server.tls.enabled }}HTTPS{{ else }}HTTP{{ end }}
               path: /healthz?service=readiness
               port: http
+          {{ end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
