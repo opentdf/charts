@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.3](https://github.com/opentdf/charts/compare/platform-0.2.2...platform-v0.2.3) (2024-05-07)
+
+
+### Bug Fixes
+
+* changes service to http2 from http ([#32](https://github.com/opentdf/charts/issues/32)) ([a548707](https://github.com/opentdf/charts/commit/a548707c04ef2a62803713bb3d8d3e810f37b690))
+
 ## [0.2.2](https://github.com/opentdf/charts/compare/platform-0.2.1...platform-v0.2.2) (2024-05-02)
 
 
