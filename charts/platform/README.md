@@ -80,10 +80,16 @@ ingress:
 
 ### Playground Configuration (Optional)
 
-If you want to test the platform quickly without having to worry about setting up a database and identity provider, you can use the following configuration:
+If you want to test the platform quickly without having to worry about setting up a database and identity provider, you can use the following configuration.
+
+NOTE: Currently, this Playground configuration uses the unstable "nightly" image as as the default.  In the future, expect this to be a pinned version:
 
 ```yaml
 playground: true # Enable playground mode
+
+image:
+  # -- Overrides the image tag whose default is the chart appVersion.
+  tag: "nightly"
 
 # Only need to configure keycloak ingress and adminIngress
 keycloak:
