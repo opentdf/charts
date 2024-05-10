@@ -4,7 +4,8 @@
 
 A Helm Chart for OpenTDF Platform
 
-**_NOTE:_** Until a stable platform release is available, the current appVersion is set to `nightly`.
+> [!NOTE]
+> Until a stable platform release is available, the current appVersion is set to `nightly`.
 
 ## Requirements
 
