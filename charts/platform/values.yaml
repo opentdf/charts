@@ -261,5 +261,13 @@ keycloak:
       opentdf.json: |
         {
           "realm":"opentdf",
+          "enabled": true,
           "clients": []
         }
+  proxy: edge
+  ingress:
+    enabled: true
+    tls: true
+    selfSigned: true
+    labels:
+      "opentdf.io/keycloak-admin": "false"

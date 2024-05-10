@@ -72,6 +72,11 @@ spec:
               readOnly: true
               mountPath: /etc/opentdf/certs
             {{- end -}}
+            {{- if .Values.playground }}
+            - name: keycloak-tls
+              readOnly: true
+              mountPath: /etc/ssl/certs
+            {{- end -}}
             {{- with .Values.volumeMounts }}
             {{- toYaml . | nindent 12 }}
           {{- end }}
@@ -92,6 +97,15 @@ spec:
         - name: tls
           secret:
             secretName: {{ .Values.server.tls.secret | default (printf "%s-tls" (include "chart.fullname" .)) }}
+        {{- end -}}
+        {{- if .Values.playground }}
+        - name: keycloak-tls
+          secret:
+            secretName: {{ .Values.keycloak.ingress.hostname }}-tls # If the fullnameOverride is set, this will break
+            optional: false
+            items:
+              - key: ca.crt
+                path: kc-ca.crt
         {{- end -}}
         {{- with .Values.volumes }}
         {{- toYaml . | nindent 8 }}
