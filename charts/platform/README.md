@@ -1,6 +1,6 @@
 # platform
 
-![Version: 0.2.1](https://img.shields.io/badge/Version-0.2.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 0.1.0](https://img.shields.io/badge/AppVersion-0.1.0-informational?style=flat-square)
+![Version: 0.2.3](https://img.shields.io/badge/Version-0.2.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: nightly](https://img.shields.io/badge/AppVersion-nightly-informational?style=flat-square)
 
 A Helm Chart for OpenTDF Platform
 
@@ -85,22 +85,25 @@ If you want to test the platform quickly without having to worry about setting u
 ```yaml
 playground: true # Enable playground mode
 
-# Only need to configure keycloak ingress and adminIngress
+# Configure keycloak ingress and adminIngress for access to keycloak
 keycloak:
   proxy: edge # Your keycloak proxy (edge, passthrough, reencrypt)
   ingress:
     enabled: true
     selfSigned: true
+    labels:
+      opentdf.io/keycloak-admin: "false"
     annotations: {}
       # route.openshift.io/termination: edge
     hostname: # Your keycloak hostname (e.g. keycloak.example.com)
   adminIngress:
     enabled: true
     selfSigned: true
+    labels:
+      opentdf.io/keycloak-admin: "true"
     annotations: {}
       # route.openshift.io/termination: edge
     hostname: # Your keycloak admin hostname (e.g. keycloak-admin.example.com)
-
 ```
 
 ## Post Install
@@ -195,10 +198,10 @@ grpcurl -insecure $PLATFORM_HOST:443 kas.AccessService/PublicKey
 | server.cryptoProvider.standard.rsa.key1.privateKeyPath | string | `"/etc/opentdf/kas/kas-private.pem"` |  |
 | server.cryptoProvider.standard.rsa.key1.publicKeyPath | string | `"/etc/opentdf/kas/kas-cert.pem"` |  |
 | server.grpc.reflectionEnabled | bool | `true` | Enables grpc reflection (https://github.com/grpc/grpc/blob/master/doc/server-reflection.md) |
+| server.healthCheckz | bool | `true` | Enables Kubernetes Health Checkz |
 | server.port | int | `9000` | The server port |
 | server.tls.enabled | bool | `true` | Enables tls |
 | server.tls.secret | string | `nil` | The server tls certificate. If not set, a self-signed certificate is generated |
-| server.healthCheckz | bool | `true` | Enables liveness and readiness probe health check to server |
 | service.port | int | `9000` | The port of the service |
 | service.type | string | `"ClusterIP"` | The type of service to create |
 | serviceAccount.annotations | object | `{}` | Extra annotations to add to the service account |

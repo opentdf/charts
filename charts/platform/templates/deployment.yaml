@@ -50,12 +50,12 @@ spec:
           livenessProbe:
             httpGet:
               scheme: {{ if .Values.server.tls.enabled }}HTTPS{{ else }}HTTP{{ end }}              
-              path: /healthz?service=liveness
+              path: /healthz
               port: http2
           readinessProbe:
             httpGet:
               scheme: {{ if .Values.server.tls.enabled }}HTTPS{{ else }}HTTP{{ end }}
-              path: /healthz?service=readiness
+              path: /healthz?service=all
               port: http2
           {{ end }}
           resources:

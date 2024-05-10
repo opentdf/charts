@@ -87,22 +87,25 @@ If you want to test the platform quickly without having to worry about setting u
 ```yaml
 playground: true # Enable playground mode
 
-# Only need to configure keycloak ingress and adminIngress
+# Configure keycloak ingress and adminIngress for access to keycloak
 keycloak:
   proxy: edge # Your keycloak proxy (edge, passthrough, reencrypt)
   ingress:
     enabled: true
     selfSigned: true
+    labels:
+      opentdf.io/keycloak-admin: "false"
     annotations: {}
       # route.openshift.io/termination: edge
     hostname: # Your keycloak hostname (e.g. keycloak.example.com)
   adminIngress:
     enabled: true
     selfSigned: true
+    labels: 
+      opentdf.io/keycloak-admin: "true"
     annotations: {}
       # route.openshift.io/termination: edge
     hostname: # Your keycloak admin hostname (e.g. keycloak-admin.example.com)
-
 ```
 
 ## Post Install
@@ -113,6 +116,7 @@ If everything is healthy you should be able to access the platform at the hostna
 export PLATFORM_HOST=$(kubectl get ingress -l app.kubernetes.io/name=platform -o jsonpath='{.items[0].spec.rules[0].host}'  )  
 grpcurl -insecure $PLATFORM_HOST:443 kas.AccessService/PublicKey
 ```
+
 {{ template "chart.homepageLine" . }}
 
 {{ template "chart.maintainersSection" . }}
