@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.4](https://github.com/opentdf/charts/compare/platform-0.2.3...platform-v0.2.4) (2024-05-14)
+
+
+### Bug Fixes
+
+* set appVersion to nightly ([#37](https://github.com/opentdf/charts/issues/37)) ([54ec9b1](https://github.com/opentdf/charts/commit/54ec9b1faf4c3f4627b8cb94381dde2fa41df245))
+
 ## [0.2.3](https://github.com/opentdf/charts/compare/platform-0.2.2...platform-v0.2.3) (2024-05-07)
 
 
