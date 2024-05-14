@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.5](https://github.com/opentdf/charts/compare/platform-0.2.4...platform-v0.2.5) (2024-05-14)
+
+
+### Bug Fixes
+
+* remove container command ([#39](https://github.com/opentdf/charts/issues/39)) ([0af92ca](https://github.com/opentdf/charts/commit/0af92cab269b7770092c1b9f1e68e629d2cb2d48))
+
 ## [0.2.4](https://github.com/opentdf/charts/compare/platform-0.2.3...platform-v0.2.4) (2024-05-14)
 
 
