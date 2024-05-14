@@ -3,7 +3,6 @@
 </p>
 
 <p align="center">
-    <a href="https://join.slack.com/t/opentdf/shared_invite/zt-2h6j6n5ly-BVUq~bIPoMeSu~20XQswFw"><img src="https://img.shields.io/badge/Join%20Our%20Community-Slack-blue" /></a>
     <a href="https://github.com/opentdf/charts"><img src="https://badgen.net/github/stars/opentdf/charts?icon=github" /></a>
     <a href="https://github.com/opentdf/charts"><img src="https://badgen.net/github/forks/opentdf/charts?icon=github" /></a>
     <!-- <a href="https://artifacthub.io/packages/search?repo=opentdf"><img src="https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/opentdf" /></a> -->
