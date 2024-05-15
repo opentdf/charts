@@ -5,7 +5,7 @@ metadata:
   labels:
     {{- include "chart.labels" . | nindent 4 }}
 data:
-  opentdf.yaml: |-
+ {{ include "platform.configFileName" .}}: |-
     logger: 
     {{- .Values.logger | toYaml | nindent 6 }}
     db:
@@ -22,8 +22,8 @@ data:
         reflectionEnabled: {{ .Values.server.grpc.reflectionEnabled }} # Default is false
       tls:
         enabled: {{ .Values.server.tls.enabled }}
-        cert: /etc/opentdf/certs/tls.crt
-        key: /etc/opentdf/certs/tls.key
+        cert: /etc/platform/certs/tls.crt
+        key: /etc/platform/certs/tls.key
       auth:
         enabled: true
         {{- .Values.server.auth | toYaml | nindent 8 }}

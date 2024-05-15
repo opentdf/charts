@@ -35,7 +35,7 @@ spec:
           args:
             - start
             - --config-file
-            - /etc/opentdf/config/opentdf.yaml
+            - /etc/platform/config/{{ include "platform.configFileName" .}}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
@@ -61,14 +61,14 @@ spec:
           volumeMounts:
             - name: config
               readOnly: true
-              mountPath: /etc/opentdf/config
+              mountPath: /etc/platform/config
             - name: kas-private-keys
               readOnly: true
-              mountPath: /etc/opentdf/kas
+              mountPath: /etc/platform/kas
             {{- if .Values.server.tls.enabled }}
             - name: tls
               readOnly: true
-              mountPath: /etc/opentdf/certs
+              mountPath: /etc/platform/certs
             {{- end -}}
             {{- if .Values.playground }}
             - name: keycloak-tls
@@ -79,7 +79,7 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           env:
-            - name: OPENTDF_DB_PASSWORD
+            - name: {{include "platform.envVarPrefix" .}}_DB_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ .Values.db.password.secret.name }}

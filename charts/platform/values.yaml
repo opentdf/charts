@@ -192,12 +192,12 @@ server:
     standard:
       rsa:
         key1:
-          privateKeyPath: /etc/opentdf/kas/kas-private.pem
-          publicKeyPath: /etc/opentdf/kas/kas-cert.pem
+          privateKeyPath: /etc/platform/kas/kas-private.pem
+          publicKeyPath: /etc/platform/kas/kas-cert.pem
       ec:
         key1:
-          privateKeyPath: /etc/opentdf/kas/kas-ec-private.pem
-          publicKeyPath: /etc/opentdf/kas/kas-ec-cert.pem
+          privateKeyPath: /etc/platform/kas/kas-ec-private.pem
+          publicKeyPath: /etc/platform/kas/kas-ec-cert.pem
 services:
   kas:
     # -- KAS service enabled

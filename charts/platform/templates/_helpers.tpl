@@ -66,3 +66,11 @@ Create the name of the service account to use
 {{- define "var_dump" -}}
 {{- . | mustToPrettyJson | printf "\nThe JSON output of the dumped var is: \n%s" | fail }}
 {{- end -}}
+
+{{- define "platform.configFileName" -}}
+{{- printf "%s.yaml" ( .Values.configFileKey | default "opentdf" ) }}
+{{- end -}}
+
+{{- define "platform.envVarPrefix" -}}
+{{- printf "%s" ( .Values.configFileKey | default "opentdf" | upper ) }}
+{{- end -}}
