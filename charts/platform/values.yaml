@@ -199,6 +199,18 @@ server:
           privateKeyPath: /etc/platform/kas/kas-ec-private.pem
           publicKeyPath: /etc/platform/kas/kas-ec-cert.pem
 services:
+  entityresolution:
+    # -- Entity Resolver service enabled
+    enabled: false
+    # -- Identity Provider Entity Resolver
+    url:
+    # -- Client Id for Entity Resolver 
+    clientid: tdf-entity-resolution
+    # -- Client Secret for Entity Resolver
+    clientsecret:
+    # -- Entity Resolver Realm 
+    realm: opentdf
+
   kas:
     # -- KAS service enabled
     enabled: true
