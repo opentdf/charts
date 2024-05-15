@@ -12,6 +12,8 @@ data:
     {{- omit .Values.db "password" | toYaml | nindent 6 }}
       password: # loaded from env
     services:
+      entityresolution: 
+        {{- .Values.services.entityresolution | toYaml | nindent 8 }}
       kas:
         enabled: {{ .Values.services.kas.enabled }}
       authorization:

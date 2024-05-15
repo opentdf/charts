@@ -199,6 +199,8 @@ server:
           privateKeyPath: /etc/opentdf/kas/kas-ec-private.pem
           publicKeyPath: /etc/opentdf/kas/kas-ec-cert.pem
 services:
+  entityresolution:
+    enabled: false
   kas:
     # -- KAS service enabled
     enabled: true
