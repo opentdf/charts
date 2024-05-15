@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.6](https://github.com/opentdf/charts/compare/platform-0.2.5...platform-v0.2.6) (2024-05-15)
+
+
+### Bug Fixes
+
+* change file paths to be more generic ([#42](https://github.com/opentdf/charts/issues/42)) ([acf9487](https://github.com/opentdf/charts/commit/acf94873ca44daaf3b94917ef0a9babc65e45418))
+
 ## [0.2.5](https://github.com/opentdf/charts/compare/platform-0.2.4...platform-v0.2.5) (2024-05-14)
 
 
