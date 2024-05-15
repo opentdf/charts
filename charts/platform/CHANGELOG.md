@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/opentdf/charts/compare/platform-0.2.6...platform-v0.3.0) (2024-05-15)
+
+
+### Features
+
+* add entity resolution service to values ([#41](https://github.com/opentdf/charts/issues/41)) ([3eb303d](https://github.com/opentdf/charts/commit/3eb303d2a9e372ac835679e56b393f5c8ff0bf6b))
+
 ## [0.2.6](https://github.com/opentdf/charts/compare/platform-0.2.5...platform-v0.2.6) (2024-05-15)
 
 
