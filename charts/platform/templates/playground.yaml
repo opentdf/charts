@@ -4,9 +4,11 @@ apiVersion: v1
 kind: Secret
 metadata:
   name: {{.Values.db.password.secret.name }}
+  annotations:
+    "helm.sh/hook": "pre-install"
+    "helm.sh/hook-delete-policy": "before-hook-creation"
   labels:
     {{- include "chart.labels" . | nindent 4 }}
-type: Opaque
 data:
-  password: {{ .Values.postgresql.auth.postgresPassword | b64enc }}
+  password: {{ randAlphaNum 16 | b64enc }}
 {{- end }}
