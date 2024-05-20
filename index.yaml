@@ -3,6 +3,27 @@ entries:
   platform:
   - apiVersion: v2
     appVersion: nightly
+    created: "2024-05-20T14:36:51.551371843Z"
+    dependencies:
+    - condition: playground
+      name: postgresql
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 15.2.4
+    - condition: playground
+      name: keycloak
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 21.0.3
+    description: A Helm Chart for OpenTDF Platform
+    digest: 11679ec11059af3dfd28d5ab5d3d800ed12c0fa2b2b3d4e8f2e98c606fa3caea
+    maintainers:
+    - name: Opentdf
+    name: platform
+    type: application
+    urls:
+    - https://github.com/opentdf/charts/releases/download/platform-0.4.0/platform-0.4.0.tgz
+    version: 0.4.0
+  - apiVersion: v2
+    appVersion: nightly
     created: "2024-05-15T23:13:32.341448913Z"
     dependencies:
     - condition: playground
@@ -148,4 +169,4 @@ entries:
     urls:
     - https://github.com/opentdf/charts/releases/download/platform-0.2.1/platform-0.2.1.tgz
     version: 0.2.1
-generated: "2024-05-15T23:13:32.341468038Z"
+generated: "2024-05-20T14:36:51.551411617Z"
