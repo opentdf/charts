@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0](https://github.com/opentdf/charts/compare/platform-0.3.0...platform-v0.4.0) (2024-05-20)
+
+
+### Miscellaneous Chores
+
+* release 0.4.0 ([#46](https://github.com/opentdf/charts/issues/46)) ([97cd502](https://github.com/opentdf/charts/commit/97cd50274a2047e68ed67ebefa775f5b657d4b5b))
+
 ## [0.3.0](https://github.com/opentdf/charts/compare/platform-0.2.6...platform-v0.3.0) (2024-05-15)
 
 
