@@ -4,11 +4,14 @@ metadata:
   name: {{ include "chart.fullname" . }}
   labels:
     {{- include "chart.labels" . | nindent 4 }}
+  annotations:
+    {{- toYaml .Values.service.annotations | nindent 4 }}
 spec:
   type: {{ .Values.service.type }}
   ports:
     - port: {{ .Values.service.port }}
       targetPort: http2
+      appProtocol:  {{ if .Values.server.tls.enabled }}http2{{ else }}h2c{{ end }}      
       protocol: TCP
       name: http2
   selector:

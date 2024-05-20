@@ -1,8 +1,11 @@
 # platform
 
-![Version: 0.2.5](https://img.shields.io/badge/Version-0.2.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: nightly](https://img.shields.io/badge/AppVersion-nightly-informational?style=flat-square)
+![Version: 0.3.0](https://img.shields.io/badge/Version-0.3.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: nightly](https://img.shields.io/badge/AppVersion-nightly-informational?style=flat-square)
 
 A Helm Chart for OpenTDF Platform
+
+> [!WARNING]
+> This chart is currently under active development and breaking changes may occur.
 
 > [!NOTE]
 > Until a stable platform release is available, the current appVersion is set to `nightly`.
@@ -39,8 +42,7 @@ In order to run the KAS server, you need to provide the KAS with a set a keys. T
 
 ```bash
 openssl req -x509 -nodes -newkey RSA:2048 -subj "/CN=kas" -keyout kas-private.pem -out kas-cert.pem -days 365
-openssl ecparam -name prime256v1 >ecparams.tmp
-openssl req -x509 -nodes -newkey ec:ecparams.tmp -subj "/CN=kas" -keyout kas-ec-private.pem -out kas-ec-cert.pem -days 365
+openssl req -x509 -nodes -newkey ec:<(openssl ecparam -name secp256r1) -subj "/CN=kas" -keyout kas-ec-private.pem -out kas-ec-cert.pem -days 365
 ```
 
 To create a secret with the keys, run the following command:
@@ -57,17 +59,12 @@ Below are starting examples for configuring various ingress providers:
 
 #### Openshift
 
-Check to see if you have HTTP/2 enabled on your ingress routers
-- https://docs.openshift.com/container-platform/4.15/networking/ingress-operator.html#nw-http2-haproxy_configuring-ingress
-
-If no HTTP/2 support is enabled. You can still leverage gRPC by using a passthrough route.
-
-Example values.yaml for passthrough route:
+Example values.yaml for edge terminated route:
 ```yaml
 ingress:
   enabled: true
   annotations:
-    route.openshift.io/termination: "passthrough"
+    route.openshift.io/termination: "edge"
   hosts:
     - host: platform.apps.okd.example.com
       paths:
@@ -310,11 +307,12 @@ realms:
 | server.cryptoProvider.standard.ec.key1.publicKeyPath | string | `"/etc/platform/kas/kas-ec-cert.pem"` |  |
 | server.cryptoProvider.standard.rsa.key1.privateKeyPath | string | `"/etc/platform/kas/kas-private.pem"` |  |
 | server.cryptoProvider.standard.rsa.key1.publicKeyPath | string | `"/etc/platform/kas/kas-cert.pem"` |  |
+| server.disableHealthChecks | bool | `false` | Disable Kubernetes Health Checks. (Useful for debugging) |
 | server.grpc.reflectionEnabled | bool | `true` | Enables grpc reflection (https://github.com/grpc/grpc/blob/master/doc/server-reflection.md) |
-| server.healthCheckz | bool | `true` | Enables Kubernetes Health Checkz |
 | server.port | int | `9000` | The server port |
-| server.tls.enabled | bool | `true` | Enables tls |
+| server.tls.enabled | bool | `false` | Enables tls for platform server |
 | server.tls.secret | string | `nil` | The server tls certificate. If not set, a self-signed certificate is generated |
+| service.annotations | object | `{}` | Extra annotations to add to the service |
 | service.port | int | `9000` | The port of the service |
 | service.type | string | `"ClusterIP"` | The type of service to create |
 | serviceAccount.annotations | object | `{}` | Extra annotations to add to the service account |
@@ -327,13 +325,13 @@ realms:
 | services.authorization.realm | string | `"opentdf"` | Keycloak Realm |
 | services.authorization.secret | string | `nil` | Client secret for the external entity store |
 | services.authorization.url | string | `nil` | External entity store (currently only keycloak is supported) |
+| services.entityresolution.clientid | string | `"tdf-entity-resolution"` | Client Id for Entity Resolver |
+| services.entityresolution.clientsecret | string | `nil` | Client Secret for Entity Resolver |
+| services.entityresolution.enabled | bool | `false` | Entity Resolver service enabled |
+| services.entityresolution.realm | string | `"opentdf"` | Entity Resolver Realm |
+| services.entityresolution.url | string | `nil` | Identity Provider Entity Resolver |
 | services.kas.enabled | bool | `true` | KAS service enabled |
 | services.kas.privateKeysSecret | string | `"kas-private-keys"` | KAS secret containing keys kas-private.pem , kas-cert.pem , kas-ec-private.pem , kas-ec-cert.pem |
-| services.entityresolution.enabled | bool | `false` | Entity Resolution service enabled |
-| services.entityresolution.url | string | `""` | Identity Provider Entity Resolver |
-| services.entityresolution.clientid | string | `tdf-entity-resolution` | Client Id for Entity Resolver |
-| services.entityresolution.clientsecret | string | `""` | Client Secret for Entity Resolver |
-| services.entityresolution.realm | string | `"opentdf"` | Entity Resolver Realm |
 | tolerations | list | `[]` | Tolerations to apply to the pod (https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) |
 | volumeMounts | list | `[]` | Additional volumeMounts on the output Deployment definition. |
 | volumes | list | `[]` | Additional volumes on the output Deployment definition. |

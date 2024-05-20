@@ -44,7 +44,7 @@ spec:
             - name: http2
               containerPort: {{ .Values.server.port }}
               protocol: TCP
-          {{ if .Values.server.healthCheckz }}
+          {{ if not .Values.server.disableHealthChecks }}
           livenessProbe:
             httpGet:
               scheme: {{ if .Values.server.tls.enabled }}HTTPS{{ else }}HTTP{{ end }}              
@@ -70,7 +70,7 @@ spec:
               readOnly: true
               mountPath: /etc/platform/certs
             {{- end -}}
-            {{- if .Values.playground }}
+            {{- if and .Values.playground  .Values.keycloak.ingress.tls}}
             - name: keycloak-tls
               readOnly: true
               mountPath: /etc/ssl/certs
@@ -96,7 +96,7 @@ spec:
           secret:
             secretName: {{ .Values.server.tls.secret | default (printf "%s-tls" (include "chart.fullname" .)) }}
         {{- end -}}
-        {{- if .Values.playground }}
+        {{- if and .Values.playground .Values.keycloak.ingress.tls}}
         - name: keycloak-tls
           secret:
             secretName: {{ .Values.keycloak.ingress.hostname }}-tls # If the fullnameOverride is set, this will break

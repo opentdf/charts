@@ -5,6 +5,9 @@
 
 {{ template "chart.description" . }}
 
+> [!WARNING]
+> This chart is currently under active development and breaking changes may occur.
+
 > [!NOTE]
 > Until a stable platform release is available, the current appVersion is set to `nightly`.
 
@@ -40,8 +43,7 @@ In order to run the KAS server, you need to provide the KAS with a set a keys. T
 
 ```bash
 openssl req -x509 -nodes -newkey RSA:2048 -subj "/CN=kas" -keyout kas-private.pem -out kas-cert.pem -days 365
-openssl ecparam -name prime256v1 >ecparams.tmp
-openssl req -x509 -nodes -newkey ec:ecparams.tmp -subj "/CN=kas" -keyout kas-ec-private.pem -out kas-ec-cert.pem -days 365
+openssl req -x509 -nodes -newkey ec:<(openssl ecparam -name secp256r1) -subj "/CN=kas" -keyout kas-ec-private.pem -out kas-ec-cert.pem -days 365
 ```
 
 To create a secret with the keys, run the following command:
@@ -58,18 +60,12 @@ Below are starting examples for configuring various ingress providers:
 
 #### Openshift
 
-Check to see if you have HTTP/2 enabled on your ingress routers
-- https://docs.openshift.com/container-platform/4.15/networking/ingress-operator.html#nw-http2-haproxy_configuring-ingress
-
-
-If no HTTP/2 support is enabled. You can still leverage gRPC by using a passthrough route.
-
-Example values.yaml for passthrough route:
+Example values.yaml for edge terminated route:
 ```yaml
 ingress:
   enabled: true
   annotations:
-    route.openshift.io/termination: "passthrough"
+    route.openshift.io/termination: "edge"
   hosts:
     - host: platform.apps.okd.example.com
       paths:

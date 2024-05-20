@@ -56,6 +56,8 @@ service:
   type: ClusterIP
   # -- The port of the service
   port: 9000
+  # -- Extra annotations to add to the service
+  annotations: {}
 
 ingress:
   # -- Enable Ingress
@@ -158,11 +160,11 @@ server:
   grpc:
     # -- Enables grpc reflection (https://github.com/grpc/grpc/blob/master/doc/server-reflection.md)
     reflectionEnabled: true
-  # -- Enables Kubernetes Health Checkz
-  healthCheckz: true
+  # -- Disable Kubernetes Health Checks. (Useful for debugging)
+  disableHealthChecks: false
   tls:
-    # -- Enables tls
-    enabled: true
+    # -- Enables tls for platform server
+    enabled: false
     # -- The server tls certificate. If not set, a self-signed certificate is generated
     secret:
   auth:
@@ -204,11 +206,11 @@ services:
     enabled: false
     # -- Identity Provider Entity Resolver
     url:
-    # -- Client Id for Entity Resolver 
+    # -- Client Id for Entity Resolver
     clientid: tdf-entity-resolution
     # -- Client Secret for Entity Resolver
     clientsecret:
-    # -- Entity Resolver Realm 
+    # -- Entity Resolver Realm
     realm: opentdf
 
   kas:
