@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.1](https://github.com/opentdf/charts/compare/platform-0.4.0...platform-v0.4.1) (2024-06-06)
+
+
+### Bug Fixes
+
+* **platform:** update kas key paths to new config format ([#48](https://github.com/opentdf/charts/issues/48)) ([9c4bd5b](https://github.com/opentdf/charts/commit/9c4bd5bf64dfe8114e2aff03fbaa8aff70ecb09d))
+
 ## [0.4.0](https://github.com/opentdf/charts/compare/platform-0.3.0...platform-v0.4.0) (2024-05-20)
 
 
