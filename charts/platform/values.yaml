@@ -194,12 +194,12 @@ server:
     standard:
       rsa:
         key1:
-          privateKeyPath: /etc/platform/kas/kas-private.pem
-          publicKeyPath: /etc/platform/kas/kas-cert.pem
+          private_key_path: /etc/platform/kas/kas-private.pem
+          public_key_path: /etc/platform/kas/kas-cert.pem
       ec:
         key1:
-          privateKeyPath: /etc/platform/kas/kas-ec-private.pem
-          publicKeyPath: /etc/platform/kas/kas-ec-cert.pem
+          private_key_path: /etc/platform/kas/kas-ec-private.pem
+          public_key_path: /etc/platform/kas/kas-ec-cert.pem
 services:
   entityresolution:
     # -- Entity Resolver service enabled
