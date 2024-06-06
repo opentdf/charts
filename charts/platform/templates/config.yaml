@@ -5,25 +5,25 @@ metadata:
   labels:
     {{- include "chart.labels" . | nindent 4 }}
 data:
- {{ include "platform.configFileName" .}}: |-
+ {{ include "platform.configFileName" . }}: |
     logger: 
-    {{- .Values.logger | toYaml | nindent 6 }}
+      {{- .Values.logger | toYaml | nindent 6 }}
     db:
-    {{- omit .Values.db "password" | toYaml | nindent 6 }}
+      {{- omit .Values.db "password" | toYaml | nindent 6 }}
       password: # loaded from env
     services:
       entityresolution: 
         {{- .Values.services.entityresolution | toYaml | nindent 8 }}
       kas:
-        enabled: {{ .Values.services.kas.enabled }}
+        enabled: {{ .Values.services.kas.enabled | quote }}
       authorization:
         {{- .Values.services.authorization | toYaml | nindent 8 }}
     server:
-      port: {{ .Values.server.port }}
+      port: {{ .Values.server.port | quote }}
       grpc:
-        reflectionEnabled: {{ .Values.server.grpc.reflectionEnabled }} # Default is false
+        reflectionEnabled: {{ .Values.server.grpc.reflectionEnabled | quote }} # Default is false
       tls:
-        enabled: {{ .Values.server.tls.enabled }}
+        enabled: {{ .Values.server.tls.enabled | quote }}
         cert: /etc/platform/certs/tls.crt
         key: /etc/platform/certs/tls.key
       auth:
@@ -31,6 +31,5 @@ data:
         {{- .Values.server.auth | toYaml | nindent 8 }}
       cryptoProvider:
         {{- .Values.server.cryptoProvider | toYaml | nindent 8 }}
-      
     opa:
-      embedded: {{ .Values.opa.embedded }}
+      embedded: {{ .Values.opa.embedded | quote }}

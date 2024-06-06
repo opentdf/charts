@@ -1,6 +1,6 @@
 # platform
 
-![Version: 0.3.0](https://img.shields.io/badge/Version-0.3.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: nightly](https://img.shields.io/badge/AppVersion-nightly-informational?style=flat-square)
+![Version: 0.4.0](https://img.shields.io/badge/Version-0.4.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: nightly](https://img.shields.io/badge/AppVersion-nightly-informational?style=flat-square)
 
 A Helm Chart for OpenTDF Platform
 
@@ -305,10 +305,10 @@ realms:
 | server.auth.policy.csv | string | `nil` |  |
 | server.auth.policy.default | string | `nil` |  |
 | server.auth.policy.map | string | `nil` |  |
-| server.cryptoProvider.standard.ec.key1.privateKeyPath | string | `"/etc/platform/kas/kas-ec-private.pem"` |  |
-| server.cryptoProvider.standard.ec.key1.publicKeyPath | string | `"/etc/platform/kas/kas-ec-cert.pem"` |  |
-| server.cryptoProvider.standard.rsa.key1.privateKeyPath | string | `"/etc/platform/kas/kas-private.pem"` |  |
-| server.cryptoProvider.standard.rsa.key1.publicKeyPath | string | `"/etc/platform/kas/kas-cert.pem"` |  |
+| server.cryptoProvider.standard.ec.key1.private_key_path | string | `"/etc/platform/kas/kas-ec-private.pem"` |  |
+| server.cryptoProvider.standard.ec.key1.public_key_path | string | `"/etc/platform/kas/kas-ec-cert.pem"` |  |
+| server.cryptoProvider.standard.rsa.key1.private_key_path | string | `"/etc/platform/kas/kas-private.pem"` |  |
+| server.cryptoProvider.standard.rsa.key1.public_key_path | string | `"/etc/platform/kas/kas-cert.pem"` |  |
 | server.disableHealthChecks | bool | `false` | Disable Kubernetes Health Checks. (Useful for debugging) |
 | server.grpc.reflectionEnabled | bool | `true` | Enables grpc reflection (https://github.com/grpc/grpc/blob/master/doc/server-reflection.md) |
 | server.port | int | `9000` | The server port |
