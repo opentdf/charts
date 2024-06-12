@@ -15,7 +15,7 @@ data:
       entityresolution: 
         {{- .Values.services.entityresolution | toYaml | nindent 8 }}
       kas:
-        enabled: {{ .Values.services.kas.enabled | quote }}
+        {{- .Values.services.kas.config | toYaml | nindent 8 }}
       authorization:
         {{- .Values.services.authorization | toYaml | nindent 8 }}
     server:
