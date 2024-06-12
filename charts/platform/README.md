@@ -332,7 +332,8 @@ realms:
 | services.entityresolution.enabled | bool | `false` | Entity Resolver service enabled |
 | services.entityresolution.realm | string | `"opentdf"` | Entity Resolver Realm |
 | services.entityresolution.url | string | `nil` | Identity Provider Entity Resolver |
-| services.kas.enabled | bool | `true` | KAS service enabled |
+| services.kas.config | object | `{"enabled":true}` | KAS service Configuration as yaml |
+| services.kas.config.enabled | bool | `true` | KAS service enabled |
 | services.kas.privateKeysSecret | string | `"kas-private-keys"` | KAS secret containing keys kas-private.pem , kas-cert.pem , kas-ec-private.pem , kas-ec-cert.pem |
 | tolerations | list | `[]` | Tolerations to apply to the pod (https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) |
 | volumeMounts | list | `[]` | Additional volumeMounts on the output Deployment definition. |

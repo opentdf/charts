@@ -214,6 +214,7 @@ services:
     realm: opentdf
 
   kas:
+    # -- KAS service Configuration as yaml
     config:
       # -- KAS service enabled
       enabled: true
