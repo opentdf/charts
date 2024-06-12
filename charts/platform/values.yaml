@@ -214,8 +214,10 @@ services:
     realm: opentdf
 
   kas:
-    # -- KAS service enabled
-    enabled: true
+    # -- KAS service Configuration as yaml
+    config:
+      # -- KAS service enabled
+      enabled: true
     # -- KAS secret containing keys
     # kas-private.pem , kas-cert.pem , kas-ec-private.pem , kas-ec-cert.pem
     privateKeysSecret: kas-private-keys
