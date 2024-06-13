@@ -6,6 +6,7 @@ metadata:
     {{- include "chart.labels" . | nindent 4 }}
 data:
  {{ include "platform.configFileName" . }}: |
+    dev_mode: {{ .Values.playground }}
     logger: 
       {{- .Values.logger | toYaml | nindent 6 }}
     db:
