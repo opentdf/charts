@@ -1,6 +1,6 @@
 # platform
 
-![Version: 0.4.0](https://img.shields.io/badge/Version-0.4.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: nightly](https://img.shields.io/badge/AppVersion-nightly-informational?style=flat-square)
+![Version: 0.4.1](https://img.shields.io/badge/Version-0.4.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: nightly](https://img.shields.io/badge/AppVersion-nightly-informational?style=flat-square)
 
 A Helm Chart for OpenTDF Platform
 
@@ -305,13 +305,11 @@ realms:
 | server.auth.policy.csv | string | `nil` |  |
 | server.auth.policy.default | string | `nil` |  |
 | server.auth.policy.map | string | `nil` |  |
-| server.cryptoProvider.standard.ec.key1.private_key_path | string | `"/etc/platform/kas/kas-ec-private.pem"` |  |
-| server.cryptoProvider.standard.ec.key1.public_key_path | string | `"/etc/platform/kas/kas-ec-cert.pem"` |  |
-| server.cryptoProvider.standard.rsa.key1.private_key_path | string | `"/etc/platform/kas/kas-private.pem"` |  |
-| server.cryptoProvider.standard.rsa.key1.public_key_path | string | `"/etc/platform/kas/kas-cert.pem"` |  |
+| server.cryptoProvider.standard.keys | list | `[{"alg":"rsa:2048","cert":"/etc/platform/kas/kas-cert.pem","kid":"r1","private":"/etc/platform/kas/kas-private.pem"},{"alg":"ec:secp256r1","cert":"/etc/platform/kas/kas-ec-cert.pem","kid":"e1","private":"/etc/platform/kas/kas-ec-private.pem"}]` | List of key pairs to load into the platform. (Currently only leveraged by KAS) |
 | server.disableHealthChecks | bool | `false` | Disable Kubernetes Health Checks. (Useful for debugging) |
 | server.grpc.reflectionEnabled | bool | `true` | Enables grpc reflection (https://github.com/grpc/grpc/blob/master/doc/server-reflection.md) |
 | server.port | int | `9000` | The server port |
+| server.tls.additionalTrustedCerts | list | `[]` | Additional trusted certificates. These can be loaded following [projected volume](https://kubernetes.io/docs/concepts/storage/projected-volumes/) |
 | server.tls.enabled | bool | `false` | Enables tls for platform server |
 | server.tls.secret | string | `nil` | The server tls certificate. If not set, a self-signed certificate is generated |
 | service.annotations | object | `{}` | Extra annotations to add to the service |
@@ -332,8 +330,9 @@ realms:
 | services.entityresolution.enabled | bool | `false` | Entity Resolver service enabled |
 | services.entityresolution.realm | string | `"opentdf"` | Entity Resolver Realm |
 | services.entityresolution.url | string | `nil` | Identity Provider Entity Resolver |
-| services.kas.config | object | `{"enabled":true}` | KAS service Configuration as yaml |
+| services.kas.config | object | `{"enabled":true,"keyring":[{"alg":"ec:secp256r1","kid":"e1"},{"alg":"rsa:2048","kid":"r1"}]}` | KAS service Configuration as yaml |
 | services.kas.config.enabled | bool | `true` | KAS service enabled |
+| services.kas.config.keyring | list | `[{"alg":"ec:secp256r1","kid":"e1"},{"alg":"rsa:2048","kid":"r1"}]` | Default keys for clients to use |
 | services.kas.privateKeysSecret | string | `"kas-private-keys"` | KAS secret containing keys kas-private.pem , kas-cert.pem , kas-ec-private.pem , kas-ec-cert.pem |
 | tolerations | list | `[]` | Tolerations to apply to the pod (https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) |
 | volumeMounts | list | `[]` | Additional volumeMounts on the output Deployment definition. |
