@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.5.0](https://github.com/opentdf/charts/compare/platform-0.4.1...platform-v0.5.0) (2024-06-17)
+
+
+### ⚠ BREAKING CHANGES
+
+* yaml config for kas ([#52](https://github.com/opentdf/charts/issues/52))
+
+### Features
+
+* **platform:** add headless service ([#55](https://github.com/opentdf/charts/issues/55)) ([c7c8611](https://github.com/opentdf/charts/commit/c7c8611168fb4185bce5015d3c3d089688fff57a))
+* **platform:** additional certs projected volumes ([#57](https://github.com/opentdf/charts/issues/57)) ([d1205b4](https://github.com/opentdf/charts/commit/d1205b4b77602587fd28c3ce69734ce49a8c7152))
+* **platform:** propagate playground setting to platform ([#56](https://github.com/opentdf/charts/issues/56)) ([2aaa497](https://github.com/opentdf/charts/commit/2aaa49749bc24df9ee29fcf1f3e729c8a47e3e2a))
+* yaml config for kas ([#52](https://github.com/opentdf/charts/issues/52)) ([e5b4c1a](https://github.com/opentdf/charts/commit/e5b4c1a1e7320d2738ba04693c9927d225a5d64c))
+
+
+### Bug Fixes
+
+* **platform:** update crypto provider and kas keyring configuration ([d1205b4](https://github.com/opentdf/charts/commit/d1205b4b77602587fd28c3ce69734ce49a8c7152))
+
 ## [0.4.1](https://github.com/opentdf/charts/compare/platform-0.4.0...platform-v0.4.1) (2024-06-06)
 
 
