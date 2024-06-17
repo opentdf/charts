@@ -167,6 +167,15 @@ server:
     enabled: false
     # -- The server tls certificate. If not set, a self-signed certificate is generated
     secret:
+    # -- Additional trusted certificates. These can be loaded following [projected volume](https://kubernetes.io/docs/concepts/storage/projected-volumes/)
+    additionalTrustedCerts:
+      []
+      # - secret:
+      #     name: app-certs
+      #     optional: false
+      #     items:
+      #       - key: cert.pem
+      #         path: app-cert.pem
   auth:
     # -- Audience of provided by the identity provider
     audience: "http://localhost:8080"
@@ -192,14 +201,16 @@ server:
       #  p, role:org-admin, policy:kas-registry, *, *, allow
   cryptoProvider:
     standard:
-      rsa:
-        key1:
-          private_key_path: /etc/platform/kas/kas-private.pem
-          public_key_path: /etc/platform/kas/kas-cert.pem
-      ec:
-        key1:
-          private_key_path: /etc/platform/kas/kas-ec-private.pem
-          public_key_path: /etc/platform/kas/kas-ec-cert.pem
+      # -- List of key pairs to load into the platform. (Currently only leveraged by KAS)
+      keys:
+        - kid: r1
+          alg: rsa:2048
+          private: /etc/platform/kas/kas-private.pem
+          cert: /etc/platform/kas/kas-cert.pem
+        - kid: e1
+          alg: ec:secp256r1
+          private: /etc/platform/kas/kas-ec-private.pem
+          cert: /etc/platform/kas/kas-ec-cert.pem
 services:
   entityresolution:
     # -- Entity Resolver service enabled
@@ -218,6 +229,12 @@ services:
     config:
       # -- KAS service enabled
       enabled: true
+      # -- Default keys for clients to use
+      keyring:
+        - kid: e1
+          alg: ec:secp256r1
+        - kid: r1
+          alg: rsa:2048
     # -- KAS secret containing keys
     # kas-private.pem , kas-cert.pem , kas-ec-private.pem , kas-ec-cert.pem
     privateKeysSecret: kas-private-keys

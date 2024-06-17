@@ -65,15 +65,13 @@ spec:
             - name: kas-private-keys
               readOnly: true
               mountPath: /etc/platform/kas
+            - name: trusted-certs
+              readOnly: true
+              mountPath: /etc/ssl/certs
             {{- if .Values.server.tls.enabled }}
             - name: tls
               readOnly: true
               mountPath: /etc/platform/certs
-            {{- end -}}
-            {{- if and .Values.playground  .Values.keycloak.ingress.tls}}
-            - name: keycloak-tls
-              readOnly: true
-              mountPath: /etc/ssl/certs
             {{- end -}}
             {{- with .Values.volumeMounts }}
             {{- toYaml . | nindent 12 }}
@@ -95,16 +93,22 @@ spec:
         - name: tls
           secret:
             secretName: {{ .Values.server.tls.secret | default (printf "%s-tls" (include "chart.fullname" .)) }}
-        {{- end -}}
-        {{- if and .Values.playground .Values.keycloak.ingress.tls}}
-        - name: keycloak-tls
-          secret:
-            secretName: {{ .Values.keycloak.ingress.hostname }}-tls # If the fullnameOverride is set, this will break
-            optional: false
-            items:
-              - key: ca.crt
-                path: kc-ca.crt
-        {{- end -}}
+        {{- end }}
+        - name: trusted-certs
+          projected:
+            defaultMode: 0400
+            sources:
+            {{- if and .Values.playground .Values.keycloak.ingress.tls }}
+            - secret:
+                name: {{ .Values.keycloak.ingress.hostname }}-tls # If the fullnameOverride is set, this will break
+                optional: false
+                items:
+                  - key: ca.crt
+                    path: kc-ca.crt
+            {{- end -}}
+            {{- with .Values.server.tls.additionalTrustedCerts }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
         {{- with .Values.volumes }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
