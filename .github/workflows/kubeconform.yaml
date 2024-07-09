@@ -10,4 +10,5 @@ jobs:
     steps:
       - uses: azure/setup-helm@v4.2.0
       - run: helm plugin install https://github.com/jtyr/kubeconform-helm
+      - run: ls -la
       - run: helm kubeconform charts/platform
