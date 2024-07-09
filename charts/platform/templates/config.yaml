@@ -19,6 +19,9 @@ data:
         {{- .Values.services.kas.config | toYaml | nindent 8 }}
       authorization:
         {{- .Values.services.authorization | toYaml | nindent 8 }}
+      {{- with .Values.services.extraServices }}
+      {{- toYaml . | nindent 6 }}
+      {{- end }}
     server:
       port: {{ .Values.server.port | quote }}
       cors:
