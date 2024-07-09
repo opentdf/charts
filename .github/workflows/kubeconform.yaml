@@ -8,7 +8,10 @@ jobs:
   kubeconform:
     runs-on: ubuntu-22.04
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: azure/setup-helm@v4.2.0
       - run: helm plugin install https://github.com/jtyr/kubeconform-helm
-      - run: ls -la
       - run: helm kubeconform charts/platform
