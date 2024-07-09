@@ -1,0 +1,13 @@
+name: Kubeconform Check
+
+on:
+  pull_request:
+    branches:
+      - main
+jobs:
+  kubeconform:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: azure/setup-helm@v4.2.0
+      - run: helm plugin install https://github.com/jtyr/kubeconform-helm
+      - run: helm kubeconform charts/platform
