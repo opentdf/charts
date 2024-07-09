@@ -158,7 +158,7 @@ server:
   # -- The server port
   port: 9000
   cors:
-    # -- Enable CORS
+    # -- Enable CORS (default: true)
     enabled: true
     # -- The allowed origins
     allowedorigins: []
