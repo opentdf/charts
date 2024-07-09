@@ -305,6 +305,13 @@ realms:
 | server.auth.policy.csv | string | `nil` |  |
 | server.auth.policy.default | string | `nil` |  |
 | server.auth.policy.map | string | `nil` |  |
+| server.cors.allowcredentials | bool | `true` | Allow credentials |
+| server.cors.allowedheaders | list | `["Accept","Authorization","Content-Type","X-CSRF-Token","X-Request-ID"]` | The allowed request headers |
+| server.cors.allowedmethods | list | `["GET","POST","PUT","DELETE","OPTIONS"]` | The allowed request methods |
+| server.cors.allowedorigins | list | `[]` | The allowed origins |
+| server.cors.enabled | bool | `false` | Enable CORS (default: false) |
+| server.cors.exposedheaders | list | `["Link"]` | List of response headers that browsers are allowed to access |
+| server.cors.maxage | int | `3600` | The max age |
 | server.cryptoProvider.standard.keys | list | `[{"alg":"rsa:2048","cert":"/etc/platform/kas/kas-cert.pem","kid":"r1","private":"/etc/platform/kas/kas-private.pem"},{"alg":"ec:secp256r1","cert":"/etc/platform/kas/kas-ec-cert.pem","kid":"e1","private":"/etc/platform/kas/kas-ec-private.pem"}]` | List of key pairs to load into the platform. (Currently only leveraged by KAS) |
 | server.disableHealthChecks | bool | `false` | Disable Kubernetes Health Checks. (Useful for debugging) |
 | server.grpc.reflectionEnabled | bool | `true` | Enables grpc reflection (https://github.com/grpc/grpc/blob/master/doc/server-reflection.md) |

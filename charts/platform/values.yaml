@@ -157,6 +157,33 @@ db:
 server:
   # -- The server port
   port: 9000
+  cors:
+    # -- Enable CORS (default: false)
+    enabled: false
+    # -- The allowed origins
+    allowedorigins: []
+      # - "*"
+    # -- The allowed request methods
+    allowedmethods: 
+      - "GET"
+      - "POST"
+      - "PUT"
+      - "DELETE"
+      - "OPTIONS"
+    # -- The allowed request headers
+    allowedheaders:
+      - "Accept"
+      - "Authorization"
+      - "Content-Type"
+      - "X-CSRF-Token"
+      - "X-Request-ID"
+    # -- List of response headers that browsers are allowed to access
+    exposedheaders:
+      - Link
+    # -- The max age
+    maxage: 3600
+    # -- Allow credentials
+    allowcredentials: true
   grpc:
     # -- Enables grpc reflection (https://github.com/grpc/grpc/blob/master/doc/server-reflection.md)
     reflectionEnabled: true
