@@ -163,14 +163,14 @@ server:
     # -- The allowed origins
     allowedorigins: []
       # - "*"
-    # -- The allowed methods
+    # -- The allowed request methods
     allowedmethods: 
       - "GET"
       - "POST"
       - "PUT"
       - "DELETE"
       - "OPTIONS"
-    # -- The allowed headers
+    # -- The allowed request headers
     allowedheaders:
       - "Accept"
       - "Authorization"
