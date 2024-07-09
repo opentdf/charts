@@ -266,6 +266,8 @@ realms:
 | keycloak.externalDatabase.host | string | `"platform-db"` |  |
 | keycloak.externalDatabase.port | int | `5432` |  |
 | keycloak.externalDatabase.user | string | `"opentdf"` |  |
+| keycloak.extraEnvVars[0].name | string | `"KC_FEATURES"` |  |
+| keycloak.extraEnvVars[0].value | string | `"preview,token-exchange"` |  |
 | keycloak.fullnameOverride | string | `"platform-keycloak"` |  |
 | keycloak.ingress.enabled | bool | `true` |  |
 | keycloak.ingress.labels."opentdf.io/keycloak-admin" | string | `"false"` |  |
