@@ -286,7 +286,6 @@ realms:
 | logger.type | string | `"json"` | The platform log format ( json, text ) |
 | nameOverride | string | `""` | Overrides the chart name |
 | nodeSelector | object | `{}` | Target specific nodes in the cluster |
-| opa.embedded | bool | `true` | Whether to run an embedded OPA bundle. (!!! Do not enable this in production !!!) |
 | playground | bool | `false` |  |
 | podAnnotations | object | `{}` | Extra annotations to add to the pod |
 | podLabels | object | `{}` | Extra labels to add to the pod |
@@ -330,16 +329,16 @@ realms:
 | serviceAccount.automount | bool | `true` | Automatically mount a ServiceAccount's API credentials |
 | serviceAccount.create | bool | `true` | Specifies whether a service account should be created |
 | serviceAccount.name | string | `""` | The name of the service account to use. If not set and create is true, a name is generated using the fullname template |
-| services.authorization.client | string | `"tdf-entity-resolution"` | Client id for the external entity store |
+| services.authorization.clientid | string | `nil` | Client id for the external entity store |
+| services.authorization.clientsecret | string | `nil` | Client secret for the external entity store |
 | services.authorization.enabled | bool | `true` | Authorization service enabled |
-| services.authorization.legacy | bool | `true` | Keycloak legacy mode?? |
-| services.authorization.realm | string | `"opentdf"` | Keycloak Realm |
-| services.authorization.secret | string | `nil` | Client secret for the external entity store |
-| services.authorization.url | string | `nil` | External entity store (currently only keycloak is supported) |
-| services.entityresolution.clientid | string | `"tdf-entity-resolution"` | Client Id for Entity Resolver |
+| services.authorization.ersurl | string | `nil` | External entity store (currently only keycloak is supported) |
+| services.authorization.tokenendpoint | string | `nil` | Oauth2 Server Token Endpoint  |
+| services.entityresolution.clientid | string | `nil` | Client Id for Entity Resolver |
 | services.entityresolution.clientsecret | string | `nil` | Client Secret for Entity Resolver |
 | services.entityresolution.enabled | bool | `false` | Entity Resolver service enabled |
-| services.entityresolution.realm | string | `"opentdf"` | Entity Resolver Realm |
+| services.entityresolution.realm | string | `nil` | Entity Resolver Realm |
+| services.entityresolution.subgroups | bool | `false` | Subgroups  |
 | services.entityresolution.url | string | `nil` | Identity Provider Entity Resolver |
 | services.extraServices | object | `{}` | Additional services |
 | services.kas.config | object | `{"enabled":true,"keyring":[{"alg":"ec:secp256r1","kid":"e1"},{"alg":"rsa:2048","kid":"r1"}]}` | KAS service Configuration as yaml |

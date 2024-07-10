@@ -262,11 +262,13 @@ services:
     # -- Identity Provider Entity Resolver
     url:
     # -- Client Id for Entity Resolver
-    clientid: tdf-entity-resolution
+    clientid: 
     # -- Client Secret for Entity Resolver
     clientsecret:
     # -- Entity Resolver Realm
-    realm: opentdf
+    realm: 
+    # -- Subgroups 
+    subgroups: false
 
   kas:
     # -- KAS service Configuration as yaml
@@ -286,24 +288,23 @@ services:
     # -- Authorization service enabled
     enabled: true
     # -- External entity store (currently only keycloak is supported)
-    url:
+    ersurl:
     # -- Client id for the external entity store
-    client: "tdf-entity-resolution"
+    clientid: 
     # -- Client secret for the external entity store
-    secret:
-    # -- Keycloak Realm
-    realm: "opentdf"
-    # -- Keycloak legacy mode??
-    legacy: true
+    clientsecret:
+    # -- Oauth2 Server Token Endpoint 
+    tokenendpoint:
+    # -- Overide embedded rego policy
+    # rego:
+    #   path: /etc/platform/entitlements.rego
+
   # -- Additional services
   extraServices: {}
   # -- Example of extra service
   # myservice:
   #   enabled: true
   #   url: http://localhost:8080
-opa:
-  # -- Whether to run an embedded OPA bundle. (!!! Do not enable this in production !!!)
-  embedded: true
 
 #############################################
 # The following values are for testing only #
