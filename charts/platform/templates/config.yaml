@@ -22,7 +22,7 @@ data:
     server:
       port: {{ .Values.server.port | quote }}
       cors:
-        enabled: {{ .Values.server.cors.enabled | quote }}
+        enabled: {{ .Values.server.cors.enabled }}
         allowedorigins:
           {{- toYaml .Values.server.cors.allowedorigins | nindent 10 }}
         allowedmethods:
@@ -31,8 +31,8 @@ data:
           {{- toYaml .Values.server.cors.allowedheaders | nindent 10 }}
         exposedheaders:
           {{- toYaml .Values.server.cors.exposedheaders | nindent 10 }}
-        maxage: {{ .Values.server.cors.maxage | quote }}
-        allowcredentials: {{ .Values.server.cors.allowcredentials | quote }}
+        maxage: {{ .Values.server.cors.maxage }}
+        allowcredentials: {{ .Values.server.cors.allowcredentials }}
       grpc:
         reflectionEnabled: {{ .Values.server.grpc.reflectionEnabled | quote }} # Default is false
       tls:
