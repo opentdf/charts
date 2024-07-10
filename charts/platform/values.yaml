@@ -128,6 +128,23 @@ tolerations: []
 # -- Affinity settings for pod assignment
 affinity: {}
 
+# -- Extra environment variables to add to the container
+extraEnv: []
+# - name: SAMPLE_ENV
+#   value: sample
+# - name: SECRET
+#   valueFrom:
+#     secretKeyRef:
+#       name: mysecret
+#       key: mykey
+
+# -- Environment variables from a configmap or secret 
+envFrom: []
+# - configMapRef:
+#     name: configmap
+# - secretRef:
+#     name: secret
+
 logger:
   # -- The platform log level ( debug, info, warn, error )
   level: info
@@ -278,6 +295,12 @@ services:
     realm: "opentdf"
     # -- Keycloak legacy mode??
     legacy: true
+  # -- Additional services
+  extraServices: {}
+  # -- Example of extra service
+  # myservice:
+  #   enabled: true
+  #   url: http://localhost:8080
 opa:
   # -- Whether to run an embedded OPA bundle. (!!! Do not enable this in production !!!)
   embedded: true

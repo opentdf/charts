@@ -77,11 +77,18 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           env:
-            - name: {{include "platform.envVarPrefix" .}}_DB_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Values.db.password.secret.name }}
-                  key: {{ .Values.db.password.secret.key  }}
+          - name: {{include "platform.envVarPrefix" .}}_DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.db.password.secret.name }}
+                key: {{ .Values.db.password.secret.key  }}
+            {{- with .Values.extraEnv }}
+            {{- toYaml . | nindent 10 }}
+            {{- end }}
+          {{- with .Values.envFrom }}
+          envFrom:
+            {{- toYaml . | nindent 10 }}
+          {{- end }}
       volumes:
         - name: config
           configMap:

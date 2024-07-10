@@ -249,6 +249,8 @@ realms:
 | db.port | int | `5432` | The database port |
 | db.sslmode | string | `"prefer"` | The database ssl mode ( disable, prefer, require, verify-ca, verify-full ) |
 | db.user | string | `"opentdf"` | The database user |
+| envFrom | list | `[]` | Environment variables from a configmap or secret  |
+| extraEnv | list | `[]` | Extra environment variables to add to the container |
 | fullnameOverride | string | `""` | Overrides the generated fullname |
 | image.pullPolicy | string | `"IfNotPresent"` | The image tag to pull policy |
 | image.repository | string | `"registry.opentdf.io/platform"` | The image repository to pull from |
@@ -339,6 +341,7 @@ realms:
 | services.entityresolution.enabled | bool | `false` | Entity Resolver service enabled |
 | services.entityresolution.realm | string | `"opentdf"` | Entity Resolver Realm |
 | services.entityresolution.url | string | `nil` | Identity Provider Entity Resolver |
+| services.extraServices | object | `{}` | Additional services |
 | services.kas.config | object | `{"enabled":true,"keyring":[{"alg":"ec:secp256r1","kid":"e1"},{"alg":"rsa:2048","kid":"r1"}]}` | KAS service Configuration as yaml |
 | services.kas.config.enabled | bool | `true` | KAS service enabled |
 | services.kas.config.keyring | list | `[{"alg":"ec:secp256r1","kid":"e1"},{"alg":"rsa:2048","kid":"r1"}]` | Default keys for clients to use |
