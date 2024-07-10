@@ -1,5 +1,31 @@
 # Changelog
 
+## [0.5.0](https://github.com/opentdf/charts/compare/platform-0.4.1...platform-v0.5.0) (2024-07-10)
+
+
+### ⚠ BREAKING CHANGES
+
+* yaml config for kas ([#52](https://github.com/opentdf/charts/issues/52))
+
+### Features
+
+* ability to add extra service definitions ([#62](https://github.com/opentdf/charts/issues/62)) ([e35695e](https://github.com/opentdf/charts/commit/e35695e2137446faf5a07cb5312d121a9f389ab2))
+* ability to load envFrom a configmap or secret ([e35695e](https://github.com/opentdf/charts/commit/e35695e2137446faf5a07cb5312d121a9f389ab2))
+* ability to set extra environment variables ([e35695e](https://github.com/opentdf/charts/commit/e35695e2137446faf5a07cb5312d121a9f389ab2))
+* add cors configuration support ([#60](https://github.com/opentdf/charts/issues/60)) ([f175e88](https://github.com/opentdf/charts/commit/f175e88b04e7846e343ec0d460c2cf365af47dcd))
+* **platform:** add headless service ([#55](https://github.com/opentdf/charts/issues/55)) ([c7c8611](https://github.com/opentdf/charts/commit/c7c8611168fb4185bce5015d3c3d089688fff57a))
+* **platform:** additional certs projected volumes ([#57](https://github.com/opentdf/charts/issues/57)) ([d1205b4](https://github.com/opentdf/charts/commit/d1205b4b77602587fd28c3ce69734ce49a8c7152))
+* **platform:** propagate playground setting to platform ([#56](https://github.com/opentdf/charts/issues/56)) ([2aaa497](https://github.com/opentdf/charts/commit/2aaa49749bc24df9ee29fcf1f3e729c8a47e3e2a))
+* yaml config for kas ([#52](https://github.com/opentdf/charts/issues/52)) ([e5b4c1a](https://github.com/opentdf/charts/commit/e5b4c1a1e7320d2738ba04693c9927d225a5d64c))
+
+
+### Bug Fixes
+
+* enable extra keycloak features needed by platform ([#63](https://github.com/opentdf/charts/issues/63)) ([d877541](https://github.com/opentdf/charts/commit/d8775412be5dc967477a29ea191c972a3a035a4d))
+* **platform:** update crypto provider and kas keyring configuration ([d1205b4](https://github.com/opentdf/charts/commit/d1205b4b77602587fd28c3ce69734ce49a8c7152))
+* sync service configuration with platform ([#64](https://github.com/opentdf/charts/issues/64)) ([63dc6ba](https://github.com/opentdf/charts/commit/63dc6ba38ea283e6a7a1881bfe5a4e224c8e6206))
+* unquote cors config values ([#61](https://github.com/opentdf/charts/issues/61)) ([1bb67ff](https://github.com/opentdf/charts/commit/1bb67ffc0118de644452a0fe7d89ee2bcdb58f1f))
+
 ## [0.4.1](https://github.com/opentdf/charts/compare/platform-0.4.0...platform-v0.4.1) (2024-06-06)
 
 
