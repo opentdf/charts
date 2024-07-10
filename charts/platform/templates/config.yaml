@@ -47,5 +47,3 @@ data:
         {{- .Values.server.auth | toYaml | nindent 8 }}
       cryptoProvider:
         {{- .Values.server.cryptoProvider | toYaml | nindent 8 }}
-    opa:
-      embedded: {{ .Values.opa.embedded | quote }}
