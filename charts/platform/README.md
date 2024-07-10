@@ -332,7 +332,7 @@ realms:
 | services.authorization.clientid | string | `nil` | Client id for the external entity store |
 | services.authorization.clientsecret | string | `nil` | Client secret for the external entity store |
 | services.authorization.enabled | bool | `true` | Authorization service enabled |
-| services.authorization.ersurl | string | `nil` | External entity store (currently only keycloak is supported) |
+| services.authorization.ersurl | string | `"http://localhost:9000/entityresolution/resolve"` | External entity store (currently only keycloak is supported) |
 | services.authorization.tokenendpoint | string | `nil` | Oauth2 Server Token Endpoint  |
 | services.entityresolution.clientid | string | `nil` | Client Id for Entity Resolver |
 | services.entityresolution.clientsecret | string | `nil` | Client Secret for Entity Resolver |

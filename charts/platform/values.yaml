@@ -288,13 +288,13 @@ services:
     # -- Authorization service enabled
     enabled: true
     # -- External entity store (currently only keycloak is supported)
-    ersurl:
+    ersurl: http://localhost:9000/entityresolution/resolve
     # -- Client id for the external entity store
-    clientid: 
+    clientid:
     # -- Client secret for the external entity store
-    clientsecret:
+    clientsecret: 
     # -- Oauth2 Server Token Endpoint 
-    tokenendpoint:
+    tokenendpoint: 
     # -- Overide embedded rego policy
     # rego:
     #   path: /etc/platform/entitlements.rego
