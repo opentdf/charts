@@ -30,9 +30,9 @@ spec:
       serviceAccountName: {{ include "chart.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
-      {{- if .Values.common.hostAliases }}
+      {{- if .Values.hostAliases }}
       hostAliases:
-        {{- toYaml .Values.common.hostAliases | nindent 8 }}
+        {{- toYaml .Values.hostAliases | nindent 8 }}
       {{- end }}
       containers:
         - name: {{ .Chart.Name }}
