@@ -36,6 +36,16 @@ podAnnotations: {}
 # -- Extra labels to add to the pod
 podLabels: {}
 
+# -- Host Alias entries to add to pods
+common:
+  hostAliases: []
+    # - ip: 10.0.0.1
+    #   hostnames:
+    #     - sharepoint.foo.lab
+    # - ip: 127.0.0.1
+    #   hostnames:
+    #     - service.local.lab
+
 # -- The pod security context
 podSecurityContext:
   {}
