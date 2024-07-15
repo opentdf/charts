@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.0](https://github.com/opentdf/charts/compare/platform-0.5.0...platform-v0.6.0) (2024-07-15)
+
+
+### Features
+
+* **common:** add templating for hostaliases ([#66](https://github.com/opentdf/charts/issues/66)) ([efc773c](https://github.com/opentdf/charts/commit/efc773cb38f6a5db6f6fff083245dd2aafa0a3cf))
+
 ## [0.5.0](https://github.com/opentdf/charts/compare/platform-0.4.1...platform-v0.5.0) (2024-07-10)
 
 
