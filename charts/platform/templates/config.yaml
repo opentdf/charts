@@ -24,6 +24,7 @@ data:
       {{- end }}
     server:
       port: {{ .Values.server.port | quote }}
+      enable_pprof: {{ .Values.server.enable_pprof }}
       cors:
         enabled: {{ .Values.server.cors.enabled }}
         allowedorigins:

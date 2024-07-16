@@ -174,6 +174,8 @@ db:
 server:
   # -- The server port
   port: 9000
+  # -- Enable go pprof
+  enable_pprof: false
   cors:
     # -- Enable CORS (default: false)
     enabled: false
