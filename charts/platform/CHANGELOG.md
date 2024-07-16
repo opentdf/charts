@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.1](https://github.com/opentdf/charts/compare/platform-0.6.0...platform-v0.6.1) (2024-07-16)
+
+
+### Bug Fixes
+
+* allow enablement of pprof in service ([#68](https://github.com/opentdf/charts/issues/68)) ([060f9f6](https://github.com/opentdf/charts/commit/060f9f65c5de91e8eac2f5bf9ef1b95aee8c72d1))
+
 ## [0.6.0](https://github.com/opentdf/charts/compare/platform-0.5.0...platform-v0.6.0) (2024-07-15)
 
 
