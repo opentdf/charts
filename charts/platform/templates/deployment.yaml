@@ -71,7 +71,7 @@ spec:
               mountPath: /etc/platform/kas
             - name: trusted-certs
               readOnly: true
-              mountPath: /etc/ssl/certs
+              mountPath: /etc/ssl/certs/platform
             {{- if .Values.server.tls.enabled }}
             - name: tls
               readOnly: true
@@ -81,6 +81,8 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           env:
+          - name: SSL_CERT_DIR
+            value: '/etc/ssl/certs:/etc/ssl/certs/platform'
           - name: {{include "platform.envVarPrefix" .}}_DB_PASSWORD
             valueFrom:
               secretKeyRef:
