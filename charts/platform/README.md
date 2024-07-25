@@ -1,6 +1,6 @@
 # platform
 
-![Version: 0.5.0](https://img.shields.io/badge/Version-0.5.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: nightly](https://img.shields.io/badge/AppVersion-nightly-informational?style=flat-square)
+![Version: 0.6.1](https://img.shields.io/badge/Version-0.6.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: nightly](https://img.shields.io/badge/AppVersion-nightly-informational?style=flat-square)
 
 A Helm Chart for OpenTDF Platform
 
@@ -290,7 +290,7 @@ realms:
 | playground | bool | `false` |  |
 | podAnnotations | object | `{}` | Extra annotations to add to the pod |
 | podLabels | object | `{}` | Extra labels to add to the pod |
-| podSecurityContext | object | `{}` | The pod security context |
+| podSecurityContext | object | `{"runAsNonRoot":true,"seccompProfile":{"type":"RuntimeDefault"}}` | The pod security context (https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod) |
 | postgresql.auth.database | string | `"opentdf"` |  |
 | postgresql.auth.enablePostgresUser | bool | `false` |  |
 | postgresql.auth.existingSecret | string | `"opentdf-db-credentials"` |  |
@@ -302,7 +302,7 @@ realms:
 | postgresql.tls.enabled | bool | `true` |  |
 | replicaCount | int | `1` | The number of Platform pods to run |
 | resources | object | `{}` | Resources to allocate to the container |
-| securityContext | object | `{}` | The container security context |
+| securityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"runAsNonRoot":true,"seccompProfile":{"type":"RuntimeDefault"}}` | The container security context (https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container) |
 | server.auth.audience | string | `"http://localhost:8080"` | Audience of provided by the identity provider |
 | server.auth.issuer | string | `"http://platform-keycloak/realms/opentdf"` | Identity provider issuer |
 | server.auth.policy.claim | string | `nil` |  |

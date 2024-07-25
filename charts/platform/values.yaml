@@ -45,20 +45,24 @@ hostAliases: []
   #   hostnames:
   #     - service.local.lab
 
-# -- The pod security context
+# -- The pod security context (https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod)
 podSecurityContext:
-  {}
+  runAsNonRoot: true
+  seccompProfile:
+    type: RuntimeDefault
   # fsGroup: 2000
 
-# -- The container security context
+# -- The container security context (https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container)
 securityContext:
-  {}
-  # capabilities:
-  #   drop:
-  #   - ALL
+  capabilities:
+    drop:
+    - ALL
   # readOnlyRootFilesystem: true
-  # runAsNonRoot: true
+  runAsNonRoot: true
+  allowPrivilegeEscalation: false
   # runAsUser: 1000
+  seccompProfile:
+    type: "RuntimeDefault"
 
 service:
   # -- The type of service to create
