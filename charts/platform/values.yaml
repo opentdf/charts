@@ -47,7 +47,9 @@ hostAliases: []
 
 # -- The pod security context (https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod)
 podSecurityContext:
-  {}
+  runAsNonRoot: true
+  seccompProfile:
+    type: RuntimeDefault
   # fsGroup: 2000
 
 # -- The container security context (https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container)
