@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.6.2](https://github.com/opentdf/charts/compare/platform-0.6.1...platform-v0.6.2) (2024-07-25)
+
+
+### Bug Fixes
+
+* only mount keycloak cert if ingress and tls enabled ([5cacbb8](https://github.com/opentdf/charts/commit/5cacbb814060f531ea3cccbea2375f41e33c4d20))
+* **platform:** extra certs overwriting files in /etc/ssl/certs ([#70](https://github.com/opentdf/charts/issues/70)) ([5cacbb8](https://github.com/opentdf/charts/commit/5cacbb814060f531ea3cccbea2375f41e33c4d20))
+* remove defaultMode on trusted-certs volume ([5cacbb8](https://github.com/opentdf/charts/commit/5cacbb814060f531ea3cccbea2375f41e33c4d20))
+* set default security context values for container ([5cacbb8](https://github.com/opentdf/charts/commit/5cacbb814060f531ea3cccbea2375f41e33c4d20))
+* set pod security context defaults ([5cacbb8](https://github.com/opentdf/charts/commit/5cacbb814060f531ea3cccbea2375f41e33c4d20))
+
 ## [0.6.1](https://github.com/opentdf/charts/compare/platform-0.6.0...platform-v0.6.1) (2024-07-16)
 
 
