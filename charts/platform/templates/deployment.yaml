@@ -109,9 +109,8 @@ spec:
         {{- end }}
         - name: trusted-certs
           projected:
-            defaultMode: 0400
             sources:
-            {{- if and .Values.playground .Values.keycloak.ingress.tls }}
+            {{- if and .Values.playground .Values.keycloak.ingress.enabled .Values.keycloak.ingress.tls }}
             - secret:
                 name: {{ .Values.keycloak.ingress.hostname }}-tls # If the fullnameOverride is set, this will break
                 optional: false
