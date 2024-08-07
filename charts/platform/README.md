@@ -1,6 +1,6 @@
 # platform
 
-![Version: 0.6.1](https://img.shields.io/badge/Version-0.6.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: nightly](https://img.shields.io/badge/AppVersion-nightly-informational?style=flat-square)
+![Version: 0.6.2](https://img.shields.io/badge/Version-0.6.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: nightly](https://img.shields.io/badge/AppVersion-nightly-informational?style=flat-square)
 
 A Helm Chart for OpenTDF Platform
 
@@ -285,6 +285,7 @@ realms:
 | logger.level | string | `"info"` | The platform log level ( debug, info, warn, error ) |
 | logger.output | string | `"stdout"` | The platform log output |
 | logger.type | string | `"json"` | The platform log format ( json, text ) |
+| mode | string | `"all"` | Mode defines the set of services to run (all, core, kas). Example mode: core,kas |
 | nameOverride | string | `""` | Overrides the chart name |
 | nodeSelector | object | `{}` | Target specific nodes in the cluster |
 | playground | bool | `false` |  |
@@ -302,6 +303,13 @@ realms:
 | postgresql.tls.enabled | bool | `true` |  |
 | replicaCount | int | `1` | The number of Platform pods to run |
 | resources | object | `{}` | Resources to allocate to the container |
+| sdk_config.clientid | string | `""` | Oauth2 Client Id |
+| sdk_config.clientsecret | string | `""` | Oauth2 Client Secret |
+| sdk_config.endpoint | string | `""` | The core platform endpoint |
+| sdk_config.existingSecret | object | `{"key":"","name":""}` | Oauth2 Client Secret Kubernetes Secret |
+| sdk_config.existingSecret.key | string | `""` | The key in the secret containing the client secret |
+| sdk_config.existingSecret.name | string | `""` | The kubernetes secret containing the client secret |
+| sdk_config.plaintext | bool | `false` | Plaintext Insecure Connection |
 | securityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"runAsNonRoot":true,"seccompProfile":{"type":"RuntimeDefault"}}` | The container security context (https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container) |
 | server.auth.audience | string | `"http://localhost:8080"` | Audience of provided by the identity provider |
 | server.auth.issuer | string | `"http://platform-keycloak/realms/opentdf"` | Identity provider issuer |
@@ -331,20 +339,17 @@ realms:
 | serviceAccount.automount | bool | `true` | Automatically mount a ServiceAccount's API credentials |
 | serviceAccount.create | bool | `true` | Specifies whether a service account should be created |
 | serviceAccount.name | string | `""` | The name of the service account to use. If not set and create is true, a name is generated using the fullname template |
-| services.authorization.clientid | string | `nil` | Client id for the external entity store |
+| services.authorization.clientid | string | `nil` | Deprecated Client id for the external entity store |
 | services.authorization.clientsecret | string | `nil` | Client secret for the external entity store |
-| services.authorization.enabled | bool | `true` | Authorization service enabled |
 | services.authorization.ersurl | string | `"http://localhost:9000/entityresolution/resolve"` | External entity store (currently only keycloak is supported) |
 | services.authorization.tokenendpoint | string | `nil` | Oauth2 Server Token Endpoint  |
 | services.entityresolution.clientid | string | `nil` | Client Id for Entity Resolver |
 | services.entityresolution.clientsecret | string | `nil` | Client Secret for Entity Resolver |
-| services.entityresolution.enabled | bool | `false` | Entity Resolver service enabled |
 | services.entityresolution.realm | string | `nil` | Entity Resolver Realm |
 | services.entityresolution.subgroups | bool | `false` | Subgroups  |
 | services.entityresolution.url | string | `nil` | Identity Provider Entity Resolver |
 | services.extraServices | object | `{}` | Additional services |
-| services.kas.config | object | `{"enabled":true,"keyring":[{"alg":"ec:secp256r1","kid":"e1"},{"alg":"rsa:2048","kid":"r1"}]}` | KAS service Configuration as yaml |
-| services.kas.config.enabled | bool | `true` | KAS service enabled |
+| services.kas.config | object | `{"keyring":[{"alg":"ec:secp256r1","kid":"e1"},{"alg":"rsa:2048","kid":"r1"}]}` | KAS service Configuration as yaml |
 | services.kas.config.keyring | list | `[{"alg":"ec:secp256r1","kid":"e1"},{"alg":"rsa:2048","kid":"r1"}]` | Default keys for clients to use |
 | services.kas.privateKeysSecret | string | `"kas-private-keys"` | KAS secret containing keys kas-private.pem , kas-cert.pem , kas-ec-private.pem , kas-ec-cert.pem |
 | tolerations | list | `[]` | Tolerations to apply to the pod (https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) |

@@ -88,6 +88,13 @@ spec:
               secretKeyRef:
                 name: {{ .Values.db.password.secret.name }}
                 key: {{ .Values.db.password.secret.key  }}
+          {{- if and .Values.sdk_config.existingSecret.name .Values.sdk_config.existingSecret.key }}
+          - name: {{include "platform.envVarPrefix" .}}_SDK_CONFIG_CLIENTSECRET
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.sdk_config.existingSecret.name }}
+                key: {{ .Values.sdk_config.existingSecret.key }}
+          {{- end }}
             {{- with .Values.extraEnv }}
             {{- toYaml . | nindent 10 }}
             {{- end }}

@@ -1,3 +1,4 @@
+{{ include "sdk_config.validate" . }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -12,6 +13,14 @@ data:
     db:
       {{- omit .Values.db "password" | toYaml | nindent 6 }}
       password: # loaded from env
+    mode: {{ .Values.mode | quote }}
+    sdk_config:
+      endpoint: {{ .Values.sdk_config.endpoint | quote }}
+      plaintext: {{ .Values.sdk_config.plaintext }}
+      clientid: {{ .Values.sdk_config.clientid | quote }}
+      {{- if .Values.sdk_config.clientsecret }}
+      clientsecret: {{ .Values.sdk_config.clientsecret | quote }}
+      {{- end }}
     services:
       entityresolution: 
         {{- .Values.services.entityresolution | toYaml | nindent 8 }}
