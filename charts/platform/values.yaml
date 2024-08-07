@@ -270,10 +270,28 @@ server:
           alg: ec:secp256r1
           private: /etc/platform/kas/kas-ec-private.pem
           cert: /etc/platform/kas/kas-ec-cert.pem
+
+# -- Mode defines the set of services to run (all, core, kas). Example mode: core,kas
+mode: all
+
+sdk_config:
+  # -- The core platform endpoint
+  endpoint: ""
+  # -- Plaintext Insecure Connection
+  plaintext: false
+  # -- Oauth2 Client Id
+  clientid: ""
+  # -- Oauth2 Client Secret
+  clientsecret: ""
+  # -- Oauth2 Client Secret Kubernetes Secret
+  existingSecret:
+    # -- The kubernetes secret containing the client secret
+    name: ""
+    # -- The key in the secret containing the client secret
+    key: ""
+
 services:
   entityresolution:
-    # -- Entity Resolver service enabled
-    enabled: false
     # -- Identity Provider Entity Resolver
     url:
     # -- Client Id for Entity Resolver
@@ -288,8 +306,6 @@ services:
   kas:
     # -- KAS service Configuration as yaml
     config:
-      # -- KAS service enabled
-      enabled: true
       # -- Default keys for clients to use
       keyring:
         - kid: e1
@@ -300,11 +316,9 @@ services:
     # kas-private.pem , kas-cert.pem , kas-ec-private.pem , kas-ec-cert.pem
     privateKeysSecret: kas-private-keys
   authorization:
-    # -- Authorization service enabled
-    enabled: true
     # -- External entity store (currently only keycloak is supported)
     ersurl: http://localhost:9000/entityresolution/resolve
-    # -- Client id for the external entity store
+    # -- Deprecated Client id for the external entity store
     clientid:
     # -- Client secret for the external entity store
     clientsecret: 
@@ -318,7 +332,6 @@ services:
   extraServices: {}
   # -- Example of extra service
   # myservice:
-  #   enabled: true
   #   url: http://localhost:8080
 
 #############################################
