@@ -5,6 +5,7 @@ metadata:
   name: cluster # name that you want to give to your cluster (will still be prefixed with `k3d-`)
 # servers: 1 # same as `--servers 1`
 # agents: 2 # same as `--agents 2`
+network: platform-k3d
 kubeAPI: # same as `--api-port myhost.my.domain:6445` (where the name would resolve to 127.0.0.1)
   hostIP: "0.0.0.0" # where the Kubernetes API will be listening on
   hostPort: "6445" # where the Kubernetes API listening port will be mapped to on your host system
@@ -16,7 +17,7 @@ ports:
     nodeFilters:
       - loadbalancer
 hostAliases: # /etc/hosts style entries to be injected into /etc/hosts in the node containers and in the NodeHosts section in CoreDNS
-  - ip: 172.18.0.1
+  - ip: 10.255.127.1
     hostnames: 
       - keycloak.opentdf.local
 registries: # define how registries should be created or used

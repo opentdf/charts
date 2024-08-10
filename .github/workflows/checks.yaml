@@ -62,6 +62,7 @@ jobs:
         run: |
           echo "127.0.0.1 platform.opentdf.local keycloak.opentdf.local" | sudo tee -a /etc/hosts
           echo "127.0.0.1 k3d.registry" | sudo tee -a /etc/hosts
+          docker network create platform-k3d --subnet 10.255.127.0/24 --ip-range 10.255.127.192/26 --gateway 10.255.127.1
           k3d cluster create --config ".github/k3d-config.yaml" --image "rancher/k3s:${{ matrix.k3s_image }}" --wait --timeout 60s
       - run: go test ./
         working-directory: tests
