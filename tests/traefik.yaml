@@ -10,7 +10,7 @@ spec:
     - match: Host(`keycloak.opentdf.local`)
       kind: Rule
       services:
-        - name: opentdf-keycloak
+        - name: platform-keycloak
           port: 80
           scheme: http
           passHostHeader: true

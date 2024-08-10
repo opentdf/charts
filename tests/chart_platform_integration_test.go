@@ -77,9 +77,13 @@ func (suite *PlatformChartIntegrationSuite) TestBasicDeployment() {
 
 	helm.Install(suite.T(), options, suite.chartPath, releaseName)
 
-	serviceName := fmt.Sprintf("%s-platform", releaseName)
+	kcServiceName := "platform-keycloak"
 
-	k8s.WaitUntilServiceAvailable(suite.T(), kubectlOptions, serviceName, 10, 1*time.Second)
+	k8s.WaitUntilServiceAvailable(suite.T(), kubectlOptions, kcServiceName, 10, 1*time.Second)
+
+	platServiceName := fmt.Sprintf("%s-platform", releaseName)
+
+	k8s.WaitUntilServiceAvailable(suite.T(), kubectlOptions, platServiceName, 10, 1*time.Second)
 
 	pods := k8s.ListPods(suite.T(), kubectlOptions, metav1.ListOptions{})
 	suite.Require().Len(pods, 3)
