@@ -14,17 +14,23 @@ import (
 
 type PlatformChartTemplateSuite struct {
 	suite.Suite
+	chartPath string
 }
 
 func TestPlatformChartTemplateSuite(t *testing.T) {
+	if !testing.Short() {
+		t.Skip("skipping platform template test not in short mode.")
+	}
 	suite.Run(t, new(PlatformChartTemplateSuite))
 }
 
-func (suite *PlatformChartTemplateSuite) TestBasicDeploymentTemplateRender() {
-
-	helmChartPath, err := filepath.Abs("../charts/platform")
+func (suite *PlatformChartTemplateSuite) SetupTest() {
+	path, err := filepath.Abs("../charts/platform")
 	suite.Require().NoError(err)
+	suite.chartPath = path
+}
 
+func (suite *PlatformChartTemplateSuite) TestBasicDeploymentTemplateRender() {
 	releaseName := "basic"
 
 	namespaceName := "opentdf-" + strings.ToLower(random.UniqueId())
@@ -37,8 +43,7 @@ func (suite *PlatformChartTemplateSuite) TestBasicDeploymentTemplateRender() {
 		},
 	}
 
-	output, err := helm.RenderTemplateE(suite.T(), options, helmChartPath, releaseName, []string{"templates/deployment.yaml"})
-	suite.Require().NoError(err)
+	output := helm.RenderTemplate(suite.T(), options, suite.chartPath, releaseName, []string{"templates/deployment.yaml"})
 
 	var deployment appv1.Deployment
 	helm.UnmarshalK8SYaml(suite.T(), output, &deployment)
@@ -49,10 +54,6 @@ func (suite *PlatformChartTemplateSuite) TestBasicDeploymentTemplateRender() {
 }
 
 func (suite *PlatformChartTemplateSuite) Test_Empty_SDK_Config_Client_Secret_AND_Existing_Secret_Expect_Error() {
-
-	helmChartPath, err := filepath.Abs("../charts/platform")
-	suite.Require().NoError(err)
-
 	releaseName := "basic"
 
 	namespaceName := "opentdf-" + strings.ToLower(random.UniqueId())
@@ -64,17 +65,13 @@ func (suite *PlatformChartTemplateSuite) Test_Empty_SDK_Config_Client_Secret_AND
 		},
 	}
 
-	_, err = helm.RenderTemplateE(suite.T(), options, helmChartPath, releaseName, []string{})
+	_, err := helm.RenderTemplateE(suite.T(), options, suite.chartPath, releaseName, []string{})
 	suite.Require().Error(err)
 	suite.Require().ErrorContains(err, "You must set either clientsecret and existingSecret in sdk_config.")
 
 }
 
 func (suite *PlatformChartTemplateSuite) Test_SDK_Config_Set_Client_Secret_AND_Existing_Secret_Expect_Error() {
-
-	helmChartPath, err := filepath.Abs("../charts/platform")
-	suite.Require().NoError(err)
-
 	releaseName := "basic"
 
 	namespaceName := "opentdf-" + strings.ToLower(random.UniqueId())
@@ -89,7 +86,7 @@ func (suite *PlatformChartTemplateSuite) Test_SDK_Config_Set_Client_Secret_AND_E
 		},
 	}
 
-	_, err = helm.RenderTemplateE(suite.T(), options, helmChartPath, releaseName, []string{})
+	_, err := helm.RenderTemplateE(suite.T(), options, suite.chartPath, releaseName, []string{})
 	suite.Require().Error(err)
 	suite.Require().ErrorContains(err, "You cannot set both clientsecret and existingSecret in sdk_config.")
 }
