@@ -2,6 +2,7 @@ package test
 
 import (
 	"fmt"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -49,8 +50,9 @@ func (suite *PlatformChartIntegrationSuite) TestBasicDeployment() {
 	options := &helm.Options{
 		KubectlOptions: kubectlOptions,
 		SetValues: map[string]string{
-			"sdk_config.clientsecret": "test",
-			"playground":              "true",
+			"sdk_config.clientsecret":  "test",
+			"playground":               "true",
+			"keycloak.ingress.enabled": "false",
 		},
 	}
 
@@ -84,4 +86,23 @@ func (suite *PlatformChartIntegrationSuite) TestBasicDeployment() {
 	for _, pod := range pods {
 		suite.Require().Equal(pod.Status.Phase, corev1.PodRunning, fmt.Sprintf("Pod %s is not running", pod.Name))
 	}
+
+	// Get Ingress Resources
+	ingresses := k8s.ListIngresses(suite.T(), kubectlOptions, metav1.ListOptions{})
+	suite.Require().Len(ingresses, 0)
+
+	// Apply tls secret
+	k8s.RunKubectl(suite.T(), kubectlOptions, "create", "secret", "tls", "platform-tls", "--cert=../tls.crt", "--key=../tls.key")
+
+	traefikIngressCfg, err := filepath.Abs("traefik.yaml")
+	suite.Require().NoError(err)
+
+	k8s.KubectlApply(suite.T(), kubectlOptions, traefikIngressCfg)
+
+	// Run bats tests
+	batsTestFile, err := filepath.Abs("bats/tutorial.bats")
+	suite.Require().NoError(err)
+
+	err = exec.Command("bats", batsTestFile).Run()
+	suite.Require().NoError(err)
 }

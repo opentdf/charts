@@ -32,14 +32,17 @@ jobs:
           cache-dependency-path: |
             tests/go.sum
             otdfctl/go.sum
-      - run: |
+      - name: "Build otdfctl"
+        run: |
           mkdir -p $HOME/.local/bin
-          ls -alh
           go build -o $HOME/.local/bin/otdfctl .
         working-directory: otdfctl
       - uses: bats-core/bats-action@472edde1138d59aca53ff162fb8d996666d21e4a
       - name: "Install mkcert"
         run: go install filippo.io/mkcert@2a46726cebac0ff4e1f133d90b4e4c42f1edf44a
+      - run:
+          mkcert -install
+          mkcert -cert-file tls.crt -key-file tls.key opentdf.local keycloak.opentdf.local platform.opentdf.local tagging.opentdf.local
       - name: "Download k3d"
         id: "download-k3d"
         shell: bash
@@ -57,6 +60,7 @@ jobs:
       - name: "Create k3d cluster"
         id: "create-k3d-cluster"
         run: |
+          echo "127.0.0.1 platform.opentdf.local keycloak.opentdf.local" | sudo tee -a /etc/hosts
           echo "127.0.0.1 k3d.registry" | sudo tee -a /etc/hosts
           k3d cluster create --config ".github/k3d-config.yaml" --image "rancher/k3s:${{ matrix.k3s_image }}" --wait --timeout 60s
       - run: go test ./
