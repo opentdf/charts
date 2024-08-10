@@ -11,6 +11,7 @@ import (
 	"github.com/gruntwork-io/terratest/modules/k8s"
 	"github.com/gruntwork-io/terratest/modules/random"
 	"github.com/stretchr/testify/suite"
+	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -81,6 +82,6 @@ func (suite *PlatformChartIntegrationSuite) TestBasicDeployment() {
 	pods := k8s.ListPods(suite.T(), kubectlOptions, metav1.ListOptions{})
 	//suite.Require().Len(pods,4)
 	for _, pod := range pods {
-		suite.Require().Equal(pod.Status.Phase, "Running")
+		suite.Require().Equal(pod.Status.Phase, corev1.PodRunning, fmt.Sprintf("Pod %s is not running", pod.Name))
 	}
 }
