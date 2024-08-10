@@ -77,9 +77,9 @@ Create the name of the service account to use
 
 {{- define "sdk_config.validate" -}}
 {{- if and (not .Values.sdk_config.clientsecret) (not .Values.sdk_config.existingSecret.name) (not .Values.sdk_config.existingSecret.key) }}
-{{- fail "You must set either clientsecret and existingSecret." }}
+{{- fail "You must set either clientsecret and existingSecret in sdk_config." }}
 {{- end -}}
 {{- if and ( .Values.sdk_config.clientsecret) ( .Values.sdk_config.existingSecret.name) ( .Values.sdk_config.existingSecret.key)}}
-{{- fail "You cannot set both clientsecret and existingSecret." }}
+{{- fail "You cannot set both clientsecret and existingSecret in sdk_config." }}
 {{- end -}}
 {{- end -}}

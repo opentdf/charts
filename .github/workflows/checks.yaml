@@ -1,0 +1,15 @@
+name: Helm Chart Checks
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  unit:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332
+      - uses: actions/setup-go@0a12ed9d6a96ab950c8f026ed9f722fe0da7ef32
+      - run: go test ./
+        working-directory: tests
