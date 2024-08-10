@@ -11,6 +11,7 @@ import (
 	"github.com/gruntwork-io/terratest/modules/k8s"
 	"github.com/gruntwork-io/terratest/modules/random"
 	"github.com/stretchr/testify/suite"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 type PlatformChartIntegrationSuite struct {
@@ -77,4 +78,9 @@ func (suite *PlatformChartIntegrationSuite) TestBasicDeployment() {
 
 	k8s.WaitUntilServiceAvailable(suite.T(), kubectlOptions, serviceName, 10, 1*time.Second)
 
+	pods := k8s.ListPods(suite.T(), kubectlOptions, metav1.ListOptions{})
+	//suite.Require().Len(pods,4)
+	for _, pod := range pods {
+		suite.Require().Equal(pod.Status.Phase, "Running")
+	}
 }
