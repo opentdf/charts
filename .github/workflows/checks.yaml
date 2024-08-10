@@ -40,11 +40,9 @@ jobs:
       - uses: bats-core/bats-action@472edde1138d59aca53ff162fb8d996666d21e4a
       - name: "Install mkcert"
         run: go install filippo.io/mkcert@2a46726cebac0ff4e1f133d90b4e4c42f1edf44a
-      - run:
+      - run: |
           mkcert -install
           mkcert -cert-file tls.crt -key-file tls.key opentdf.local keycloak.opentdf.local platform.opentdf.local tagging.opentdf.local
-          pwd 
-          ls -alh
       - name: "Download k3d"
         id: "download-k3d"
         shell: bash
