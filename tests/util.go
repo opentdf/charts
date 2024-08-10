@@ -23,10 +23,17 @@ func generateKasRSAKeyPair() ([]byte, []byte, error) {
 		},
 	)
 
-	pubKeyPEM, err := x509.MarshalPKIXPublicKey(&pubKey)
+	pk, err := x509.MarshalPKIXPublicKey(&pubKey)
 	if err != nil {
 		return nil, nil, err
 	}
+
+	pubKeyPEM := pem.EncodeToMemory(
+		&pem.Block{
+			Type:  "PUBLIC KEY",
+			Bytes: pk,
+		},
+	)
 
 	return privKeyPEM, pubKeyPEM, nil
 }
@@ -44,10 +51,15 @@ func generateKasECDHKeyPair() ([]byte, []byte, error) {
 		Bytes: privKey.Bytes(),
 	}
 
-	pubKeyPEM, err := x509.MarshalPKIXPublicKey(pubKey)
+	pk, err := x509.MarshalPKIXPublicKey(pubKey)
 	if err != nil {
 		return nil, nil, err
 	}
+
+	pubKeyPEM := pem.EncodeToMemory(&pem.Block{
+		Type:  "PUBLIC KEY",
+		Bytes: pk,
+	})
 
 	return pem.EncodeToMemory(&privKeyPEM), pubKeyPEM, nil
 
