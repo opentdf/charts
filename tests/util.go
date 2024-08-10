@@ -44,7 +44,7 @@ func generateKasECDHKeyPair() ([]byte, []byte, error) {
 		Bytes: privKey.Bytes(),
 	}
 
-	pubKeyPEM, err := x509.MarshalPKIXPublicKey(&pubKey)
+	pubKeyPEM, err := x509.MarshalPKIXPublicKey(pubKey)
 	if err != nil {
 		return nil, nil, err
 	}
