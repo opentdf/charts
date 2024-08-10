@@ -23,10 +23,16 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332
+        with:
+          repository: opentdf/otdfctl
+          path: otdfctl
       - uses: actions/setup-go@0a12ed9d6a96ab950c8f026ed9f722fe0da7ef32
         with:
           cache-dependency-path: |
             tests/go.sum
+            otdfctl/go.sum
+      - run: go build -o otdfctl/otdfctl otdfctl
       - uses: bats-core/bats-action@472edde1138d59aca53ff162fb8d996666d21e4a
       - name: "Install mkcert"
         run: go install filippo.io/mkcert@2a46726cebac0ff4e1f133d90b4e4c42f1edf44a
