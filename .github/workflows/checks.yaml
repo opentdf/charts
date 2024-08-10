@@ -43,6 +43,8 @@ jobs:
       - run:
           mkcert -install
           mkcert -cert-file tls.crt -key-file tls.key opentdf.local keycloak.opentdf.local platform.opentdf.local tagging.opentdf.local
+          pwd 
+          ls -alh
       - name: "Download k3d"
         id: "download-k3d"
         shell: bash
