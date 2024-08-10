@@ -84,6 +84,8 @@ func (suite *PlatformChartIntegrationSuite) TestBasicDeployment() {
 
 	platServiceName := fmt.Sprintf("%s-platform", releaseName)
 
+	k8s.RunKubectl(suite.T(), kubectlOptions, "rollout", "status", "deployment", platServiceName)
+
 	k8s.WaitUntilServiceAvailable(suite.T(), kubectlOptions, platServiceName, 10, 1*time.Second)
 
 	pods := k8s.ListPods(suite.T(), kubectlOptions, metav1.ListOptions{})
