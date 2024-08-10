@@ -21,6 +21,7 @@ jobs:
     steps:
       - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332
       - uses: actions/setup-go@0a12ed9d6a96ab950c8f026ed9f722fe0da7ef32
+      - uses: bats-core/bats-action@472edde1138d59aca53ff162fb8d996666d21e4a
       - name: "Install mkcert"
         run: go install filippo.io/mkcert@2a46726cebac0ff4e1f133d90b4e4c42f1edf44a
       - name: "Download k3d"
@@ -42,5 +43,5 @@ jobs:
         run: |
           echo "127.0.0.1 k3d.registry" | sudo tee -a /etc/hosts
           k3d cluster create --config ".github/k3d-config.yaml" --image "rancher/k3s:${{ matrix.k3s_image }}" --wait --timeout 60s
-      - run: go test ./tests
+      - run: go test ./
         working-directory: tests

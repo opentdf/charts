@@ -54,6 +54,23 @@ func (suite *PlatformChartIntegrationSuite) TestBasicDeployment() {
 
 	defer helm.Delete(suite.T(), options, releaseName, true)
 
+	// Generate KAS Keys
+	privECKey, pubECKey, err := generateKasECDHKeyPair()
+	suite.Require().NoError(err)
+	privRSAKey, pubRSAKey, err := generateKasRSAKeyPair()
+	suite.Require().NoError(err)
+
+	k8s.RunKubectl(suite.T(), kubectlOptions, "create", "secret", "generic", "kas-private-keys",
+		fmt.Sprintf("--from-literal=kas-ec-private.pem=%s", string(privECKey)),
+		fmt.Sprintf("--from-literal=kas-ec-cert.pem=%s", string(pubECKey)),
+		fmt.Sprintf("--from-literal=kas-private.pem=%s", string(privRSAKey)),
+		fmt.Sprintf("--from-literal=kas-cert.pem=%s", string(pubRSAKey)),
+	)
+
+	kasSecret := k8s.GetSecret(suite.T(), kubectlOptions, "kas-private-keys")
+
+	suite.Require().Equal(kasSecret.Data["kas-ec-private.pem"], privECKey)
+
 	helm.Install(suite.T(), options, suite.chartPath, releaseName)
 
 	serviceName := fmt.Sprintf("%s-platform", releaseName)
