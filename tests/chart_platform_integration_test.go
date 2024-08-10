@@ -36,7 +36,7 @@ func (suite *PlatformChartIntegrationSuite) SetupTest() {
 
 func (suite *PlatformChartIntegrationSuite) TestBasicDeployment() {
 	namespaceName := fmt.Sprintf("opentdf-%s", strings.ToLower(random.UniqueId()))
-	releaseName := "basic"
+	releaseName := "opentdf"
 
 	// Setup the kubectl config and context. Here we choose to use the defaults, which is:
 	// - HOME/.kube/config for the kubectl config file

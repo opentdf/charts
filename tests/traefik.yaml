@@ -10,21 +10,14 @@ spec:
     - match: Host(`keycloak.opentdf.local`)
       kind: Rule
       services:
-        - name: platform-keycloak
+        - name: opentdf-keycloak
           port: 80
           scheme: http
           passHostHeader: true
     - match: Host(`platform.opentdf.local`)
       kind: Rule
       services:
-        - name: dsp-platform
-          port: 9000
-          scheme: h2c
-          passHostHeader: true
-    - match: Host(`tagging.opentdf.local`)
-      kind: Rule
-      services:
-        - name: tagging-pdp
+        - name: opentdf-platform
           port: 9000
           scheme: h2c
           passHostHeader: true
