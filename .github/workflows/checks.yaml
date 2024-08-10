@@ -33,7 +33,7 @@ jobs:
           curl -sSLO "https://github.com/k3d-io/k3d/releases/download/${K3D_VERSION}/k3d-linux-amd64"
           echo "${K3D_SHA256SUM}  k3d-linux-amd64" | sha256sum -c --quiet --strict
           chmod +x k3d-linux-amd64
-          ls  -alh $HOME/.local
+          mkdir -p $HOME/.local/bin
           mv ./k3d-linux-amd64 "$HOME/.local/bin/k3d"
 
           k3d version
