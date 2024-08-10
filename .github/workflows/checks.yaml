@@ -29,7 +29,7 @@ jobs:
         env:
           K3D_VERSION: "v5.7.3"
           K3D_SHA256SUM: "0fe23b8c0a151e9c41d16f9d861be26df65e5ab7f35115424220aad5a83c566b"
-        run:
+        run: |
           curl -sSLO "https://github.com/k3d-io/k3d/releases/download/${K3D_VERSION}/k3d-linux-amd64"
           echo "${K3D_SHA256SUM}  k3d-linux-amd64" | sha256sum -c --quiet --strict
           chmod +x k3d-linux-amd64
