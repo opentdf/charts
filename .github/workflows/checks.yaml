@@ -25,6 +25,7 @@ jobs:
         run: go install filippo.io/mkcert@2a46726cebac0ff4e1f133d90b4e4c42f1edf44a
       - name: "Download k3d"
         id: "download-k3d"
+        shell: bash
         env:
           K3D_VERSION: "v5.7.3"
           K3D_SHA256SUM: "0fe23b8c0a151e9c41d16f9d861be26df65e5ab7f35115424220aad5a83c566b"
