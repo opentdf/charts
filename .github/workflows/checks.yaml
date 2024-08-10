@@ -41,4 +41,5 @@ jobs:
         id: "create-k3d-cluster"
         run: |
           echo "127.0.0.1 k3d.registry" | sudo tee -a /etc/hosts
+          ls -alh
           k3d cluster create --config ".github/k3d-config.yaml" --image "rancher/k3s:${{ matrix.k3s_image }}" --wait --timeout 60s
