@@ -53,6 +53,7 @@ func (suite *PlatformChartIntegrationSuite) TestBasicDeployment() {
 			"sdk_config.clientsecret":  "test",
 			"playground":               "true",
 			"keycloak.ingress.enabled": "false",
+			"server.auth.issuer":       "https://keycloak.opentdf.local/realms/opentdf",
 		},
 	}
 
