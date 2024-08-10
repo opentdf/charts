@@ -103,6 +103,7 @@ func (suite *PlatformChartIntegrationSuite) TestBasicDeployment() {
 	batsTestFile, err := filepath.Abs("bats/tutorial.bats")
 	suite.Require().NoError(err)
 
-	err = exec.Command("bats", batsTestFile).Run()
-	suite.Require().NoError(err)
+	cmd := exec.Command("bats", batsTestFile)
+	output, err := cmd.CombinedOutput()
+	suite.Require().NoError(err, string(output))
 }
