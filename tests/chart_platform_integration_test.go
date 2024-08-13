@@ -197,4 +197,7 @@ func (suite *PlatformChartIntegrationSuite) TestBasicDeployment() {
 	cmd := exec.Command("bats", batsTestFile)
 	output, err := cmd.CombinedOutput()
 	suite.Require().NoError(err, string(output))
+	if err == nil {
+		suite.T().Log(string(output))
+	}
 }
