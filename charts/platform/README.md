@@ -312,11 +312,13 @@ realms:
 | sdk_config.plaintext | bool | `false` | Plaintext Insecure Connection |
 | securityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"runAsNonRoot":true,"seccompProfile":{"type":"RuntimeDefault"}}` | The container security context (https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container) |
 | server.auth.audience | string | `"http://localhost:8080"` | Audience of provided by the identity provider |
+| server.auth.dpopskew | string | `"1h"` | The amount of drift allowed between the server and the client for the DPoP Proof Token |
 | server.auth.issuer | string | `"http://platform-keycloak/realms/opentdf"` | Identity provider issuer |
 | server.auth.policy.claim | string | `nil` |  |
 | server.auth.policy.csv | string | `nil` |  |
 | server.auth.policy.default | string | `nil` |  |
 | server.auth.policy.map | string | `nil` |  |
+| server.auth.skew | string | `"1m"` | The amount of drift allowed between the server and the client for the Access Token |
 | server.cors.allowcredentials | bool | `true` | Allow credentials |
 | server.cors.allowedheaders | list | `["Accept","Authorization","Content-Type","X-CSRF-Token","X-Request-ID"]` | The allowed request headers |
 | server.cors.allowedmethods | list | `["GET","POST","PUT","DELETE","OPTIONS"]` | The allowed request methods |

@@ -258,6 +258,10 @@ server:
       #  p, role:org-admin, policy:subject-mappings, *, *, allow
       #  p, role:org-admin, policy:resource-mappings, *, *, allow
       #  p, role:org-admin, policy:kas-registry, *, *, allow
+    # -- The amount of drift allowed between the server and the client for the DPoP Proof Token
+    dpopskew: 1h
+    # -- The amount of drift allowed between the server and the client for the Access Token
+    skew: 1m
   cryptoProvider:
     standard:
       # -- List of key pairs to load into the platform. (Currently only leveraged by KAS)
