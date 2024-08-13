@@ -159,9 +159,12 @@ func (suite *PlatformChartIntegrationSuite) TestBasicDeployment() {
 	k8s.WaitUntilServiceAvailable(suite.T(), kubectlOptions, kcServiceName, 10, 1*time.Second)
 
 	// Provision Keycloak
+	kcSecret := k8s.GetSecret(suite.T(), kubectlOptions, "platform-keycloak")
+	kcAdminPass := string(kcSecret.Data["admin-password"])
+
 	kcDataPath, err := filepath.Abs("../platform/service/cmd/keycloak_data.yaml")
 	suite.Require().NoError(err)
-	dockerRun := exec.Command("docker", "run", "--rm", "--network=platform-k3d", "--add-host=keycloak.opentdf.local:10.255.127.1", "-v", fmt.Sprintf("%s:/keycloak_data.yaml", kcDataPath), "registry.opentdf.io/platform:nightly", "provision", "keycloak-from-config", "-e", "https://keycloak.opentdf.local", "-f", "/keycloak_data.yaml")
+	dockerRun := exec.Command("docker", "run", "--rm", "--network=platform-k3d", "--add-host=keycloak.opentdf.local:10.255.127.1", "-v", fmt.Sprintf("%s:/keycloak_data.yaml", kcDataPath), "registry.opentdf.io/platform:nightly", "provision", "keycloak-from-config", "-p", kcAdminPass, "-e", "https://keycloak.opentdf.local", "-f", "/keycloak_data.yaml")
 	dockerRunOutput, err := dockerRun.CombinedOutput()
 	suite.Require().NoError(err, string(dockerRunOutput))
 
