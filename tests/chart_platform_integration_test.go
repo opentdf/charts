@@ -152,7 +152,7 @@ func (suite *PlatformChartIntegrationSuite) TestBasicDeployment() {
 	}()
 
 	// Wait for Keycloak and Platform to be available
-	time.Sleep(60 * time.Second)
+	// time.Sleep(30 * time.Second)
 
 	kcServiceName := "platform-keycloak"
 
