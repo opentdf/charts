@@ -93,6 +93,8 @@ func (suite *PlatformChartIntegrationSuite) TestBasicDeployment() {
 
 	// Generate KAS Keys
 	privECKey, pubECKey, err := generateKasECDHKeyPair()
+	fmt.Println("EC Key: ", string(privECKey))
+	fmt.Println("EC Cert: ", string(pubECKey))
 	suite.Require().NoError(err)
 	privRSAKey, pubRSAKey, err := generateKasRSAKeyPair()
 	suite.Require().NoError(err)

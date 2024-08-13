@@ -43,13 +43,18 @@ func generateKasECDHKeyPair() ([]byte, []byte, error) {
 	if err != nil {
 		return nil, nil, err
 	}
-
 	pubKey := privKey.PublicKey()
 
-	privKeyPEM := pem.Block{
-		Type:  "EC PRIVATE KEY",
-		Bytes: privKey.Bytes(),
+	privKeyBytes, err := x509.MarshalPKCS8PrivateKey(privKey)
+	if err != nil {
+		return nil, nil, err
 	}
+
+	// Encode the private key in PEM format
+	privKeyPEM := pem.EncodeToMemory(&pem.Block{
+		Type:  "EC PRIVATE KEY",
+		Bytes: privKeyBytes,
+	})
 
 	pk, err := x509.MarshalPKIXPublicKey(pubKey)
 	if err != nil {
@@ -61,6 +66,6 @@ func generateKasECDHKeyPair() ([]byte, []byte, error) {
 		Bytes: pk,
 	})
 
-	return privKeyPEM.Bytes, pubKeyPEM, nil
+	return privKeyPEM, pubKeyPEM, nil
 
 }
