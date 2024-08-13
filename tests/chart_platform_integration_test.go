@@ -3,6 +3,8 @@ package test
 import (
 	"encoding/json"
 	"fmt"
+	"html/template"
+	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
@@ -16,6 +18,36 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
+
+var traefikIngress = `
+	---
+	apiVersion: traefik.containo.us/v1alpha1
+	kind: IngressRoute
+	metadata:
+	name: platform
+	spec:
+	entryPoints:
+		- websecure
+	routes:
+		- match: Host('keycloak.opentdf.local')
+		kind: Rule
+		services:
+			- name: platform-keycloak
+			namespace: {{ .Namespace }}
+			port: 80
+			scheme: http
+			passHostHeader: true
+		- match: Host('platform.opentdf.local')
+		kind: Rule
+		services:
+			- name: opentdf-platform
+			namespace: {{ .Namespace }}
+			port: 9000
+			scheme: h2c
+			passHostHeader: true
+	tls:
+		secretName: platform-tls
+`
 
 type PlatformChartIntegrationSuite struct {
 	suite.Suite
@@ -125,6 +157,13 @@ func (suite *PlatformChartIntegrationSuite) TestBasicDeployment() {
 	// Get Ingress Resources
 	ingresses := k8s.ListIngresses(suite.T(), kubectlOptions, metav1.ListOptions{})
 	suite.Require().Len(ingresses, 0)
+
+	ingFile, err := os.Create("traefik.yaml")
+	suite.Require().NoError(err)
+	ingTmpl, err := template.New("traefik").Parse(traefikIngress)
+	suite.Require().NoError(err)
+	err = ingTmpl.Execute(ingFile, map[string]string{"Namespace": namespaceName})
+	suite.Require().NoError(err)
 
 	traefikIngressCfg, err := filepath.Abs("traefik.yaml")
 	suite.Require().NoError(err)
