@@ -88,9 +88,9 @@ func (suite *PlatformChartIntegrationSuite) TestBasicDeployment() {
 			"server.tls.additionalTrustedCerts[0].secret.optional":      "false",
 			"server.tls.additionalTrustedCerts[0].secret.items[0].key":  "tls.crt",
 			"server.tls.additionalTrustedCerts[0].secret.items[0].path": "traefik.crt",
-			"services.entityresolution.url":                             "https://keycloak.opentdf.local/realms/opentdf",
-			"services.entityresolution.clientId":                        "tdf-entity-resolution",
-			"services.entityresolution.clientSecret":                    "secret",
+			"services.entityresolution.url":                             "https://keycloak.opentdf.local",
+			"services.entityresolution.clientid":                        "tdf-entity-resolution",
+			"services.entityresolution.clientsecret":                    "secret",
 			"services.entityresolution.realm":                           "opentdf",
 		},
 	}

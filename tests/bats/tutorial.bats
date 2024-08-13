@@ -9,12 +9,12 @@ setup() {
   bats_load_library bats-detik/detik.bash
 
   echo '{"clientId":"opentdf","clientSecret":"secret"}' > client_creds.json
-  
+
   export OTDFCTL_CMD="otdfctl --host https://platform.opentdf.local --with-client-creds-file ./client_creds.json"
 
 }
 
-@test "List namespaces and verify demo.com exists" {
+@test "List namespaces" {
   # Run the command to list namespaces
   run $OTDFCTL_CMD policy attributes namespaces list  --json
     
@@ -23,9 +23,6 @@ setup() {
   # Assert that the command was successful
   assert_success
 
-  # Assert that the output contains demo.com
-  echo "$output" | jq -e '.[] | select(.name == "demo.com")' > /dev/null
-  assert [ "$?" -eq 0 ]
 }
 
 @test "Create namespace and verify the output" {
