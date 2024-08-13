@@ -35,6 +35,7 @@ func (suite *PlatformChartIntegrationSuite) SetupTest() {
 }
 
 func (suite *PlatformChartIntegrationSuite) TestBasicDeployment() {
+
 	namespaceName := fmt.Sprintf("opentdf-%s", strings.ToLower(random.UniqueId()))
 	releaseName := "opentdf"
 
@@ -44,8 +45,6 @@ func (suite *PlatformChartIntegrationSuite) TestBasicDeployment() {
 	kubectlOptions := k8s.NewKubectlOptions("", "", namespaceName)
 
 	k8s.CreateNamespace(suite.T(), kubectlOptions, namespaceName)
-
-	defer k8s.DeleteNamespace(suite.T(), kubectlOptions, namespaceName)
 
 	options := &helm.Options{
 		KubectlOptions: kubectlOptions,
@@ -83,7 +82,16 @@ func (suite *PlatformChartIntegrationSuite) TestBasicDeployment() {
 	// Install the chart
 	helm.Install(suite.T(), options, suite.chartPath, releaseName)
 
-	defer helm.Delete(suite.T(), options, releaseName, true)
+	defer func() {
+		pods := k8s.ListPods(suite.T(), kubectlOptions, metav1.ListOptions{})
+		for _, pod := range pods {
+			fmt.Println("Pod Name: ", pod.Name)
+			fmt.Println("Pod Status: ", pod.Status.Phase)
+			fmt.Println("Pod Logs: ", k8s.GetPodLogs(suite.T(), kubectlOptions, &pod, "platform"))
+		}
+		helm.Delete(suite.T(), options, releaseName, true)
+		k8s.DeleteNamespace(suite.T(), kubectlOptions, namespaceName)
+	}()
 
 	kcServiceName := "platform-keycloak"
 
