@@ -84,19 +84,21 @@ func (suite *PlatformChartIntegrationSuite) TestBasicDeployment() {
 	helm.Install(suite.T(), options, suite.chartPath, releaseName)
 
 	defer func() {
-		secret := k8s.GetSecret(suite.T(), kubectlOptions, "platform-tls")
-		secretJson, _ := json.MarshalIndent(secret, "", "  ")
-		fmt.Println("TLS Secret: ", string(secretJson))
-		pods := k8s.ListPods(suite.T(), kubectlOptions, metav1.ListOptions{})
-		for _, pod := range pods {
-			if strings.Contains(pod.Name, "opentdf-platform") {
-				fmt.Println("Pod Name: ", pod.Name)
-				fmt.Println("Pod Status: ", pod.Status.Phase)
-				fmt.Println("Pod Reason: ", pod.Status.Reason)
-				podJson, _ := json.MarshalIndent(pod, "", "  ")
-				fmt.Println("Pod: ", string(podJson))
-				platLogs := k8s.GetPodLogs(suite.T(), kubectlOptions, &pod, "platform")
-				fmt.Println("Platform Logs: ", platLogs)
+		if suite.T().Failed() {
+			secret := k8s.GetSecret(suite.T(), kubectlOptions, "platform-tls")
+			secretJson, _ := json.MarshalIndent(secret, "", "  ")
+			fmt.Println("TLS Secret: ", string(secretJson))
+			pods := k8s.ListPods(suite.T(), kubectlOptions, metav1.ListOptions{})
+			for _, pod := range pods {
+				if strings.Contains(pod.Name, "opentdf-platform") {
+					fmt.Println("Pod Name: ", pod.Name)
+					fmt.Println("Pod Status: ", pod.Status.Phase)
+					fmt.Println("Pod Reason: ", pod.Status.Reason)
+					podJson, _ := json.MarshalIndent(pod, "", "  ")
+					fmt.Println("Pod: ", string(podJson))
+					platLogs := k8s.GetPodLogs(suite.T(), kubectlOptions, &pod, "platform")
+					fmt.Println("Platform Logs: ", platLogs)
+				}
 			}
 		}
 		helm.Delete(suite.T(), options, releaseName, true)
