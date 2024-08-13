@@ -50,10 +50,13 @@ func (suite *PlatformChartIntegrationSuite) TestBasicDeployment() {
 	options := &helm.Options{
 		KubectlOptions: kubectlOptions,
 		SetValues: map[string]string{
-			"sdk_config.clientsecret":  "test",
 			"playground":               "true",
 			"keycloak.ingress.enabled": "false",
 			"server.auth.issuer":       "https://keycloak.opentdf.local/realms/opentdf",
+			"server.tls.additionalTrustedCerts[0].secret.name":          "platform-tls",
+			"server.tls.additionalTrustedCerts[0].secret.optional":      "false",
+			"server.tls.additionalTrustedCerts[0].secret.items[0].key":  "tls.crt",
+			"server.tls.additionalTrustedCerts[0].secret.items[0].path": "traeffik.crt",
 		},
 	}
 
@@ -76,6 +79,15 @@ func (suite *PlatformChartIntegrationSuite) TestBasicDeployment() {
 
 	suite.Require().Equal(kasSecret.Data["kas-ec-private.pem"], privECKey)
 
+	// Apply tls secret
+	k8s.RunKubectl(suite.T(), kubectlOptions, "create", "secret", "tls", "platform-tls", "--cert=../tls.crt", "--key=../tls.key")
+
+	traefikIngressCfg, err := filepath.Abs("traefik.yaml")
+	suite.Require().NoError(err)
+
+	k8s.KubectlApply(suite.T(), kubectlOptions, traefikIngressCfg)
+
+	// Install the chart
 	helm.Install(suite.T(), options, suite.chartPath, releaseName)
 
 	kcServiceName := "platform-keycloak"
@@ -97,14 +109,6 @@ func (suite *PlatformChartIntegrationSuite) TestBasicDeployment() {
 	// Get Ingress Resources
 	ingresses := k8s.ListIngresses(suite.T(), kubectlOptions, metav1.ListOptions{})
 	suite.Require().Len(ingresses, 0)
-
-	// Apply tls secret
-	k8s.RunKubectl(suite.T(), kubectlOptions, "create", "secret", "tls", "platform-tls", "--cert=../tls.crt", "--key=../tls.key")
-
-	traefikIngressCfg, err := filepath.Abs("traefik.yaml")
-	suite.Require().NoError(err)
-
-	k8s.KubectlApply(suite.T(), kubectlOptions, traefikIngressCfg)
 
 	// Run bats tests
 	batsTestFile, err := filepath.Abs("bats/tutorial.bats")
