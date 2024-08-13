@@ -315,15 +315,7 @@ services:
     # -- KAS secret containing keys
     # kas-private.pem , kas-cert.pem , kas-ec-private.pem , kas-ec-cert.pem
     privateKeysSecret: kas-private-keys
-  authorization:
-    # -- External entity store (currently only keycloak is supported)
-    ersurl: http://localhost:9000/entityresolution/resolve
-    # -- Deprecated Client id for the external entity store
-    clientid:
-    # -- Client secret for the external entity store
-    clientsecret: 
-    # -- Oauth2 Server Token Endpoint 
-    tokenendpoint: 
+  authorization: {}
     # -- Overide embedded rego policy
     # rego:
     #   path: /etc/platform/entitlements.rego

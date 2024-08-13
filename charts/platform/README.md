@@ -339,10 +339,7 @@ realms:
 | serviceAccount.automount | bool | `true` | Automatically mount a ServiceAccount's API credentials |
 | serviceAccount.create | bool | `true` | Specifies whether a service account should be created |
 | serviceAccount.name | string | `""` | The name of the service account to use. If not set and create is true, a name is generated using the fullname template |
-| services.authorization.clientid | string | `nil` | Deprecated Client id for the external entity store |
-| services.authorization.clientsecret | string | `nil` | Client secret for the external entity store |
-| services.authorization.ersurl | string | `"http://localhost:9000/entityresolution/resolve"` | External entity store (currently only keycloak is supported) |
-| services.authorization.tokenendpoint | string | `nil` | Oauth2 Server Token Endpoint  |
+| services.authorization | object | `{}` |  |
 | services.entityresolution.clientid | string | `nil` | Client Id for Entity Resolver |
 | services.entityresolution.clientsecret | string | `nil` | Client Secret for Entity Resolver |
 | services.entityresolution.realm | string | `nil` | Entity Resolver Realm |
