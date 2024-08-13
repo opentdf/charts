@@ -159,7 +159,9 @@ func (suite *PlatformChartIntegrationSuite) TestBasicDeployment() {
 	k8s.WaitUntilServiceAvailable(suite.T(), kubectlOptions, kcServiceName, 10, 1*time.Second)
 
 	// Provision Keycloak
-	dockerRun := exec.Command("docker", "run", "--rm", "--network=host", "-v", "../platform/service/cmd/keycloak_data.yaml:/keycloak_data.yaml", "registry.opentdf.io/platform:nightly", "provision", "keycloak-from-config", "-e", "https://keycloak.opentdf.local", "-f", "/keycloak_data.yaml")
+	kcDataPath, err := filepath.Abs("../platform/service/cmd/keycloak_data.yaml")
+	suite.Require().NoError(err)
+	dockerRun := exec.Command("docker", "run", "--rm", "--network=host", "-v", fmt.Sprintf("%s:/keycloak_data.yaml", kcDataPath), "registry.opentdf.io/platform:nightly", "provision", "keycloak-from-config", "-e", "https://keycloak.opentdf.local", "-f", "/keycloak_data.yaml")
 	dockerRunOutput, err := dockerRun.CombinedOutput()
 	suite.Require().NoError(err, string(dockerRunOutput))
 
