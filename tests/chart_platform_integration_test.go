@@ -60,8 +60,6 @@ func (suite *PlatformChartIntegrationSuite) TestBasicDeployment() {
 		},
 	}
 
-	defer helm.Delete(suite.T(), options, releaseName, true)
-
 	// Generate KAS Keys
 	privECKey, pubECKey, err := generateKasECDHKeyPair()
 	suite.Require().NoError(err)
@@ -84,6 +82,8 @@ func (suite *PlatformChartIntegrationSuite) TestBasicDeployment() {
 
 	// Install the chart
 	helm.Install(suite.T(), options, suite.chartPath, releaseName)
+
+	defer helm.Delete(suite.T(), options, releaseName, true)
 
 	kcServiceName := "platform-keycloak"
 
@@ -109,6 +109,11 @@ func (suite *PlatformChartIntegrationSuite) TestBasicDeployment() {
 	suite.Require().NoError(err)
 
 	k8s.KubectlApply(suite.T(), kubectlOptions, traefikIngressCfg)
+
+	// Provision Keycloak
+	dockerRun := exec.Command("docker", "run", "--rm", "--network=host", "-v", "./platform/service/cmd/keycloak_data.yaml:/keycloak_data.yaml", "registry.opentdf.io/platform:nightly", "provision", "keycloak", "-e", "https://keycloak.opentdf.local", "-f", "/keycloak_data.yaml")
+	dockerRunOutput, err := dockerRun.CombinedOutput()
+	suite.Require().NoError(err, string(dockerRunOutput))
 
 	// Run bats tests
 	batsTestFile, err := filepath.Abs("bats/tutorial.bats")
