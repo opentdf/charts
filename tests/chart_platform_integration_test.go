@@ -158,6 +158,11 @@ func (suite *PlatformChartIntegrationSuite) TestBasicDeployment() {
 
 	k8s.WaitUntilServiceAvailable(suite.T(), kubectlOptions, kcServiceName, 10, 1*time.Second)
 
+	// Provision Keycloak
+	dockerRun := exec.Command("docker", "run", "--rm", "--network=host", "-v", "./platform/service/cmd/keycloak_data.yaml:/keycloak_data.yaml", "registry.opentdf.io/platform:nightly", "provision", "keycloak", "-e", "https://keycloak.opentdf.local", "-f", "/keycloak_data.yaml")
+	dockerRunOutput, err := dockerRun.CombinedOutput()
+	suite.Require().NoError(err, string(dockerRunOutput))
+
 	platServiceName := fmt.Sprintf("%s-platform", releaseName)
 
 	k8s.RunKubectl(suite.T(), kubectlOptions, "rollout", "restart", "deployment", platServiceName)
@@ -174,11 +179,6 @@ func (suite *PlatformChartIntegrationSuite) TestBasicDeployment() {
 	// Get Ingress Resources
 	ingresses := k8s.ListIngresses(suite.T(), kubectlOptions, metav1.ListOptions{})
 	suite.Require().Len(ingresses, 0)
-
-	// Provision Keycloak
-	dockerRun := exec.Command("docker", "run", "--rm", "--network=host", "-v", "./platform/service/cmd/keycloak_data.yaml:/keycloak_data.yaml", "registry.opentdf.io/platform:nightly", "provision", "keycloak", "-e", "https://keycloak.opentdf.local", "-f", "/keycloak_data.yaml")
-	dockerRunOutput, err := dockerRun.CombinedOutput()
-	suite.Require().NoError(err, string(dockerRunOutput))
 
 	// Run bats tests
 	batsTestFile, err := filepath.Abs("bats/tutorial.bats")
