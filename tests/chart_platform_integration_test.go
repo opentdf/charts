@@ -83,7 +83,7 @@ func (suite *PlatformChartIntegrationSuite) TestBasicDeployment() {
 		SetValues: map[string]string{
 			"playground":               "true",
 			"keycloak.ingress.enabled": "false",
-			"server.auth.issuer":       "https://keycloak.dsp.local:9443/realms/opentdf",
+			"server.auth.issuer":       "https://keycloak.opentdf.local/realms/opentdf",
 			"server.tls.additionalTrustedCerts[0].secret.name":          "platform-tls",
 			"server.tls.additionalTrustedCerts[0].secret.optional":      "false",
 			"server.tls.additionalTrustedCerts[0].secret.items[0].key":  "tls.crt",
