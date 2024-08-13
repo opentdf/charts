@@ -80,6 +80,7 @@ func (suite *PlatformChartIntegrationSuite) TestBasicDeployment() {
 
 	options := &helm.Options{
 		KubectlOptions: kubectlOptions,
+		ValuesFiles:    []string{"../charts/platform/values.yaml"},
 		SetValues: map[string]string{
 			"playground":               "true",
 			"keycloak.ingress.enabled": "false",
