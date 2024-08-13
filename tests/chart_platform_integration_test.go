@@ -87,6 +87,7 @@ func (suite *PlatformChartIntegrationSuite) TestBasicDeployment() {
 		for _, pod := range pods {
 			fmt.Println("Pod Name: ", pod.Name)
 			fmt.Println("Pod Status: ", pod.Status.Phase)
+			fmt.Println("Pod Reason: ", pod.Status.Reason)
 			fmt.Println("Pod Logs: ", k8s.GetPodLogs(suite.T(), kubectlOptions, &pod, "platform"))
 		}
 		helm.Delete(suite.T(), options, releaseName, true)
