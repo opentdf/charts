@@ -29,7 +29,7 @@ spec:
   entryPoints:
     - websecure
   routes:
-    - match: Host('keycloak.opentdf.local')
+    - match: Host(` + "`" + "keycloak.opentdf.local" + "`" + `)
       kind: Rule
       services:
         - name: platform-keycloak
@@ -37,7 +37,7 @@ spec:
           port: 80
           scheme: http
           passHostHeader: true
-    - match: Host('platform.opentdf.local')
+    - match: Host(` + "`" + "platform.opentdf.local" + "`" + `)
       kind: Rule
       services:
         - name: opentdf-platform
