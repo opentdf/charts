@@ -134,10 +134,10 @@ func (suite *PlatformChartIntegrationSuite) TestBasicDeployment() {
 			fmt.Println("TLS Secret: ", string(secretJson))
 			pods := k8s.ListPods(suite.T(), kubectlOptions, metav1.ListOptions{})
 			for _, pod := range pods {
+				fmt.Println("Pod Name: ", pod.Name)
+				fmt.Println("Pod Status: ", pod.Status.Phase)
+				fmt.Println("Pod Reason: ", pod.Status.Reason)
 				if strings.Contains(pod.Name, "opentdf-platform") {
-					fmt.Println("Pod Name: ", pod.Name)
-					fmt.Println("Pod Status: ", pod.Status.Phase)
-					fmt.Println("Pod Reason: ", pod.Status.Reason)
 					podJson, _ := json.MarshalIndent(pod, "", "  ")
 					fmt.Println("Pod: ", string(podJson))
 					platLogs := k8s.GetPodLogs(suite.T(), kubectlOptions, &pod, "platform")
@@ -148,6 +148,9 @@ func (suite *PlatformChartIntegrationSuite) TestBasicDeployment() {
 		helm.Delete(suite.T(), options, releaseName, true)
 		k8s.DeleteNamespace(suite.T(), kubectlOptions, namespaceName)
 	}()
+
+	// Wait for Keycloak and Platform to be available
+	time.Sleep(30 * time.Second)
 
 	kcServiceName := "platform-keycloak"
 
