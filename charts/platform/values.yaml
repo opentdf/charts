@@ -378,7 +378,7 @@ keycloak:
           "enabled": true,
           "clients": []
         }
-  proxy: edge
+  proxyheaders: forwarded
   ingress:
     enabled: true
     tls: true
