@@ -378,7 +378,7 @@ keycloak:
           "enabled": true,
           "clients": []
         }
-  proxyheaders: forwarded
+  proxyHeaders: xforwarded
   ingress:
     enabled: true
     tls: true

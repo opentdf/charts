@@ -28,7 +28,7 @@ maintainers:
 
 dependencies:
   - name: postgresql
-    version: 15.2.4
+    version: 15.5.21
     repository: oci://registry-1.docker.io/bitnamicharts
     condition: playground
   - name: keycloak

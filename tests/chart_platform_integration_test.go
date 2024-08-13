@@ -191,7 +191,7 @@ func (suite *PlatformChartIntegrationSuite) TestBasicDeployment() {
 	suite.Require().Len(ingresses, 0)
 
 	// Give everything time to settle
-	time.Sleep(30 * time.Second)
+	time.Sleep(60 * time.Second)
 
 	// Run bats tests
 	batsTestFile, err := filepath.Abs("bats/tutorial.bats")
