@@ -169,6 +169,9 @@ func (suite *PlatformChartIntegrationSuite) TestBasicDeployment() {
 	dockerRun := exec.Command("docker", "run", "--rm", "--network=platform-k3d", "--add-host=keycloak.opentdf.local:10.255.127.1", "-v", fmt.Sprintf("%s:/keycloak_data.yaml", kcDataPath), "registry.opentdf.io/platform:nightly", "provision", "keycloak-from-config", "-p", kcAdminPass, "-e", "https://keycloak.opentdf.local", "-f", "/keycloak_data.yaml")
 	dockerRunOutput, err := dockerRun.CombinedOutput()
 	suite.Require().NoError(err, string(dockerRunOutput))
+	if err == nil {
+		suite.T().Log(string(dockerRunOutput))
+	}
 
 	platServiceName := fmt.Sprintf("%s-platform", releaseName)
 
