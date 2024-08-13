@@ -35,7 +35,7 @@ jobs:
             service/cmd/keycloak_data.yaml
           sparse-checkout-cone-mode: false
       - run: |
-          sed -e "s/http://localhost:8888/https://keycloak.opentdf.local/g" platform/service/cmd/keycloak_data.yaml -i
+          sed -e "s/http:\/\/localhost:8888/https:\/\/keycloak.opentdf.local/g" platform/service/cmd/keycloak_data.yaml -i
           cat platform/service/cmd/keycloak_data.yaml
       - uses: actions/setup-go@0a12ed9d6a96ab950c8f026ed9f722fe0da7ef32
         with:
