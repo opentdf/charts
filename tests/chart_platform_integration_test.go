@@ -82,11 +82,6 @@ func (suite *PlatformChartIntegrationSuite) TestBasicDeployment() {
 	// Apply tls secret
 	k8s.RunKubectl(suite.T(), kubectlOptions, "create", "secret", "tls", "platform-tls", "--cert=../tls.crt", "--key=../tls.key")
 
-	traefikIngressCfg, err := filepath.Abs("traefik.yaml")
-	suite.Require().NoError(err)
-
-	k8s.KubectlApply(suite.T(), kubectlOptions, traefikIngressCfg)
-
 	// Install the chart
 	helm.Install(suite.T(), options, suite.chartPath, releaseName)
 
@@ -109,6 +104,11 @@ func (suite *PlatformChartIntegrationSuite) TestBasicDeployment() {
 	// Get Ingress Resources
 	ingresses := k8s.ListIngresses(suite.T(), kubectlOptions, metav1.ListOptions{})
 	suite.Require().Len(ingresses, 0)
+
+	traefikIngressCfg, err := filepath.Abs("traefik.yaml")
+	suite.Require().NoError(err)
+
+	k8s.KubectlApply(suite.T(), kubectlOptions, traefikIngressCfg)
 
 	// Run bats tests
 	batsTestFile, err := filepath.Abs("bats/tutorial.bats")
