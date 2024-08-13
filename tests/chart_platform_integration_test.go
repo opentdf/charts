@@ -1,6 +1,7 @@
 package test
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"html/template"
@@ -19,35 +20,33 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
-var traefikIngress = `
-	---
-	apiVersion: traefik.containo.us/v1alpha1
-	kind: IngressRoute
-	metadata:
-	name: platform
-	spec:
-	entryPoints:
-		- websecure
-	routes:
-		- match: Host('keycloak.opentdf.local')
-		kind: Rule
-		services:
-			- name: platform-keycloak
-			namespace: {{ .Namespace }}
-			port: 80
-			scheme: http
-			passHostHeader: true
-		- match: Host('platform.opentdf.local')
-		kind: Rule
-		services:
-			- name: opentdf-platform
-			namespace: {{ .Namespace }}
-			port: 9000
-			scheme: h2c
-			passHostHeader: true
-	tls:
-		secretName: platform-tls
-`
+var traefikIngress = `---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: platform
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host('keycloak.opentdf.local')
+      kind: Rule
+      services:
+        - name: platform-keycloak
+          namespace: {{ .Namespace }}
+          port: 80
+          scheme: http
+          passHostHeader: true
+    - match: Host('platform.opentdf.local')
+      kind: Rule
+      services:
+        - name: opentdf-platform
+          namespace: {{ .Namespace }}
+          port: 9000
+          scheme: h2c
+          passHostHeader: true
+  tls:
+    secretName: platform-tls`
 
 type PlatformChartIntegrationSuite struct {
 	suite.Suite
@@ -84,7 +83,7 @@ func (suite *PlatformChartIntegrationSuite) TestBasicDeployment() {
 		SetValues: map[string]string{
 			"playground":               "true",
 			"keycloak.ingress.enabled": "false",
-			"server.auth.issuer":       "https://keycloak.opentdf.local/realms/opentdf",
+			"server.auth.issuer":       "https://keycloak.dsp.local:9443/realms/opentdf",
 			"server.tls.additionalTrustedCerts[0].secret.name":          "platform-tls",
 			"server.tls.additionalTrustedCerts[0].secret.optional":      "false",
 			"server.tls.additionalTrustedCerts[0].secret.items[0].key":  "tls.crt",
@@ -111,6 +110,19 @@ func (suite *PlatformChartIntegrationSuite) TestBasicDeployment() {
 
 	// Apply tls secret
 	k8s.RunKubectl(suite.T(), kubectlOptions, "create", "secret", "tls", "platform-tls", "--cert=../tls.crt", "--key=../tls.key")
+
+	var ingRendered bytes.Buffer
+	ingTmpl, err := template.New("traefik").Parse(traefikIngress)
+	suite.Require().NoError(err)
+	err = ingTmpl.Execute(&ingRendered, map[string]string{"Namespace": namespaceName})
+	suite.Require().NoError(err)
+	err = os.WriteFile("traefik.yaml", ingRendered.Bytes(), 0644)
+	suite.Require().NoError(err)
+
+	traefikIngressCfg, err := filepath.Abs("traefik.yaml")
+	suite.Require().NoError(err)
+
+	k8s.KubectlApply(suite.T(), kubectlOptions, traefikIngressCfg)
 
 	// Install the chart
 	helm.Install(suite.T(), options, suite.chartPath, releaseName)
@@ -157,18 +169,6 @@ func (suite *PlatformChartIntegrationSuite) TestBasicDeployment() {
 	// Get Ingress Resources
 	ingresses := k8s.ListIngresses(suite.T(), kubectlOptions, metav1.ListOptions{})
 	suite.Require().Len(ingresses, 0)
-
-	ingFile, err := os.Create("traefik.yaml")
-	suite.Require().NoError(err)
-	ingTmpl, err := template.New("traefik").Parse(traefikIngress)
-	suite.Require().NoError(err)
-	err = ingTmpl.Execute(ingFile, map[string]string{"Namespace": namespaceName})
-	suite.Require().NoError(err)
-
-	traefikIngressCfg, err := filepath.Abs("traefik.yaml")
-	suite.Require().NoError(err)
-
-	k8s.KubectlApply(suite.T(), kubectlOptions, traefikIngressCfg)
 
 	// Provision Keycloak
 	dockerRun := exec.Command("docker", "run", "--rm", "--network=host", "-v", "./platform/service/cmd/keycloak_data.yaml:/keycloak_data.yaml", "registry.opentdf.io/platform:nightly", "provision", "keycloak", "-e", "https://keycloak.opentdf.local", "-f", "/keycloak_data.yaml")
