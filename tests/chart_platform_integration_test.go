@@ -1,6 +1,7 @@
 package test
 
 import (
+	"encoding/json"
 	"fmt"
 	"os/exec"
 	"path/filepath"
@@ -55,7 +56,7 @@ func (suite *PlatformChartIntegrationSuite) TestBasicDeployment() {
 			"server.tls.additionalTrustedCerts[0].secret.name":          "platform-tls",
 			"server.tls.additionalTrustedCerts[0].secret.optional":      "false",
 			"server.tls.additionalTrustedCerts[0].secret.items[0].key":  "tls.crt",
-			"server.tls.additionalTrustedCerts[0].secret.items[0].path": "traeffik.crt",
+			"server.tls.additionalTrustedCerts[0].secret.items[0].path": "traefik.crt",
 		},
 	}
 
@@ -83,12 +84,16 @@ func (suite *PlatformChartIntegrationSuite) TestBasicDeployment() {
 	helm.Install(suite.T(), options, suite.chartPath, releaseName)
 
 	defer func() {
+		secret := k8s.GetSecret(suite.T(), kubectlOptions, "platform-tls")
+		secretJson, _ := json.MarshalIndent(secret, "", "  ")
+		fmt.Println("TLS Secret: ", string(secretJson))
 		pods := k8s.ListPods(suite.T(), kubectlOptions, metav1.ListOptions{})
 		for _, pod := range pods {
 			fmt.Println("Pod Name: ", pod.Name)
 			fmt.Println("Pod Status: ", pod.Status.Phase)
 			fmt.Println("Pod Reason: ", pod.Status.Reason)
-			fmt.Println("Pod Logs: ", k8s.GetPodLogs(suite.T(), kubectlOptions, &pod, "platform"))
+			podJson, _ := json.MarshalIndent(pod, "", "  ")
+			fmt.Println("Pod: ", string(podJson))
 		}
 		helm.Delete(suite.T(), options, releaseName, true)
 		k8s.DeleteNamespace(suite.T(), kubectlOptions, namespaceName)
