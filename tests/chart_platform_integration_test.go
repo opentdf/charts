@@ -187,6 +187,9 @@ func (suite *PlatformChartIntegrationSuite) TestBasicDeployment() {
 	ingresses := k8s.ListIngresses(suite.T(), kubectlOptions, metav1.ListOptions{})
 	suite.Require().Len(ingresses, 0)
 
+	// Give everything time to settle
+	time.Sleep(30 * time.Second)
+
 	// Run bats tests
 	batsTestFile, err := filepath.Abs("bats/tutorial.bats")
 	suite.Require().NoError(err)
