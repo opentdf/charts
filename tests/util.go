@@ -61,6 +61,6 @@ func generateKasECDHKeyPair() ([]byte, []byte, error) {
 		Bytes: pk,
 	})
 
-	return pem.EncodeToMemory(&privKeyPEM), pubKeyPEM, nil
+	return privKeyPEM.Bytes, pubKeyPEM, nil
 
 }

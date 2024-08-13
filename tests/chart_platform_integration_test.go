@@ -129,9 +129,6 @@ func (suite *PlatformChartIntegrationSuite) TestBasicDeployment() {
 
 	defer func() {
 		if suite.T().Failed() {
-			secret := k8s.GetSecret(suite.T(), kubectlOptions, "platform-tls")
-			secretJson, _ := json.MarshalIndent(secret, "", "  ")
-			fmt.Println("TLS Secret: ", string(secretJson))
 			pods := k8s.ListPods(suite.T(), kubectlOptions, metav1.ListOptions{})
 			fmt.Println("Number of Pods: ", len(pods))
 			for _, pod := range pods {
