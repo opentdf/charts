@@ -98,6 +98,7 @@ func (suite *PlatformChartIntegrationSuite) TestBasicDeployment() {
 	pods := k8s.ListPods(suite.T(), kubectlOptions, metav1.ListOptions{})
 	// suite.Require().Len(pods, 3)
 	for _, pod := range pods {
+		k8s.WaitUntilPodAvailable(suite.T(), kubectlOptions, pod.Name, 30, 1*time.Second)
 		suite.Require().Equal(pod.Status.Phase, corev1.PodRunning, fmt.Sprintf("Pod %s is not running", pod.Name))
 	}
 
