@@ -133,6 +133,7 @@ func (suite *PlatformChartIntegrationSuite) TestBasicDeployment() {
 			secretJson, _ := json.MarshalIndent(secret, "", "  ")
 			fmt.Println("TLS Secret: ", string(secretJson))
 			pods := k8s.ListPods(suite.T(), kubectlOptions, metav1.ListOptions{})
+			fmt.Println("Number of Pods: ", len(pods))
 			for _, pod := range pods {
 				fmt.Println("Pod Name: ", pod.Name)
 				fmt.Println("Pod Status: ", pod.Status.Phase)
