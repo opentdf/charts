@@ -99,6 +99,7 @@ func (suite *PlatformChartTemplateSuite) Test_Playground_Enabled_AND_Keycloak_In
 				if source.Secret != nil && source.Secret.Name == "keycloak.local-tls" {
 					suite.Require().Equal("ca.crt", source.Secret.Items[0].Key)
 					suite.Require().Equal("kc-ca.crt", source.Secret.Items[0].Path)
+					found = true
 				}
 			}
 		}
