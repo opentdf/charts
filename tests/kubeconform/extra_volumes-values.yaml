@@ -1,0 +1,9 @@
+volumeMounts:
+  - name: test
+    mountPath: /extra-config
+    readOnly: true
+volumes:
+  - name: test
+    secret:
+      secretName: mysecret
+      optional: false

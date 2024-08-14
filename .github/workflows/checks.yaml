@@ -1,0 +1,79 @@
+name: Helm Chart Checks
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  platform_unit:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332
+      - uses: actions/setup-go@0a12ed9d6a96ab950c8f026ed9f722fe0da7ef32
+        with:
+          cache-dependency-path: |
+            tests/go.sum
+      - run: go test -short ./
+        working-directory: tests
+  platform_integration:
+    strategy:
+      matrix:
+        k3s_image: ["latest", "v1.28.12-k3s1","v1.27.16-k3s1","v1.26.15-k3s1"]
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332
+        with:
+          repository: opentdf/otdfctl
+          path: otdfctl
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332
+        with:
+          repository: opentdf/platform
+          path: platform
+          sparse-checkout: |
+            service/cmd/keycloak_data.yaml
+          sparse-checkout-cone-mode: false
+      - run: |
+          sed -e "s/http:\/\/localhost:8888/https:\/\/keycloak.opentdf.local/g" platform/service/cmd/keycloak_data.yaml -i
+          cat platform/service/cmd/keycloak_data.yaml
+      - uses: actions/setup-go@0a12ed9d6a96ab950c8f026ed9f722fe0da7ef32
+        with:
+          cache-dependency-path: |
+            tests/go.sum
+            otdfctl/go.sum
+      - name: "Build otdfctl"
+        run: |
+          mkdir -p $HOME/.local/bin
+          go build -o $HOME/.local/bin/otdfctl .
+        working-directory: otdfctl
+      - uses: bats-core/bats-action@472edde1138d59aca53ff162fb8d996666d21e4a
+      - name: "Install mkcert"
+        run: go install filippo.io/mkcert@2a46726cebac0ff4e1f133d90b4e4c42f1edf44a
+      - run: |
+          mkcert -install
+          mkcert -cert-file tls.crt -key-file tls.key opentdf.local keycloak.opentdf.local platform.opentdf.local
+      - name: "Download k3d"
+        id: "download-k3d"
+        shell: bash
+        env:
+          K3D_VERSION: "v5.7.3"
+          K3D_SHA256SUM: "0fe23b8c0a151e9c41d16f9d861be26df65e5ab7f35115424220aad5a83c566b"
+        run: |
+          curl -sSLO "https://github.com/k3d-io/k3d/releases/download/${K3D_VERSION}/k3d-linux-amd64"
+          echo "${K3D_SHA256SUM}  k3d-linux-amd64" | sha256sum -c --quiet --strict
+          chmod +x k3d-linux-amd64
+          mkdir -p $HOME/.local/bin
+          mv ./k3d-linux-amd64 "$HOME/.local/bin/k3d"
+
+          k3d version
+      - name: "Create k3d cluster"
+        id: "create-k3d-cluster"
+        run: |
+          echo "127.0.0.1 platform.opentdf.local keycloak.opentdf.local" | sudo tee -a /etc/hosts
+          echo "127.0.0.1 k3d.registry" | sudo tee -a /etc/hosts
+          docker network create platform-k3d --subnet 10.255.127.0/24 --ip-range 10.255.127.192/26 --gateway 10.255.127.1
+          k3d cluster create --config ".github/k3d-config.yaml" --image "rancher/k3s:${{ matrix.k3s_image }}" --wait --timeout 60s
+          sleep 30 # wait for the cluster to be ready
+      - run: go test ./
+        working-directory: tests

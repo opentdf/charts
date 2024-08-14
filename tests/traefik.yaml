@@ -1,0 +1,27 @@
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: platform
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`keycloak.opentdf.local`)
+      kind: Rule
+      services:
+        - name: platform-keycloak
+          namespace: opentdf-sd1jsk
+          port: 80
+          scheme: http
+          passHostHeader: true
+    - match: Host(`platform.opentdf.local`)
+      kind: Rule
+      services:
+        - name: opentdf-platform
+          namespace: opentdf-sd1jsk
+          port: 9000
+          scheme: h2c
+          passHostHeader: true
+  tls:
+    secretName: platform-tls

@@ -1,0 +1,49 @@
+# k3d configuration file, saved as e.g. /home/me/myk3dcluster.yaml
+apiVersion: k3d.io/v1alpha5 # this will change in the future as we make everything more stable
+kind: Simple # internally, we also have a Cluster config, which is not yet available externally
+metadata:
+  name: cluster # name that you want to give to your cluster (will still be prefixed with `k3d-`)
+# servers: 1 # same as `--servers 1`
+# agents: 2 # same as `--agents 2`
+network: platform-k3d
+kubeAPI: # same as `--api-port myhost.my.domain:6445` (where the name would resolve to 127.0.0.1)
+  hostIP: "0.0.0.0" # where the Kubernetes API will be listening on
+  hostPort: "6445" # where the Kubernetes API listening port will be mapped to on your host system
+ports:
+  - port: 80:80 # same as `--port '8080:80@loadbalancer'`
+    nodeFilters:
+      - loadbalancer
+  - port: 443:443 # same as `--port '8080:80@loadbalancer'`
+    nodeFilters:
+      - loadbalancer
+hostAliases: # /etc/hosts style entries to be injected into /etc/hosts in the node containers and in the NodeHosts section in CoreDNS
+  - ip: 10.255.127.1
+    hostnames: 
+      - keycloak.opentdf.local
+registries: # define how registries should be created or used
+  create: # creates a default registry to be used with the cluster; same as `--registry-create registry.localhost`
+    name: k3d.registry
+    host: "0.0.0.0"
+    hostPort: "5000"
+  # define contents of the `registries.yaml` file (or reference a file); same as `--registry-config /path/to/config.yaml`
+  config: |
+    mirrors:
+      "k3d.registry:5000":
+        endpoint:
+          - http://k3d.registry:5000
+options:
+  k3d: # k3d runtime settings
+    wait: true # wait for cluster to be usable before returning; same as `--wait` (default: true)
+    timeout: "60s" # wait timeout before aborting; same as `--timeout 60s`
+  k3s: # options passed on to K3s itself
+    extraArgs: # additional arguments passed to the `k3s server|agent` command; same as `--k3s-arg`
+      #      - arg: "--disable=traefik"
+      #        nodeFilters:
+      #          - server:*
+      - arg: "--prefer-bundled-bin"
+        nodeFilters:
+          - server:*
+          - agent:*
+  kubeconfig:
+    updateDefaultKubeconfig: true # add new cluster to your default Kubeconfig; same as `--kubeconfig-update-default` (default: true)
+    switchCurrentContext: true # also set current-context to the new cluster's context; same as `--kubeconfig-switch-context` (default: true)
