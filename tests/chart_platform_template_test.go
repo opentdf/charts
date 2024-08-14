@@ -171,3 +171,159 @@ func (suite *PlatformChartTemplateSuite) Test_Playground_Enabled_AND_Keycloak_In
 	}
 	suite.Require().False(found)
 }
+
+func (suite *PlatformChartTemplateSuite) Test_Mode_Core_No_Kas_Volumes_Mounted() {
+	releaseName := "basic"
+
+	namespaceName := "opentdf-" + strings.ToLower(random.UniqueId())
+
+	options := &helm.Options{
+		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
+		SetValues: map[string]string{
+			"image.tag": "latest",
+			"mode":      "core",
+		},
+	}
+
+	output := helm.RenderTemplate(suite.T(), options, suite.chartPath, releaseName, []string{"templates/deployment.yaml"})
+	var deployment appv1.Deployment
+	helm.UnmarshalK8SYaml(suite.T(), output, &deployment)
+
+	// Find projected volume trusted-certs and check if keycloak cert is mounted
+	volumeFound := false
+	for _, volume := range deployment.Spec.Template.Spec.Volumes {
+		if volume.Secret != nil {
+			if volume.Secret.SecretName == "kas-private-keys" {
+				volumeFound = true
+			}
+		}
+	}
+	suite.Require().False(volumeFound)
+
+	volumeMountFound := false
+	for _, container := range deployment.Spec.Template.Spec.Containers {
+		for _, volumeMount := range container.VolumeMounts {
+			if volumeMount.Name == "kas-private-keys" {
+				volumeMountFound = true
+			}
+		}
+	}
+	suite.Require().False(volumeMountFound)
+}
+
+func (suite *PlatformChartTemplateSuite) Test_Mode_Core_And_Kas_Volumes_Mounted() {
+	releaseName := "basic"
+
+	namespaceName := "opentdf-" + strings.ToLower(random.UniqueId())
+
+	options := &helm.Options{
+		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
+		SetValues: map[string]string{
+			"image.tag": "latest",
+			"mode":      "core\\,kas",
+		},
+	}
+
+	output := helm.RenderTemplate(suite.T(), options, suite.chartPath, releaseName, []string{"templates/deployment.yaml"})
+	var deployment appv1.Deployment
+	helm.UnmarshalK8SYaml(suite.T(), output, &deployment)
+
+	// Find projected volume trusted-certs and check if keycloak cert is mounted
+	volumeFound := false
+	for _, volume := range deployment.Spec.Template.Spec.Volumes {
+		if volume.Secret != nil {
+			if volume.Secret.SecretName == "kas-private-keys" {
+				volumeFound = true
+			}
+		}
+	}
+	suite.Require().True(volumeFound)
+
+	volumeMountFound := false
+	for _, container := range deployment.Spec.Template.Spec.Containers {
+		for _, volumeMount := range container.VolumeMounts {
+			if volumeMount.Name == "kas-private-keys" {
+				volumeMountFound = true
+			}
+		}
+	}
+	suite.Require().True(volumeMountFound)
+}
+
+func (suite *PlatformChartTemplateSuite) Test_Mode_All_Kas_Volumes_Mounted() {
+	releaseName := "basic"
+
+	namespaceName := "opentdf-" + strings.ToLower(random.UniqueId())
+
+	options := &helm.Options{
+		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
+		SetValues: map[string]string{
+			"image.tag": "latest",
+			"mode":      "all",
+		},
+	}
+
+	output := helm.RenderTemplate(suite.T(), options, suite.chartPath, releaseName, []string{"templates/deployment.yaml"})
+	var deployment appv1.Deployment
+	helm.UnmarshalK8SYaml(suite.T(), output, &deployment)
+
+	// Find projected volume trusted-certs and check if keycloak cert is mounted
+	volumeFound := false
+	for _, volume := range deployment.Spec.Template.Spec.Volumes {
+		if volume.Secret != nil {
+			if volume.Secret.SecretName == "kas-private-keys" {
+				volumeFound = true
+			}
+		}
+	}
+	suite.Require().True(volumeFound)
+
+	volumeMountFound := false
+	for _, container := range deployment.Spec.Template.Spec.Containers {
+		for _, volumeMount := range container.VolumeMounts {
+			if volumeMount.Name == "kas-private-keys" {
+				volumeMountFound = true
+			}
+		}
+	}
+	suite.Require().True(volumeMountFound)
+}
+
+func (suite *PlatformChartTemplateSuite) Test_Mode_Kas_Expect_Volumes_Mounted() {
+	releaseName := "basic"
+
+	namespaceName := "opentdf-" + strings.ToLower(random.UniqueId())
+
+	options := &helm.Options{
+		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
+		SetValues: map[string]string{
+			"image.tag": "latest",
+			"mode":      "kas",
+		},
+	}
+
+	output := helm.RenderTemplate(suite.T(), options, suite.chartPath, releaseName, []string{"templates/deployment.yaml"})
+	var deployment appv1.Deployment
+	helm.UnmarshalK8SYaml(suite.T(), output, &deployment)
+
+	// Find projected volume trusted-certs and check if keycloak cert is mounted
+	volumeFound := false
+	for _, volume := range deployment.Spec.Template.Spec.Volumes {
+		if volume.Secret != nil {
+			if volume.Secret.SecretName == "kas-private-keys" {
+				volumeFound = true
+			}
+		}
+	}
+	suite.Require().True(volumeFound)
+
+	volumeMountFound := false
+	for _, container := range deployment.Spec.Template.Spec.Containers {
+		for _, volumeMount := range container.VolumeMounts {
+			if volumeMount.Name == "kas-private-keys" {
+				volumeMountFound = true
+			}
+		}
+	}
+	suite.Require().True(volumeMountFound)
+}

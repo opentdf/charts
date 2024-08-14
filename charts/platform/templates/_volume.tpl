@@ -5,7 +5,7 @@ volumes:
   - name: config
     configMap:
       name: {{ include "chart.fullname" . }}
-  {{- if or (contains .Values.mode "all") (contains .Values.mode "core") (contains .Values.mode "kas") }}
+  {{- if or (contains "all" .Values.mode) (contains "kas" .Values.mode) }}
   - name: kas-private-keys
     secret:
       secretName: {{ .Values.services.kas.privateKeysSecret }}
@@ -45,7 +45,7 @@ volumeMounts:
   - name: config
     readOnly: true
     mountPath: /etc/platform/config
-  {{- if or (contains .Values.mode "all") (contains .Values.mode "core") (contains .Values.mode "kas") }}
+  {{- if or (contains "all" .Values.mode ) (contains "kas" .Values.mode) }}
   - name: kas-private-keys
     readOnly: true
     mountPath: /etc/platform/kas
