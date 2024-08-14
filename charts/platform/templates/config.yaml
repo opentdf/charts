@@ -22,12 +22,18 @@ data:
       clientsecret: {{ .Values.sdk_config.clientsecret | quote }}
       {{- end }}
     services:
+      {{- if or (contains .Values.mode "all") (contains .Values.mode "core") }}
       entityresolution: 
         {{- .Values.services.entityresolution | toYaml | nindent 8 }}
+      {{- end }}
+      {{- if or (contains .Values.mode "all") (contains .Values.mode "core") (contains .Values.mode "kas") }}
       kas:
         {{- .Values.services.kas.config | toYaml | nindent 8 }}
+      {{- end }}
+      {{- if or (contains .Values.mode "all") (contains .Values.mode "core") }}
       authorization:
         {{- .Values.services.authorization | toYaml | nindent 8 }}
+      {{- end }}
       {{- with .Values.services.extraServices }}
       {{- toYaml . | nindent 6 }}
       {{- end }}

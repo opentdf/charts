@@ -119,6 +119,8 @@ autoscaling:
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
 
+# -- Add ability for downstream chart to merge additional volumes
+volumeTemplate: "platform.volumesEmpty.tpl"
 # -- Additional volumes on the output Deployment definition.
 volumes: []
 # - name: foo
@@ -126,6 +128,8 @@ volumes: []
 #     secretName: mysecret
 #     optional: false
 
+# -- Add ability for downstream chart to merge additional volumeMounts
+volumeMountTemplate: "platform.volumeMountsEmpty.tpl"
 # -- Additional volumeMounts on the output Deployment definition.
 volumeMounts: []
 # - name: foo

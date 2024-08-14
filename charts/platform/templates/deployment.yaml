@@ -1,3 +1,4 @@
+{{ $data := dict "Release" $.Release "Chart" $.Chart "Values" $.Values "Files" $.Files "Capabilities" .Capabilities }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -33,7 +34,8 @@ spec:
       {{- if .Values.hostAliases }}
       hostAliases:
         {{- toYaml .Values.hostAliases | nindent 8 }}
-      {{- end }}
+      {{- end -}}
+      {{  include "platform.util.merge.list" (list $data "volumes" .Values.volumeTemplate "platform.volumes.tpl" ) | nindent 6 }}
       containers:
         - name: {{ .Chart.Name }}
           args:
@@ -62,24 +64,7 @@ spec:
           {{ end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-          volumeMounts:
-            - name: config
-              readOnly: true
-              mountPath: /etc/platform/config
-            - name: kas-private-keys
-              readOnly: true
-              mountPath: /etc/platform/kas
-            - name: trusted-certs
-              readOnly: true
-              mountPath: /etc/ssl/certs/platform
-            {{- if .Values.server.tls.enabled }}
-            - name: tls
-              readOnly: true
-              mountPath: /etc/platform/certs
-            {{- end -}}
-            {{- with .Values.volumeMounts }}
-            {{- toYaml . | nindent 12 }}
-          {{- end }}
+          {{  include "platform.util.merge.list" (list $data "volumeMounts" .Values.volumeMountTemplate "platform.volumeMounts.tpl" ) | nindent 10}}
           env:
           - name: SSL_CERT_DIR
             value: '/etc/ssl/certs:/etc/ssl/certs/platform'
@@ -102,35 +87,6 @@ spec:
           envFrom:
             {{- toYaml . | nindent 10 }}
           {{- end }}
-      volumes:
-        - name: config
-          configMap:
-            name: {{ include "chart.fullname" . }}
-        - name: kas-private-keys
-          secret:
-            secretName: {{ .Values.services.kas.privateKeysSecret }}
-        {{- if .Values.server.tls.enabled }}
-        - name: tls
-          secret:
-            secretName: {{ .Values.server.tls.secret | default (printf "%s-tls" (include "chart.fullname" .)) }}
-        {{- end }}
-        - name: trusted-certs
-          projected:
-            sources:
-            {{- if and .Values.playground .Values.keycloak.ingress.enabled .Values.keycloak.ingress.tls }}
-            - secret:
-                name: {{ .Values.keycloak.ingress.hostname }}-tls # If the fullnameOverride is set, this will break
-                optional: false
-                items:
-                  - key: ca.crt
-                    path: kc-ca.crt
-            {{- end -}}
-            {{- with .Values.server.tls.additionalTrustedCerts }}
-            {{- toYaml . | nindent 12 }}
-            {{- end }}
-        {{- with .Values.volumes }}
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

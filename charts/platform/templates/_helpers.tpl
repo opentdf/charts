@@ -80,3 +80,30 @@ Create the name of the service account to use
 {{- fail "You cannot set both clientsecret and existingSecret in sdk_config." }}
 {{- end -}}
 {{- end -}}
+
+{{- /*
+platform.util.merge will merge two YAML templates and output the result.
+This takes an array of three values:
+- the top context
+- the template name of the overrides (destination)
+- the template name of the base (source)
+*/ -}}
+{{- define "platform.util.merge.list" -}}
+{{- $top := first . -}}
+{{- $filterKey := (index . 1) }}
+{{- $overrides := fromYaml (include (index . 2) $top) | default (dict) -}}
+{{- $tpl := fromYaml (include (index . 3) $top) | default (dict) -}}
+
+{{- $mergedList := index $tpl $filterKey | default (list) -}}
+
+{{- range $key, $values := $overrides -}}
+  {{- if kindIs "slice" $values }}
+    {{- range $key2, $value := $values }}
+        {{- $mergedList = append $mergedList $value -}}
+    {{- end }}
+  {{- end -}}
+{{- end -}}
+
+{{- (dict $filterKey $mergedList) | toYaml }}
+
+{{- end -}}

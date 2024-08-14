@@ -352,5 +352,7 @@ realms:
 | services.kas.config.keyring | list | `[{"alg":"ec:secp256r1","kid":"e1"},{"alg":"rsa:2048","kid":"r1"}]` | Default keys for clients to use |
 | services.kas.privateKeysSecret | string | `"kas-private-keys"` | KAS secret containing keys kas-private.pem , kas-cert.pem , kas-ec-private.pem , kas-ec-cert.pem |
 | tolerations | list | `[]` | Tolerations to apply to the pod (https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) |
+| volumeMountTemplate | string | `"platform.volumeMountsEmpty.tpl"` | Add ability for downstream chart to merge additional volumeMounts |
 | volumeMounts | list | `[]` | Additional volumeMounts on the output Deployment definition. |
+| volumeTemplate | string | `"platform.volumesEmpty.tpl"` | Add ability for downstream chart to merge additional volumes |
 | volumes | list | `[]` | Additional volumes on the output Deployment definition. |
