@@ -9,7 +9,9 @@ import (
 	"github.com/gruntwork-io/terratest/modules/k8s"
 	"github.com/gruntwork-io/terratest/modules/random"
 	"github.com/stretchr/testify/suite"
+	"gopkg.in/yaml.v3"
 	appv1 "k8s.io/api/apps/v1"
+	corev1 "k8s.io/api/core/v1"
 )
 
 type PlatformChartTemplateSuite struct {
@@ -18,9 +20,9 @@ type PlatformChartTemplateSuite struct {
 }
 
 func TestPlatformChartTemplateSuite(t *testing.T) {
-	if !testing.Short() {
-		t.Skip("skipping platform template test not in short mode.")
-	}
+	// if !testing.Short() {
+	// 	t.Skip("skipping platform template test not in short mode.")
+	// }
 	suite.Run(t, new(PlatformChartTemplateSuite))
 }
 
@@ -456,4 +458,74 @@ func (suite *PlatformChartTemplateSuite) Test_Trusted_Cert_Volume_Does_Not_Exist
 		}
 	}
 	suite.Require().False(volumeMountFound)
+}
+
+func (suite *PlatformChartTemplateSuite) Test_Custom_Volume_Templates_Merged() {
+	releaseName := "basic"
+
+	namespaceName := "opentdf-" + strings.ToLower(random.UniqueId())
+
+	options := &helm.Options{
+		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
+		SetValues: map[string]string{
+			"volumeTemplate":      "platform.volumes.test.tpl",
+			"volumeMountTemplate": "platform.volumeMounts.test.tpl",
+		},
+	}
+
+	output := helm.RenderTemplate(suite.T(), options, suite.chartPath, releaseName, []string{"templates/deployment.yaml"})
+	var deployment appv1.Deployment
+	helm.UnmarshalK8SYaml(suite.T(), output, &deployment)
+
+	volumeFound := false
+	for _, volume := range deployment.Spec.Template.Spec.Volumes {
+		if volume.Name == "testVolume" {
+			volumeFound = true
+		}
+	}
+	suite.Require().True(volumeFound)
+
+	volumeMountFound := false
+	for _, container := range deployment.Spec.Template.Spec.Containers {
+		for _, volumeMount := range container.VolumeMounts {
+			if volumeMount.Name == "testVolumeMount" {
+				volumeMountFound = true
+			}
+		}
+	}
+	suite.Require().True(volumeMountFound)
+}
+
+func (suite *PlatformChartTemplateSuite) Test_Custom_Config_Template_Services_Merged() {
+	releaseName := "basic"
+
+	namespaceName := "opentdf-" + strings.ToLower(random.UniqueId())
+
+	options := &helm.Options{
+		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
+		SetValues: map[string]string{
+			"configTemplate": "platform.configuration.test.tpl",
+		},
+	}
+
+	output := helm.RenderTemplate(suite.T(), options, suite.chartPath, releaseName, []string{"templates/config.yaml"})
+	var cm corev1.ConfigMap
+	helm.UnmarshalK8SYaml(suite.T(), output, &cm)
+
+	var config map[string]interface{}
+	suite.Suite.Require().NoError(yaml.Unmarshal([]byte(cm.Data["opentdf.yaml"]), &config))
+
+	suite.Require().Equal(releaseName+"-platform", cm.Name)
+
+	testServiceKeyFound := false
+	for key, _ := range config {
+		if key == "services" {
+			for sKey, _ := range config[key].(map[string]interface{}) {
+				if sKey == "testService" {
+					testServiceKeyFound = true
+				}
+			}
+		}
+	}
+	suite.Require().True(testServiceKeyFound)
 }

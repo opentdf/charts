@@ -242,6 +242,7 @@ realms:
 | autoscaling.maxReplicas | int | `100` | Maximum number of pods to run |
 | autoscaling.minReplicas | int | `1` | Minimum number of pods to run |
 | autoscaling.targetCPUUtilizationPercentage | int | `80` | Target CPU utilization percentage |
+| configTemplate | string | `"platform.configurationEmpty.tpl"` |  |
 | db.database | string | `"opentdf"` | The database name |
 | db.host | string | `"platform-db"` | The database host |
 | db.password.secret.key | string | `"password"` | The key in the secret containing the database user password |

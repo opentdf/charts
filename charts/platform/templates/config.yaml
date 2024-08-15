@@ -1,3 +1,4 @@
+{{ $data := dict "Release" $.Release "Chart" $.Chart "Values" $.Values "Files" $.Files "Capabilities" .Capabilities }}
 {{ include "sdk_config.validate" . }}
 apiVersion: v1
 kind: ConfigMap
@@ -12,7 +13,7 @@ data:
       {{- .Values.logger | toYaml | nindent 6 }}
     db:
       {{- omit .Values.db "password" | toYaml | nindent 6 }}
-      password: # loaded from env
+      password:
     mode: {{ .Values.mode | quote }}
     sdk_config:
       endpoint: {{ .Values.sdk_config.endpoint | quote }}
@@ -20,22 +21,6 @@ data:
       client_id: {{ .Values.sdk_config.client_id | quote }}
       {{- if .Values.sdk_config.client_secret }}
       client_secret: {{ .Values.sdk_config.client_secret | quote }}
-      {{- end }}
-    services:
-      {{- if or (contains .Values.mode "all") (contains .Values.mode "core") }}
-      entityresolution: 
-        {{- .Values.services.entityresolution | toYaml | nindent 8 }}
-      {{- end }}
-      {{- if or (contains .Values.mode "all") (contains .Values.mode "core") (contains .Values.mode "kas") }}
-      kas:
-        {{- .Values.services.kas.config | toYaml | nindent 8 }}
-      {{- end }}
-      {{- if or (contains .Values.mode "all") (contains .Values.mode "core") }}
-      authorization:
-        {{- .Values.services.authorization | toYaml | nindent 8 }}
-      {{- end }}
-      {{- with .Values.services.extraServices }}
-      {{- toYaml . | nindent 6 }}
       {{- end }}
     server:
       port: {{ .Values.server.port | quote }}
@@ -63,3 +48,4 @@ data:
         {{- .Values.server.auth | toYaml | nindent 8 }}
       cryptoProvider:
         {{- .Values.server.cryptoProvider | toYaml | nindent 8 }}
+    {{-  include "platform.util.merge.dict" (list $data .Values.configTemplate "platform.configuration.tpl" ) | nindent 4}}

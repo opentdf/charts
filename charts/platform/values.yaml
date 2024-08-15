@@ -298,6 +298,7 @@ sdk_config:
     # -- The key in the secret containing the client secret
     key: ""
 
+configTemplate: "platform.configurationEmpty.tpl"
 services:
   entityresolution:
     # -- Identity Provider Entity Resolver
