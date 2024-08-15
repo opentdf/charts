@@ -17,9 +17,9 @@ data:
     sdk_config:
       endpoint: {{ .Values.sdk_config.endpoint | quote }}
       plaintext: {{ .Values.sdk_config.plaintext }}
-      clientid: {{ .Values.sdk_config.clientid | quote }}
-      {{- if .Values.sdk_config.clientsecret }}
-      clientsecret: {{ .Values.sdk_config.clientsecret | quote }}
+      client_id: {{ .Values.sdk_config.client_id | quote }}
+      {{- if .Values.sdk_config.client_secret }}
+      client_secret: {{ .Values.sdk_config.client_secret | quote }}
       {{- end }}
     services:
       {{- if or (contains .Values.mode "all") (contains .Values.mode "core") }}

@@ -76,10 +76,10 @@ Create the name of the service account to use
 {{- end -}}
 
 {{- define "sdk_config.validate" -}}
-{{- if and ( .Values.sdk_config.clientsecret) ( .Values.sdk_config.existingSecret.name) ( .Values.sdk_config.existingSecret.key)}}
-{{- fail "You cannot set both clientsecret and existingSecret in sdk_config." }}
+{{- if and ( .Values.sdk_config.client_secret) ( .Values.sdk_config.existingSecret.name) ( .Values.sdk_config.existingSecret.key)}}
+{{- fail "You cannot set both client_secret and existingSecret in sdk_config." }}
 {{- end -}}
-{{- if and (not (or (contains "core" .Values.mode) (contains "all" .Values.mode))) (and (not .Values.sdk_config.clientsecret) (not .Values.sdk_config.existingSecret.name) (not .Values.sdk_config.existingSecret.key)) }}
+{{- if and (not (or (contains "core" .Values.mode) (contains "all" .Values.mode))) (and (not .Values.sdk_config.client_secret) (not .Values.sdk_config.existingSecret.name) (not .Values.sdk_config.existingSecret.key)) }}
 {{- fail "Mode does not contain 'core' or 'all'. You must configure the sdk_config" }}
 {{- end }}
 {{- end -}}

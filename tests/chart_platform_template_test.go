@@ -38,8 +38,8 @@ func (suite *PlatformChartTemplateSuite) TestBasicDeploymentTemplateRender() {
 	options := &helm.Options{
 		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
 		SetValues: map[string]string{
-			"image.tag":               "latest",
-			"sdk_config.clientsecret": "test",
+			"image.tag":                "latest",
+			"sdk_config.client_secret": "test",
 		},
 	}
 
@@ -62,7 +62,7 @@ func (suite *PlatformChartTemplateSuite) Test_SDK_Config_Set_Client_Secret_AND_E
 		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
 		SetValues: map[string]string{
 			"image.tag":                      "latest",
-			"sdk_config.clientsecret":        "test",
+			"sdk_config.client_secret":       "test",
 			"sdk_config.existingSecret.name": "test",
 			"sdk_config.existingSecret.key":  "test",
 		},
@@ -70,7 +70,24 @@ func (suite *PlatformChartTemplateSuite) Test_SDK_Config_Set_Client_Secret_AND_E
 
 	_, err := helm.RenderTemplateE(suite.T(), options, suite.chartPath, releaseName, []string{})
 	suite.Require().Error(err)
-	suite.Require().ErrorContains(err, "You cannot set both clientsecret and existingSecret in sdk_config.")
+	suite.Require().ErrorContains(err, "You cannot set both client_secret and existingSecret in sdk_config.")
+}
+
+func (suite *PlatformChartTemplateSuite) Test_Set_Mode_KAS_No_SDK_Config_Defined_Expect_Error() {
+	releaseName := "basic"
+
+	namespaceName := "opentdf-" + strings.ToLower(random.UniqueId())
+
+	options := &helm.Options{
+		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
+		SetValues: map[string]string{
+			"mode": "kas",
+		},
+	}
+
+	_, err := helm.RenderTemplateE(suite.T(), options, suite.chartPath, releaseName, []string{})
+	suite.Require().Error(err)
+	suite.Require().ErrorContains(err, "Mode does not contain 'core' or 'all'. You must configure the sdk_config")
 }
 
 func (suite *PlatformChartTemplateSuite) Test_Playground_Enabled_AND_Keycloak_Ing_Enabled_Trusted_Cert_Mounted() {
@@ -297,11 +314,11 @@ func (suite *PlatformChartTemplateSuite) Test_Mode_Kas_Expect_Volumes_Mounted() 
 	options := &helm.Options{
 		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
 		SetValues: map[string]string{
-			"image.tag":               "latest",
-			"mode":                    "kas",
-			"sdk_config.endpoint":     "http://localhost:8080",
-			"sdk_config.clientid":     "test",
-			"sdk_config.clientsecret": "test",
+			"image.tag":                "latest",
+			"mode":                     "kas",
+			"sdk_config.endpoint":      "http://localhost:8080",
+			"sdk_config.client_id":     "test",
+			"sdk_config.client_secret": "test",
 		},
 	}
 
