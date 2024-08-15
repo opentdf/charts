@@ -288,9 +288,9 @@ sdk_config:
   # -- Plaintext Insecure Connection
   plaintext: false
   # -- Oauth2 Client Id
-  clientid: ""
+  client_id: ""
   # -- Oauth2 Client Secret
-  clientsecret: ""
+  client_secret: ""
   # -- Oauth2 Client Secret Kubernetes Secret
   existingSecret:
     # -- The kubernetes secret containing the client secret

@@ -50,9 +50,11 @@ volumeMounts:
     readOnly: true
     mountPath: /etc/platform/kas
   {{- end }}
+  {{- if or (and .Values.playground .Values.keycloak.ingress.enabled .Values.keycloak.ingress.tls) .Values.server.tls.additionalTrustedCerts }}
   - name: trusted-certs
     readOnly: true
     mountPath: /etc/ssl/certs/platform
+  {{- end }}
   {{- if .Values.server.tls.enabled }}
   - name: tls
     readOnly: true

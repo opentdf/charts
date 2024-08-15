@@ -38,8 +38,8 @@ func (suite *PlatformChartTemplateSuite) TestBasicDeploymentTemplateRender() {
 	options := &helm.Options{
 		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
 		SetValues: map[string]string{
-			"image.tag":               "latest",
-			"sdk_config.clientsecret": "test",
+			"image.tag":                "latest",
+			"sdk_config.client_secret": "test",
 		},
 	}
 
@@ -62,7 +62,7 @@ func (suite *PlatformChartTemplateSuite) Test_SDK_Config_Set_Client_Secret_AND_E
 		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
 		SetValues: map[string]string{
 			"image.tag":                      "latest",
-			"sdk_config.clientsecret":        "test",
+			"sdk_config.client_secret":       "test",
 			"sdk_config.existingSecret.name": "test",
 			"sdk_config.existingSecret.key":  "test",
 		},
@@ -70,7 +70,24 @@ func (suite *PlatformChartTemplateSuite) Test_SDK_Config_Set_Client_Secret_AND_E
 
 	_, err := helm.RenderTemplateE(suite.T(), options, suite.chartPath, releaseName, []string{})
 	suite.Require().Error(err)
-	suite.Require().ErrorContains(err, "You cannot set both clientsecret and existingSecret in sdk_config.")
+	suite.Require().ErrorContains(err, "You cannot set both client_secret and existingSecret in sdk_config.")
+}
+
+func (suite *PlatformChartTemplateSuite) Test_Set_Mode_KAS_No_SDK_Config_Defined_Expect_Error() {
+	releaseName := "basic"
+
+	namespaceName := "opentdf-" + strings.ToLower(random.UniqueId())
+
+	options := &helm.Options{
+		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
+		SetValues: map[string]string{
+			"mode": "kas",
+		},
+	}
+
+	_, err := helm.RenderTemplateE(suite.T(), options, suite.chartPath, releaseName, []string{})
+	suite.Require().Error(err)
+	suite.Require().ErrorContains(err, "Mode does not contain 'core' or 'all'. You must configure the sdk_config")
 }
 
 func (suite *PlatformChartTemplateSuite) Test_Playground_Enabled_AND_Keycloak_Ing_Enabled_Trusted_Cert_Mounted() {
@@ -297,8 +314,11 @@ func (suite *PlatformChartTemplateSuite) Test_Mode_Kas_Expect_Volumes_Mounted() 
 	options := &helm.Options{
 		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
 		SetValues: map[string]string{
-			"image.tag": "latest",
-			"mode":      "kas",
+			"image.tag":                "latest",
+			"mode":                     "kas",
+			"sdk_config.endpoint":      "http://localhost:8080",
+			"sdk_config.client_id":     "test",
+			"sdk_config.client_secret": "test",
 		},
 	}
 
@@ -326,4 +346,114 @@ func (suite *PlatformChartTemplateSuite) Test_Mode_Kas_Expect_Volumes_Mounted() 
 		}
 	}
 	suite.Require().True(volumeMountFound)
+}
+
+func (suite *PlatformChartTemplateSuite) Test_Trusted_Cert_Volume_Exists_When_Playground_True() {
+	releaseName := "basic"
+
+	namespaceName := "opentdf-" + strings.ToLower(random.UniqueId())
+
+	options := &helm.Options{
+		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
+		SetValues: map[string]string{
+			"image.tag":  "latest",
+			"playground": "true",
+		},
+	}
+
+	output := helm.RenderTemplate(suite.T(), options, suite.chartPath, releaseName, []string{"templates/deployment.yaml"})
+	var deployment appv1.Deployment
+	helm.UnmarshalK8SYaml(suite.T(), output, &deployment)
+
+	// Find projected volume trusted-certs and check if keycloak cert is mounted
+	volumeFound := false
+	for _, volume := range deployment.Spec.Template.Spec.Volumes {
+		if volume.Name == "trusted-certs" {
+			volumeFound = true
+		}
+	}
+	suite.Require().True(volumeFound)
+
+	volumeMountFound := false
+	for _, container := range deployment.Spec.Template.Spec.Containers {
+		for _, volumeMount := range container.VolumeMounts {
+			if volumeMount.Name == "trusted-certs" {
+				volumeMountFound = true
+			}
+		}
+	}
+	suite.Require().True(volumeMountFound)
+}
+
+func (suite *PlatformChartTemplateSuite) Test_Trusted_Cert_Volume_Exists_When_AdditionalTrustedCertsDefined() {
+	releaseName := "basic"
+
+	namespaceName := "opentdf-" + strings.ToLower(random.UniqueId())
+
+	options := &helm.Options{
+		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
+		SetValues: map[string]string{
+			"image.tag": "latest",
+			"server.tls.additionalTrustedCerts[0].secret.name": "test",
+		},
+	}
+
+	output := helm.RenderTemplate(suite.T(), options, suite.chartPath, releaseName, []string{"templates/deployment.yaml"})
+	var deployment appv1.Deployment
+	helm.UnmarshalK8SYaml(suite.T(), output, &deployment)
+
+	// Find projected volume trusted-certs and check if keycloak cert is mounted
+	volumeFound := false
+	for _, volume := range deployment.Spec.Template.Spec.Volumes {
+		if volume.Name == "trusted-certs" {
+			volumeFound = true
+		}
+	}
+	suite.Require().True(volumeFound)
+
+	volumeMountFound := false
+	for _, container := range deployment.Spec.Template.Spec.Containers {
+		for _, volumeMount := range container.VolumeMounts {
+			if volumeMount.Name == "trusted-certs" {
+				volumeMountFound = true
+			}
+		}
+	}
+	suite.Require().True(volumeMountFound)
+}
+
+func (suite *PlatformChartTemplateSuite) Test_Trusted_Cert_Volume_Does_Not_Exist_When_AdditionalTrustedCertsDefined_OR_Playground_Not_Defined() {
+	releaseName := "basic"
+
+	namespaceName := "opentdf-" + strings.ToLower(random.UniqueId())
+
+	options := &helm.Options{
+		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
+		SetValues: map[string]string{
+			"image.tag": "latest",
+		},
+	}
+
+	output := helm.RenderTemplate(suite.T(), options, suite.chartPath, releaseName, []string{"templates/deployment.yaml"})
+	var deployment appv1.Deployment
+	helm.UnmarshalK8SYaml(suite.T(), output, &deployment)
+
+	// Find projected volume trusted-certs and check if keycloak cert is mounted
+	volumeFound := false
+	for _, volume := range deployment.Spec.Template.Spec.Volumes {
+		if volume.Name == "trusted-certs" {
+			volumeFound = true
+		}
+	}
+	suite.Require().False(volumeFound)
+
+	volumeMountFound := false
+	for _, container := range deployment.Spec.Template.Spec.Containers {
+		for _, volumeMount := range container.VolumeMounts {
+			if volumeMount.Name == "trusted-certs" {
+				volumeMountFound = true
+			}
+		}
+	}
+	suite.Require().False(volumeMountFound)
 }

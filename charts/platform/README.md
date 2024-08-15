@@ -303,8 +303,8 @@ realms:
 | postgresql.tls.enabled | bool | `true` |  |
 | replicaCount | int | `1` | The number of Platform pods to run |
 | resources | object | `{}` | Resources to allocate to the container |
-| sdk_config.clientid | string | `""` | Oauth2 Client Id |
-| sdk_config.clientsecret | string | `""` | Oauth2 Client Secret |
+| sdk_config.client_id | string | `""` | Oauth2 Client Id |
+| sdk_config.client_secret | string | `""` | Oauth2 Client Secret |
 | sdk_config.endpoint | string | `""` | The core platform endpoint |
 | sdk_config.existingSecret | object | `{"key":"","name":""}` | Oauth2 Client Secret Kubernetes Secret |
 | sdk_config.existingSecret.key | string | `""` | The key in the secret containing the client secret |
