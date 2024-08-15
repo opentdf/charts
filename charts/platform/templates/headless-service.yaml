@@ -12,7 +12,7 @@ spec:
   ports:
     - port: {{ .Values.service.port }}
       targetPort: http2
-      appProtocol:  {{ if .Values.server.tls.enabled }}http2{{ else }}h2c{{ end }}      
+      appProtocol:  {{ if .Values.server.tls.enabled }}http2{{ else }}kubernetes.io/h2c{{ end }}
       protocol: TCP
       name: http2
   selector:
