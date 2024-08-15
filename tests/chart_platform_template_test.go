@@ -20,9 +20,9 @@ type PlatformChartTemplateSuite struct {
 }
 
 func TestPlatformChartTemplateSuite(t *testing.T) {
-	// if !testing.Short() {
-	// 	t.Skip("skipping platform template test not in short mode.")
-	// }
+	if !testing.Short() {
+		t.Skip("skipping platform template test not in short mode.")
+	}
 	suite.Run(t, new(PlatformChartTemplateSuite))
 }
 
