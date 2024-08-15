@@ -1,5 +1,11 @@
 {{ define "platform.volumesEmpty.tpl" }}
 {{ end }}
+{{ define "platform.volumes.test.tpl" }}
+volumes:
+  - name: testVolume
+    configMap:
+      name: {{ include "chart.fullname" . }}
+{{ end }}
 {{ define "platform.volumes.tpl" }}
 volumes:
   - name: config
@@ -39,7 +45,12 @@ volumes:
 
 {{ define "platform.volumeMountsEmpty.tpl" }}
 {{ end }}
-
+{{ define "platform.volumeMounts.test.tpl" }}
+volumeMounts:
+  - name: testVolumeMount
+    readOnly: true
+    mountPath: /etc/platform/config
+{{ end }}
 {{ define "platform.volumeMounts.tpl" }}
 volumeMounts:
   - name: config
