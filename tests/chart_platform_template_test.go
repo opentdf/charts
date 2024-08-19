@@ -20,9 +20,9 @@ type PlatformChartTemplateSuite struct {
 }
 
 func TestPlatformChartTemplateSuite(t *testing.T) {
-	// if !testing.Short() {
-	// 	t.Skip("skipping platform template test not in short mode.")
-	// }
+	if !testing.Short() {
+		t.Skip("skipping platform template test not in short mode.")
+	}
 	suite.Run(t, new(PlatformChartTemplateSuite))
 }
 
@@ -585,4 +585,55 @@ func (s *PlatformChartTemplateSuite) Test_TLS_Disabled_Openshift_Expect_H2C_AppP
 	for _, port := range svc.Spec.Ports {
 		s.Require().Equal("h2c", *port.AppProtocol)
 	}
+}
+
+func (s *PlatformChartTemplateSuite) Test_DB_Required_Expect_EnvVars_Set() {
+	releaseName := "basic"
+
+	namespaceName := "opentdf-" + strings.ToLower(random.UniqueId())
+
+	options := &helm.Options{
+		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
+	}
+
+	output := helm.RenderTemplate(s.T(), options, s.chartPath, releaseName, []string{"templates/deployment.yaml"})
+	var deployment appv1.Deployment
+	helm.UnmarshalK8SYaml(s.T(), output, &deployment)
+
+	envVarFound := false
+	for _, container := range deployment.Spec.Template.Spec.Containers {
+		for _, envVar := range container.Env {
+			if envVar.Name == "OPENTDF_DB_PASSWORD" {
+				envVarFound = true
+			}
+		}
+	}
+	s.Require().True(envVarFound)
+}
+
+func (s *PlatformChartTemplateSuite) Test_DB_Not_Required_Expect_EnvVars_Not_Set() {
+	releaseName := "basic"
+
+	namespaceName := "opentdf-" + strings.ToLower(random.UniqueId())
+
+	options := &helm.Options{
+		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
+		SetValues: map[string]string{
+			"db.required": "false",
+		},
+	}
+
+	output := helm.RenderTemplate(s.T(), options, s.chartPath, releaseName, []string{"templates/deployment.yaml"})
+	var deployment appv1.Deployment
+	helm.UnmarshalK8SYaml(s.T(), output, &deployment)
+
+	envVarFound := false
+	for _, container := range deployment.Spec.Template.Spec.Containers {
+		for _, envVar := range container.Env {
+			if envVar.Name == "OPENTDF_DB_PASSWORD" {
+				envVarFound = true
+			}
+		}
+	}
+	s.Require().False(envVarFound)
 }
