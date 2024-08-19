@@ -26,13 +26,13 @@ func TestPlatformChartTemplateSuite(t *testing.T) {
 	suite.Run(t, new(PlatformChartTemplateSuite))
 }
 
-func (suite *PlatformChartTemplateSuite) SetupTest() {
+func (s *PlatformChartTemplateSuite) SetupTest() {
 	path, err := filepath.Abs("../charts/platform")
-	suite.Require().NoError(err)
-	suite.chartPath = path
+	s.Require().NoError(err)
+	s.chartPath = path
 }
 
-func (suite *PlatformChartTemplateSuite) TestBasicDeploymentTemplateRender() {
+func (s *PlatformChartTemplateSuite) TestBasicDeploymentTemplateRender() {
 	releaseName := "basic"
 
 	namespaceName := "opentdf-" + strings.ToLower(random.UniqueId())
@@ -45,17 +45,17 @@ func (suite *PlatformChartTemplateSuite) TestBasicDeploymentTemplateRender() {
 		},
 	}
 
-	output := helm.RenderTemplate(suite.T(), options, suite.chartPath, releaseName, []string{"templates/deployment.yaml"})
+	output := helm.RenderTemplate(s.T(), options, s.chartPath, releaseName, []string{"templates/deployment.yaml"})
 
 	var deployment appv1.Deployment
-	helm.UnmarshalK8SYaml(suite.T(), output, &deployment)
+	helm.UnmarshalK8SYaml(s.T(), output, &deployment)
 
-	suite.Require().Equal(deployment.Name, releaseName+"-platform")
-	suite.Require().Len(deployment.Spec.Template.Spec.Containers, 1)
-	suite.Require().Equal(deployment.Spec.Template.Spec.Containers[0].Image, "registry.opentdf.io/platform:latest")
+	s.Require().Equal(deployment.Name, releaseName+"-platform")
+	s.Require().Len(deployment.Spec.Template.Spec.Containers, 1)
+	s.Require().Equal(deployment.Spec.Template.Spec.Containers[0].Image, "registry.opentdf.io/platform:latest")
 }
 
-func (suite *PlatformChartTemplateSuite) Test_SDK_Config_Set_Client_Secret_AND_Existing_Secret_Expect_Error() {
+func (s *PlatformChartTemplateSuite) Test_SDK_Config_Set_Client_Secret_AND_Existing_Secret_Expect_Error() {
 	releaseName := "basic"
 
 	namespaceName := "opentdf-" + strings.ToLower(random.UniqueId())
@@ -70,12 +70,12 @@ func (suite *PlatformChartTemplateSuite) Test_SDK_Config_Set_Client_Secret_AND_E
 		},
 	}
 
-	_, err := helm.RenderTemplateE(suite.T(), options, suite.chartPath, releaseName, []string{})
-	suite.Require().Error(err)
-	suite.Require().ErrorContains(err, "You cannot set both client_secret and existingSecret in sdk_config.")
+	_, err := helm.RenderTemplateE(s.T(), options, s.chartPath, releaseName, []string{})
+	s.Require().Error(err)
+	s.Require().ErrorContains(err, "You cannot set both client_secret and existingSecret in sdk_config.")
 }
 
-func (suite *PlatformChartTemplateSuite) Test_Set_Mode_KAS_No_SDK_Config_Defined_Expect_Error() {
+func (s *PlatformChartTemplateSuite) Test_Set_Mode_KAS_No_SDK_Config_Defined_Expect_Error() {
 	releaseName := "basic"
 
 	namespaceName := "opentdf-" + strings.ToLower(random.UniqueId())
@@ -87,12 +87,12 @@ func (suite *PlatformChartTemplateSuite) Test_Set_Mode_KAS_No_SDK_Config_Defined
 		},
 	}
 
-	_, err := helm.RenderTemplateE(suite.T(), options, suite.chartPath, releaseName, []string{})
-	suite.Require().Error(err)
-	suite.Require().ErrorContains(err, "Mode does not contain 'core' or 'all'. You must configure the sdk_config")
+	_, err := helm.RenderTemplateE(s.T(), options, s.chartPath, releaseName, []string{})
+	s.Require().Error(err)
+	s.Require().ErrorContains(err, "Mode does not contain 'core' or 'all'. You must configure the sdk_config")
 }
 
-func (suite *PlatformChartTemplateSuite) Test_Playground_Enabled_AND_Keycloak_Ing_Enabled_Trusted_Cert_Mounted() {
+func (s *PlatformChartTemplateSuite) Test_Playground_Enabled_AND_Keycloak_Ing_Enabled_Trusted_Cert_Mounted() {
 	releaseName := "basic"
 
 	namespaceName := "opentdf-" + strings.ToLower(random.UniqueId())
@@ -105,28 +105,28 @@ func (suite *PlatformChartTemplateSuite) Test_Playground_Enabled_AND_Keycloak_In
 		},
 	}
 
-	output := helm.RenderTemplate(suite.T(), options, suite.chartPath, releaseName, []string{"templates/deployment.yaml"})
+	output := helm.RenderTemplate(s.T(), options, s.chartPath, releaseName, []string{"templates/deployment.yaml"})
 	var deployment appv1.Deployment
-	helm.UnmarshalK8SYaml(suite.T(), output, &deployment)
+	helm.UnmarshalK8SYaml(s.T(), output, &deployment)
 
 	// Find projected volume trusted-certs and check if keycloak cert is mounted
 	found := false
 	for _, volume := range deployment.Spec.Template.Spec.Volumes {
 		if volume.Projected != nil {
 			for _, source := range volume.Projected.Sources {
-				suite.T().Log("Secret Name: ", source.Secret.Name)
+				s.T().Log("Secret Name: ", source.Secret.Name)
 				if source.Secret != nil && source.Secret.Name == "keycloak.local-tls" {
-					suite.Require().Equal("ca.crt", source.Secret.Items[0].Key)
-					suite.Require().Equal("kc-ca.crt", source.Secret.Items[0].Path)
+					s.Require().Equal("ca.crt", source.Secret.Items[0].Key)
+					s.Require().Equal("kc-ca.crt", source.Secret.Items[0].Path)
 					found = true
 				}
 			}
 		}
 	}
-	suite.Require().True(found)
+	s.Require().True(found)
 }
 
-func (suite *PlatformChartTemplateSuite) Test_Playground_Enabled_AND_Keycloak_Ing_Disabled_Trusted_Cert_Not_Mounted() {
+func (s *PlatformChartTemplateSuite) Test_Playground_Enabled_AND_Keycloak_Ing_Disabled_Trusted_Cert_Not_Mounted() {
 	releaseName := "basic"
 
 	namespaceName := "opentdf-" + strings.ToLower(random.UniqueId())
@@ -140,9 +140,9 @@ func (suite *PlatformChartTemplateSuite) Test_Playground_Enabled_AND_Keycloak_In
 		},
 	}
 
-	output := helm.RenderTemplate(suite.T(), options, suite.chartPath, releaseName, []string{"templates/deployment.yaml"})
+	output := helm.RenderTemplate(s.T(), options, s.chartPath, releaseName, []string{"templates/deployment.yaml"})
 	var deployment appv1.Deployment
-	helm.UnmarshalK8SYaml(suite.T(), output, &deployment)
+	helm.UnmarshalK8SYaml(s.T(), output, &deployment)
 
 	// Find projected volume trusted-certs and check if keycloak cert is mounted
 	found := false
@@ -155,10 +155,10 @@ func (suite *PlatformChartTemplateSuite) Test_Playground_Enabled_AND_Keycloak_In
 			}
 		}
 	}
-	suite.Require().False(found)
+	s.Require().False(found)
 }
 
-func (suite *PlatformChartTemplateSuite) Test_Playground_Enabled_AND_Keycloak_Ing_Enabled_AND_TLS_Disabled_Trusted_Cert_Not_Mounted() {
+func (s *PlatformChartTemplateSuite) Test_Playground_Enabled_AND_Keycloak_Ing_Enabled_AND_TLS_Disabled_Trusted_Cert_Not_Mounted() {
 	releaseName := "basic"
 
 	namespaceName := "opentdf-" + strings.ToLower(random.UniqueId())
@@ -173,9 +173,9 @@ func (suite *PlatformChartTemplateSuite) Test_Playground_Enabled_AND_Keycloak_In
 		},
 	}
 
-	output := helm.RenderTemplate(suite.T(), options, suite.chartPath, releaseName, []string{"templates/deployment.yaml"})
+	output := helm.RenderTemplate(s.T(), options, s.chartPath, releaseName, []string{"templates/deployment.yaml"})
 	var deployment appv1.Deployment
-	helm.UnmarshalK8SYaml(suite.T(), output, &deployment)
+	helm.UnmarshalK8SYaml(s.T(), output, &deployment)
 
 	// Find projected volume trusted-certs and check if keycloak cert is mounted
 	found := false
@@ -188,10 +188,10 @@ func (suite *PlatformChartTemplateSuite) Test_Playground_Enabled_AND_Keycloak_In
 			}
 		}
 	}
-	suite.Require().False(found)
+	s.Require().False(found)
 }
 
-func (suite *PlatformChartTemplateSuite) Test_Mode_Core_No_Kas_Volumes_Mounted() {
+func (s *PlatformChartTemplateSuite) Test_Mode_Core_No_Kas_Volumes_Mounted() {
 	releaseName := "basic"
 
 	namespaceName := "opentdf-" + strings.ToLower(random.UniqueId())
@@ -204,9 +204,9 @@ func (suite *PlatformChartTemplateSuite) Test_Mode_Core_No_Kas_Volumes_Mounted()
 		},
 	}
 
-	output := helm.RenderTemplate(suite.T(), options, suite.chartPath, releaseName, []string{"templates/deployment.yaml"})
+	output := helm.RenderTemplate(s.T(), options, s.chartPath, releaseName, []string{"templates/deployment.yaml"})
 	var deployment appv1.Deployment
-	helm.UnmarshalK8SYaml(suite.T(), output, &deployment)
+	helm.UnmarshalK8SYaml(s.T(), output, &deployment)
 
 	// Find projected volume trusted-certs and check if keycloak cert is mounted
 	volumeFound := false
@@ -217,7 +217,7 @@ func (suite *PlatformChartTemplateSuite) Test_Mode_Core_No_Kas_Volumes_Mounted()
 			}
 		}
 	}
-	suite.Require().False(volumeFound)
+	s.Require().False(volumeFound)
 
 	volumeMountFound := false
 	for _, container := range deployment.Spec.Template.Spec.Containers {
@@ -227,10 +227,10 @@ func (suite *PlatformChartTemplateSuite) Test_Mode_Core_No_Kas_Volumes_Mounted()
 			}
 		}
 	}
-	suite.Require().False(volumeMountFound)
+	s.Require().False(volumeMountFound)
 }
 
-func (suite *PlatformChartTemplateSuite) Test_Mode_Core_And_Kas_Volumes_Mounted() {
+func (s *PlatformChartTemplateSuite) Test_Mode_Core_And_Kas_Volumes_Mounted() {
 	releaseName := "basic"
 
 	namespaceName := "opentdf-" + strings.ToLower(random.UniqueId())
@@ -243,9 +243,9 @@ func (suite *PlatformChartTemplateSuite) Test_Mode_Core_And_Kas_Volumes_Mounted(
 		},
 	}
 
-	output := helm.RenderTemplate(suite.T(), options, suite.chartPath, releaseName, []string{"templates/deployment.yaml"})
+	output := helm.RenderTemplate(s.T(), options, s.chartPath, releaseName, []string{"templates/deployment.yaml"})
 	var deployment appv1.Deployment
-	helm.UnmarshalK8SYaml(suite.T(), output, &deployment)
+	helm.UnmarshalK8SYaml(s.T(), output, &deployment)
 
 	// Find projected volume trusted-certs and check if keycloak cert is mounted
 	volumeFound := false
@@ -256,7 +256,7 @@ func (suite *PlatformChartTemplateSuite) Test_Mode_Core_And_Kas_Volumes_Mounted(
 			}
 		}
 	}
-	suite.Require().True(volumeFound)
+	s.Require().True(volumeFound)
 
 	volumeMountFound := false
 	for _, container := range deployment.Spec.Template.Spec.Containers {
@@ -266,10 +266,10 @@ func (suite *PlatformChartTemplateSuite) Test_Mode_Core_And_Kas_Volumes_Mounted(
 			}
 		}
 	}
-	suite.Require().True(volumeMountFound)
+	s.Require().True(volumeMountFound)
 }
 
-func (suite *PlatformChartTemplateSuite) Test_Mode_All_Kas_Volumes_Mounted() {
+func (s *PlatformChartTemplateSuite) Test_Mode_All_Kas_Volumes_Mounted() {
 	releaseName := "basic"
 
 	namespaceName := "opentdf-" + strings.ToLower(random.UniqueId())
@@ -282,9 +282,9 @@ func (suite *PlatformChartTemplateSuite) Test_Mode_All_Kas_Volumes_Mounted() {
 		},
 	}
 
-	output := helm.RenderTemplate(suite.T(), options, suite.chartPath, releaseName, []string{"templates/deployment.yaml"})
+	output := helm.RenderTemplate(s.T(), options, s.chartPath, releaseName, []string{"templates/deployment.yaml"})
 	var deployment appv1.Deployment
-	helm.UnmarshalK8SYaml(suite.T(), output, &deployment)
+	helm.UnmarshalK8SYaml(s.T(), output, &deployment)
 
 	// Find projected volume trusted-certs and check if keycloak cert is mounted
 	volumeFound := false
@@ -295,7 +295,7 @@ func (suite *PlatformChartTemplateSuite) Test_Mode_All_Kas_Volumes_Mounted() {
 			}
 		}
 	}
-	suite.Require().True(volumeFound)
+	s.Require().True(volumeFound)
 
 	volumeMountFound := false
 	for _, container := range deployment.Spec.Template.Spec.Containers {
@@ -305,10 +305,10 @@ func (suite *PlatformChartTemplateSuite) Test_Mode_All_Kas_Volumes_Mounted() {
 			}
 		}
 	}
-	suite.Require().True(volumeMountFound)
+	s.Require().True(volumeMountFound)
 }
 
-func (suite *PlatformChartTemplateSuite) Test_Mode_Kas_Expect_Volumes_Mounted() {
+func (s *PlatformChartTemplateSuite) Test_Mode_Kas_Expect_Volumes_Mounted() {
 	releaseName := "basic"
 
 	namespaceName := "opentdf-" + strings.ToLower(random.UniqueId())
@@ -324,9 +324,9 @@ func (suite *PlatformChartTemplateSuite) Test_Mode_Kas_Expect_Volumes_Mounted() 
 		},
 	}
 
-	output := helm.RenderTemplate(suite.T(), options, suite.chartPath, releaseName, []string{"templates/deployment.yaml"})
+	output := helm.RenderTemplate(s.T(), options, s.chartPath, releaseName, []string{"templates/deployment.yaml"})
 	var deployment appv1.Deployment
-	helm.UnmarshalK8SYaml(suite.T(), output, &deployment)
+	helm.UnmarshalK8SYaml(s.T(), output, &deployment)
 
 	// Find projected volume trusted-certs and check if keycloak cert is mounted
 	volumeFound := false
@@ -337,7 +337,7 @@ func (suite *PlatformChartTemplateSuite) Test_Mode_Kas_Expect_Volumes_Mounted() 
 			}
 		}
 	}
-	suite.Require().True(volumeFound)
+	s.Require().True(volumeFound)
 
 	volumeMountFound := false
 	for _, container := range deployment.Spec.Template.Spec.Containers {
@@ -347,10 +347,10 @@ func (suite *PlatformChartTemplateSuite) Test_Mode_Kas_Expect_Volumes_Mounted() 
 			}
 		}
 	}
-	suite.Require().True(volumeMountFound)
+	s.Require().True(volumeMountFound)
 }
 
-func (suite *PlatformChartTemplateSuite) Test_Trusted_Cert_Volume_Exists_When_Playground_True() {
+func (s *PlatformChartTemplateSuite) Test_Trusted_Cert_Volume_Exists_When_Playground_True() {
 	releaseName := "basic"
 
 	namespaceName := "opentdf-" + strings.ToLower(random.UniqueId())
@@ -363,9 +363,9 @@ func (suite *PlatformChartTemplateSuite) Test_Trusted_Cert_Volume_Exists_When_Pl
 		},
 	}
 
-	output := helm.RenderTemplate(suite.T(), options, suite.chartPath, releaseName, []string{"templates/deployment.yaml"})
+	output := helm.RenderTemplate(s.T(), options, s.chartPath, releaseName, []string{"templates/deployment.yaml"})
 	var deployment appv1.Deployment
-	helm.UnmarshalK8SYaml(suite.T(), output, &deployment)
+	helm.UnmarshalK8SYaml(s.T(), output, &deployment)
 
 	// Find projected volume trusted-certs and check if keycloak cert is mounted
 	volumeFound := false
@@ -374,7 +374,7 @@ func (suite *PlatformChartTemplateSuite) Test_Trusted_Cert_Volume_Exists_When_Pl
 			volumeFound = true
 		}
 	}
-	suite.Require().True(volumeFound)
+	s.Require().True(volumeFound)
 
 	volumeMountFound := false
 	for _, container := range deployment.Spec.Template.Spec.Containers {
@@ -384,10 +384,10 @@ func (suite *PlatformChartTemplateSuite) Test_Trusted_Cert_Volume_Exists_When_Pl
 			}
 		}
 	}
-	suite.Require().True(volumeMountFound)
+	s.Require().True(volumeMountFound)
 }
 
-func (suite *PlatformChartTemplateSuite) Test_Trusted_Cert_Volume_Exists_When_AdditionalTrustedCertsDefined() {
+func (s *PlatformChartTemplateSuite) Test_Trusted_Cert_Volume_Exists_When_AdditionalTrustedCertsDefined() {
 	releaseName := "basic"
 
 	namespaceName := "opentdf-" + strings.ToLower(random.UniqueId())
@@ -400,9 +400,9 @@ func (suite *PlatformChartTemplateSuite) Test_Trusted_Cert_Volume_Exists_When_Ad
 		},
 	}
 
-	output := helm.RenderTemplate(suite.T(), options, suite.chartPath, releaseName, []string{"templates/deployment.yaml"})
+	output := helm.RenderTemplate(s.T(), options, s.chartPath, releaseName, []string{"templates/deployment.yaml"})
 	var deployment appv1.Deployment
-	helm.UnmarshalK8SYaml(suite.T(), output, &deployment)
+	helm.UnmarshalK8SYaml(s.T(), output, &deployment)
 
 	// Find projected volume trusted-certs and check if keycloak cert is mounted
 	volumeFound := false
@@ -411,7 +411,7 @@ func (suite *PlatformChartTemplateSuite) Test_Trusted_Cert_Volume_Exists_When_Ad
 			volumeFound = true
 		}
 	}
-	suite.Require().True(volumeFound)
+	s.Require().True(volumeFound)
 
 	volumeMountFound := false
 	for _, container := range deployment.Spec.Template.Spec.Containers {
@@ -421,10 +421,10 @@ func (suite *PlatformChartTemplateSuite) Test_Trusted_Cert_Volume_Exists_When_Ad
 			}
 		}
 	}
-	suite.Require().True(volumeMountFound)
+	s.Require().True(volumeMountFound)
 }
 
-func (suite *PlatformChartTemplateSuite) Test_Trusted_Cert_Volume_Does_Not_Exist_When_AdditionalTrustedCertsDefined_OR_Playground_Not_Defined() {
+func (s *PlatformChartTemplateSuite) Test_Trusted_Cert_Volume_Does_Not_Exist_When_AdditionalTrustedCertsDefined_OR_Playground_Not_Defined() {
 	releaseName := "basic"
 
 	namespaceName := "opentdf-" + strings.ToLower(random.UniqueId())
@@ -436,9 +436,9 @@ func (suite *PlatformChartTemplateSuite) Test_Trusted_Cert_Volume_Does_Not_Exist
 		},
 	}
 
-	output := helm.RenderTemplate(suite.T(), options, suite.chartPath, releaseName, []string{"templates/deployment.yaml"})
+	output := helm.RenderTemplate(s.T(), options, s.chartPath, releaseName, []string{"templates/deployment.yaml"})
 	var deployment appv1.Deployment
-	helm.UnmarshalK8SYaml(suite.T(), output, &deployment)
+	helm.UnmarshalK8SYaml(s.T(), output, &deployment)
 
 	// Find projected volume trusted-certs and check if keycloak cert is mounted
 	volumeFound := false
@@ -447,7 +447,7 @@ func (suite *PlatformChartTemplateSuite) Test_Trusted_Cert_Volume_Does_Not_Exist
 			volumeFound = true
 		}
 	}
-	suite.Require().False(volumeFound)
+	s.Require().False(volumeFound)
 
 	volumeMountFound := false
 	for _, container := range deployment.Spec.Template.Spec.Containers {
@@ -457,10 +457,10 @@ func (suite *PlatformChartTemplateSuite) Test_Trusted_Cert_Volume_Does_Not_Exist
 			}
 		}
 	}
-	suite.Require().False(volumeMountFound)
+	s.Require().False(volumeMountFound)
 }
 
-func (suite *PlatformChartTemplateSuite) Test_Custom_Volume_Templates_Merged() {
+func (s *PlatformChartTemplateSuite) Test_Custom_Volume_Templates_Merged() {
 	releaseName := "basic"
 
 	namespaceName := "opentdf-" + strings.ToLower(random.UniqueId())
@@ -473,9 +473,9 @@ func (suite *PlatformChartTemplateSuite) Test_Custom_Volume_Templates_Merged() {
 		},
 	}
 
-	output := helm.RenderTemplate(suite.T(), options, suite.chartPath, releaseName, []string{"templates/deployment.yaml"})
+	output := helm.RenderTemplate(s.T(), options, s.chartPath, releaseName, []string{"templates/deployment.yaml"})
 	var deployment appv1.Deployment
-	helm.UnmarshalK8SYaml(suite.T(), output, &deployment)
+	helm.UnmarshalK8SYaml(s.T(), output, &deployment)
 
 	volumeFound := false
 	for _, volume := range deployment.Spec.Template.Spec.Volumes {
@@ -483,7 +483,7 @@ func (suite *PlatformChartTemplateSuite) Test_Custom_Volume_Templates_Merged() {
 			volumeFound = true
 		}
 	}
-	suite.Require().True(volumeFound)
+	s.Require().True(volumeFound)
 
 	volumeMountFound := false
 	for _, container := range deployment.Spec.Template.Spec.Containers {
@@ -493,10 +493,10 @@ func (suite *PlatformChartTemplateSuite) Test_Custom_Volume_Templates_Merged() {
 			}
 		}
 	}
-	suite.Require().True(volumeMountFound)
+	s.Require().True(volumeMountFound)
 }
 
-func (suite *PlatformChartTemplateSuite) Test_Custom_Config_Template_Services_Merged() {
+func (s *PlatformChartTemplateSuite) Test_Custom_Config_Template_Services_Merged() {
 	releaseName := "basic"
 
 	namespaceName := "opentdf-" + strings.ToLower(random.UniqueId())
@@ -508,24 +508,132 @@ func (suite *PlatformChartTemplateSuite) Test_Custom_Config_Template_Services_Me
 		},
 	}
 
-	output := helm.RenderTemplate(suite.T(), options, suite.chartPath, releaseName, []string{"templates/config.yaml"})
+	output := helm.RenderTemplate(s.T(), options, s.chartPath, releaseName, []string{"templates/config.yaml"})
 	var cm corev1.ConfigMap
-	helm.UnmarshalK8SYaml(suite.T(), output, &cm)
+	helm.UnmarshalK8SYaml(s.T(), output, &cm)
 
 	var config map[string]interface{}
-	suite.Suite.Require().NoError(yaml.Unmarshal([]byte(cm.Data["opentdf.yaml"]), &config))
+	s.Require().NoError(yaml.Unmarshal([]byte(cm.Data["opentdf.yaml"]), &config))
 
-	suite.Require().Equal(releaseName+"-platform", cm.Name)
+	s.Require().Equal(releaseName+"-platform", cm.Name)
 
 	testServiceKeyFound := false
-	for key, _ := range config {
+	for key := range config {
 		if key == "services" {
-			for sKey, _ := range config[key].(map[string]interface{}) {
+			for sKey := range config[key].(map[string]interface{}) {
 				if sKey == "testService" {
 					testServiceKeyFound = true
 				}
 			}
 		}
 	}
-	suite.Require().True(testServiceKeyFound)
+	s.Require().True(testServiceKeyFound)
+}
+
+func (s *PlatformChartTemplateSuite) Test_TLS_Enabled_Expect_HTTP2_AppProtocol() {
+	releaseName := "basic"
+
+	namespaceName := "opentdf-" + strings.ToLower(random.UniqueId())
+
+	options := &helm.Options{
+		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
+		SetValues: map[string]string{
+			"server.tls.enabled": "true",
+		},
+	}
+
+	output := helm.RenderTemplate(s.T(), options, s.chartPath, releaseName, []string{"templates/service.yaml"})
+	var svc corev1.Service
+	helm.UnmarshalK8SYaml(s.T(), output, &svc)
+
+	for _, port := range svc.Spec.Ports {
+		s.Require().Equal("http2", *port.AppProtocol)
+	}
+}
+
+func (s *PlatformChartTemplateSuite) Test_TLS_Disabled_Generic_K8S_Expect_K8S_H2C_AppProtocol() {
+	releaseName := "basic"
+
+	namespaceName := "opentdf-" + strings.ToLower(random.UniqueId())
+
+	options := &helm.Options{
+		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
+	}
+
+	output := helm.RenderTemplate(s.T(), options, s.chartPath, releaseName, []string{"templates/service.yaml"})
+	var svc corev1.Service
+	helm.UnmarshalK8SYaml(s.T(), output, &svc)
+
+	for _, port := range svc.Spec.Ports {
+		s.Require().Equal("kubernetes.io/h2c", *port.AppProtocol)
+	}
+}
+
+func (s *PlatformChartTemplateSuite) Test_TLS_Disabled_Openshift_Expect_H2C_AppProtocol() {
+	releaseName := "basic"
+
+	namespaceName := "opentdf-" + strings.ToLower(random.UniqueId())
+
+	options := &helm.Options{
+		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
+	}
+
+	output := helm.RenderTemplate(s.T(), options, s.chartPath, releaseName, []string{"templates/service.yaml"}, "--api-versions", "security.openshift.io/v1/SecurityContextConstraints")
+	var svc corev1.Service
+	helm.UnmarshalK8SYaml(s.T(), output, &svc)
+
+	for _, port := range svc.Spec.Ports {
+		s.Require().Equal("h2c", *port.AppProtocol)
+	}
+}
+
+func (s *PlatformChartTemplateSuite) Test_DB_Required_Expect_EnvVars_Set() {
+	releaseName := "basic"
+
+	namespaceName := "opentdf-" + strings.ToLower(random.UniqueId())
+
+	options := &helm.Options{
+		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
+	}
+
+	output := helm.RenderTemplate(s.T(), options, s.chartPath, releaseName, []string{"templates/deployment.yaml"})
+	var deployment appv1.Deployment
+	helm.UnmarshalK8SYaml(s.T(), output, &deployment)
+
+	envVarFound := false
+	for _, container := range deployment.Spec.Template.Spec.Containers {
+		for _, envVar := range container.Env {
+			if envVar.Name == "OPENTDF_DB_PASSWORD" {
+				envVarFound = true
+			}
+		}
+	}
+	s.Require().True(envVarFound)
+}
+
+func (s *PlatformChartTemplateSuite) Test_DB_Not_Required_Expect_EnvVars_Not_Set() {
+	releaseName := "basic"
+
+	namespaceName := "opentdf-" + strings.ToLower(random.UniqueId())
+
+	options := &helm.Options{
+		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
+		SetValues: map[string]string{
+			"db.required": "false",
+		},
+	}
+
+	output := helm.RenderTemplate(s.T(), options, s.chartPath, releaseName, []string{"templates/deployment.yaml"})
+	var deployment appv1.Deployment
+	helm.UnmarshalK8SYaml(s.T(), output, &deployment)
+
+	envVarFound := false
+	for _, container := range deployment.Spec.Template.Spec.Containers {
+		for _, envVar := range container.Env {
+			if envVar.Name == "OPENTDF_DB_PASSWORD" {
+				envVarFound = true
+			}
+		}
+	}
+	s.Require().False(envVarFound)
 }

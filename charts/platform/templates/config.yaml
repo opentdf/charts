@@ -11,9 +11,11 @@ data:
     dev_mode: {{ .Values.playground }}
     logger: 
       {{- .Values.logger | toYaml | nindent 6 }}
+    {{- if .Values.db.required }}
     db:
       {{- omit .Values.db "password" | toYaml | nindent 6 }}
       password:
+    {{- end }}
     mode: {{ .Values.mode | quote }}
     sdk_config:
       endpoint: {{ .Values.sdk_config.endpoint | quote }}

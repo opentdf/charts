@@ -248,6 +248,7 @@ realms:
 | db.password.secret.key | string | `"password"` | The key in the secret containing the database user password |
 | db.password.secret.name | string | `"opentdf-db-credentials"` | The kubernetes secret containing the database user password |
 | db.port | int | `5432` | The database port |
+| db.required | bool | `true` | If database connection info is required for the service (default: true) |
 | db.sslmode | string | `"prefer"` | The database ssl mode ( disable, prefer, require, verify-ca, verify-full ) |
 | db.user | string | `"opentdf"` | The database user |
 | envFrom | list | `[]` | Environment variables from a configmap or secret  |

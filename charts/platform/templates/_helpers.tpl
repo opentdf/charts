@@ -125,3 +125,21 @@ This takes an array of three values:
 {{- $tpl := fromYaml (include (index . 2) $top) | default (dict ) -}}
 {{- toYaml (merge $overrides $tpl) -}}
 {{- end -}}
+
+{{- define "isOpenshift" }}
+{{- if .Capabilities.APIVersions.Has "security.openshift.io/v1/SecurityContextConstraints" -}}
+{{- true -}}
+{{- end -}}
+{{- end -}}
+
+{{- define "determine.appProtocol" -}}
+{{- if .Values.server.tls.enabled -}}
+http2
+{{- else -}}
+{{- if (include "isOpenshift" .) -}}
+h2c
+{{- else -}}
+kubernetes.io/h2c
+{{- end -}}
+{{- end -}}
+{{- end -}}
