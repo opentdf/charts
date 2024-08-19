@@ -68,11 +68,13 @@ spec:
           env:
           - name: SSL_CERT_DIR
             value: '/etc/ssl/certs:/etc/ssl/certs/platform'
+          {{- if .Values.db.required}}
           - name: {{include "platform.envVarPrefix" .}}_DB_PASSWORD
             valueFrom:
               secretKeyRef:
                 name: {{ .Values.db.password.secret.name }}
                 key: {{ .Values.db.password.secret.key  }}
+          {{- end }}
           {{- if and .Values.sdk_config.existingSecret.name .Values.sdk_config.existingSecret.key }}
           - name: {{include "platform.envVarPrefix" .}}_SDK_CONFIG_CLIENTSECRET
             valueFrom:

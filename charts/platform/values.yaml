@@ -171,6 +171,8 @@ logger:
   output: stdout
 
 db:
+  # -- If database connection info is required for the service (default: true)
+  required: true
   # --  The database host
   host: platform-db
   # -- The database port
