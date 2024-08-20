@@ -1,5 +1,25 @@
 # Changelog
 
+## [0.7.0](https://github.com/opentdf/charts/compare/platform-0.6.2...platform-v0.7.0) (2024-08-20)
+
+
+### Features
+
+* add ability to merge custom volumes and volumeMount templates ([0666d4f](https://github.com/opentdf/charts/commit/0666d4f8e250cf1b002c77beda846aed51e9b54e))
+* platform configuration template for child charts ([#76](https://github.com/opentdf/charts/issues/76)) ([02f8839](https://github.com/opentdf/charts/commit/02f8839076ba7c2eb48e049af160488bb5333ce0))
+* platform mode and global sdk configuration support ([#73](https://github.com/opentdf/charts/issues/73)) ([0666d4f](https://github.com/opentdf/charts/commit/0666d4f8e250cf1b002c77beda846aed51e9b54e))
+
+
+### Bug Fixes
+
+* add auth skew configuration ([0666d4f](https://github.com/opentdf/charts/commit/0666d4f8e250cf1b002c77beda846aed51e9b54e))
+* add optional required field for db to drive db configuration ([#78](https://github.com/opentdf/charts/issues/78)) ([81f64ca](https://github.com/opentdf/charts/commit/81f64ca04c6b322a3b2cb3132487c1969a3f0a29))
+* correct h2c service appProtocol ([#77](https://github.com/opentdf/charts/issues/77)) ([25a1ae8](https://github.com/opentdf/charts/commit/25a1ae862937707fb42a28d037b97849a575e914))
+* support openshift compatibility for service appProtocol ([81f64ca](https://github.com/opentdf/charts/commit/81f64ca04c6b322a3b2cb3132487c1969a3f0a29))
+* trusted-cert volume and mount defined when not expected ([#75](https://github.com/opentdf/charts/issues/75)) ([73cde0e](https://github.com/opentdf/charts/commit/73cde0e2dbecb51ff426c396f2daf7ef071f4834))
+* upgrade keycloak chart to 22.1.1 ([0666d4f](https://github.com/opentdf/charts/commit/0666d4f8e250cf1b002c77beda846aed51e9b54e))
+* upgrade postgresql chart to 15.5.21 ([0666d4f](https://github.com/opentdf/charts/commit/0666d4f8e250cf1b002c77beda846aed51e9b54e))
+
 ## [0.6.2](https://github.com/opentdf/charts/compare/platform-0.6.1...platform-v0.6.2) (2024-07-25)
 
 
