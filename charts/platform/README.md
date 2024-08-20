@@ -1,6 +1,6 @@
 # platform
 
-![Version: 0.6.2](https://img.shields.io/badge/Version-0.6.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: nightly](https://img.shields.io/badge/AppVersion-nightly-informational?style=flat-square)
+![Version: 0.7.0](https://img.shields.io/badge/Version-0.7.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: nightly](https://img.shields.io/badge/AppVersion-nightly-informational?style=flat-square)
 
 A Helm Chart for OpenTDF Platform
 
@@ -145,8 +145,9 @@ Download the [keycloak_data.yaml](https://raw.githubusercontent.com/opentdf/plat
 | image.tag | string | `""` | Overrides the image tag whose default is the chart appVersion. |
 | imagePullSecrets | list | `[]` | The image pull secrets to use |
 | ingress.annotations | object | `{}` | Extra Ingress annotations |
-| ingress.className | string | `""` | Ingress class name if required |
-| ingress.enabled | bool | `false` | Enable Ingress |
+| ingress.className | string | `"gce-internal"` | Ingress class name if required |
+| ingress.defaultBackend.enabled | bool | `true` |  |
+| ingress.enabled | bool | `true` | Enable Ingress |
 | ingress.hosts | list | `[{"host":"chart-example.local","paths":[{"path":"/","pathType":"ImplementationSpecific"}]}]` | List of hosts for the ingress |
 | ingress.tls | list | `[]` | List of tls hosts |
 | keycloak.auth.adminUser | string | `"admin"` |  |

@@ -74,9 +74,9 @@ service:
 
 ingress:
   # -- Enable Ingress
-  enabled: false
+  enabled: true
   # -- Ingress class name if required
-  className: ""
+  className: "gce-internal"
   # -- Extra Ingress annotations
   annotations:
     {}
@@ -93,6 +93,8 @@ ingress:
   #  - secretName: chart-example-tls
   #    hosts:
   #      - chart-example.local
+  defaultBackend:
+    enabled: true
 
 # -- Resources to allocate to the container
 resources:
