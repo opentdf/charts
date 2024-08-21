@@ -104,7 +104,7 @@ Download the [keycloak_data.yaml](https://raw.githubusercontent.com/opentdf/plat
   ```sh
     docker run \
          -v ./kc-config.yaml:/home/nonroot/.opentdf/kc-config.yaml \
-         -it registry.opentdf.io/platform:nightly provision keycloak-from-config -f /home/nonroot/.opentdf/kc-config.yaml -e https://kc-nightly.apps.dsp.shp.virtru.us -u admin -p keycloak123
+         -it registry.opentdf.io/platform:nightly provision keycloak -f /home/nonroot/.opentdf/kc-config.yaml -e https://kc-nightly.apps.dsp.shp.virtru.us -u admin -p keycloak123
   ```
 {{ template "chart.homepageLine" . }}
 
