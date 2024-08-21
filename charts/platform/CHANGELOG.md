@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.1](https://github.com/opentdf/charts/compare/platform-0.7.0...platform-v0.7.1) (2024-08-21)
+
+
+### Bug Fixes
+
+* **core:** deprecate keycloak-from-config ([#81](https://github.com/opentdf/charts/issues/81)) ([da5a685](https://github.com/opentdf/charts/commit/da5a6856a0b14fcc6eab5810d4cf5a9518d68abe)), closes [#80](https://github.com/opentdf/charts/issues/80)
+
 ## [0.7.0](https://github.com/opentdf/charts/compare/platform-0.6.2...platform-v0.7.0) (2024-08-20)
 
 
