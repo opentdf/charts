@@ -119,6 +119,14 @@ autoscaling:
   targetCPUUtilizationPercentage: 80
   # targetMemoryUtilizationPercentage: 80
 
+podDisruptionBudget:
+  # -- Enable pod disruption budget
+  enabled: false
+  # -- Maximum number of pods that can be unavailble
+  maxUnavailable: 1
+  # -- Minimum number of pods that must be available
+  minAvailable: 1
+
 # -- Add ability for downstream chart to merge additional volumes
 volumeTemplate: "platform.volumesEmpty.tpl"
 # -- Additional volumes on the output Deployment definition.
