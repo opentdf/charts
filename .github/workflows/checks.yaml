@@ -51,7 +51,6 @@ jobs:
           echo $(ls)
           cd bats
           echo $(ls)
-          exit 1
         working-directory: tests
       - uses: bats-core/bats-action@472edde1138d59aca53ff162fb8d996666d21e4a
       - name: "Install mkcert"
