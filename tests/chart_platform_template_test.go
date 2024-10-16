@@ -1,17 +1,16 @@
 package test
 
 import (
-	"path/filepath"
-	"strings"
-	"testing"
-
 	"github.com/gruntwork-io/terratest/modules/helm"
 	"github.com/gruntwork-io/terratest/modules/k8s"
 	"github.com/gruntwork-io/terratest/modules/random"
 	"github.com/stretchr/testify/suite"
-	"gopkg.in/yaml.v3"
+	yaml3 "gopkg.in/yaml.v3"
 	appv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
+	"path/filepath"
+	"strings"
+	"testing"
 )
 
 type PlatformChartTemplateSuite struct {
@@ -513,7 +512,7 @@ func (s *PlatformChartTemplateSuite) Test_Custom_Config_Template_Services_Merged
 	helm.UnmarshalK8SYaml(s.T(), output, &cm)
 
 	var config map[string]interface{}
-	s.Require().NoError(yaml.Unmarshal([]byte(cm.Data["opentdf.yaml"]), &config))
+	s.Require().NoError(yaml3.Unmarshal([]byte(cm.Data["opentdf.yaml"]), &config))
 
 	s.Require().Equal(releaseName+"-platform", cm.Name)
 
@@ -530,7 +529,7 @@ func (s *PlatformChartTemplateSuite) Test_Custom_Config_Template_Services_Merged
 	s.Require().True(testServiceKeyFound)
 }
 
-func (s *PlatformChartTemplateSuite) Test_TLS_Enabled_Expect_HTTP2_AppProtocol() {
+func (s *PlatformChartTemplateSuite) Test_TLS_Enabled_Expect_HTTPS_AppProtocol() {
 	releaseName := "basic"
 
 	namespaceName := "opentdf-" + strings.ToLower(random.UniqueId())
@@ -547,7 +546,18 @@ func (s *PlatformChartTemplateSuite) Test_TLS_Enabled_Expect_HTTP2_AppProtocol()
 	helm.UnmarshalK8SYaml(s.T(), output, &svc)
 
 	for _, port := range svc.Spec.Ports {
-		s.Require().Equal("http2", *port.AppProtocol)
+		s.Require().Equal("https", *port.AppProtocol)
+	}
+
+	output = helm.RenderTemplate(s.T(), options, s.chartPath, releaseName, []string{"templates/deployment.yaml"})
+	var deployment appv1.Deployment
+	helm.UnmarshalK8SYaml(s.T(), output, &deployment)
+	for _, container := range deployment.Spec.Template.Spec.Containers {
+		for _, port := range container.Ports {
+			s.Require().Equal("https", port.Name)
+		}
+		s.Require().Equal("https", container.ReadinessProbe.HTTPGet.Port.String())
+		s.Require().Equal("https", container.LivenessProbe.HTTPGet.Port.String())
 	}
 }
 
@@ -566,6 +576,17 @@ func (s *PlatformChartTemplateSuite) Test_TLS_Disabled_Generic_K8S_Expect_K8S_H2
 
 	for _, port := range svc.Spec.Ports {
 		s.Require().Equal("kubernetes.io/h2c", *port.AppProtocol)
+	}
+
+	output = helm.RenderTemplate(s.T(), options, s.chartPath, releaseName, []string{"templates/deployment.yaml"})
+	var deployment appv1.Deployment
+	helm.UnmarshalK8SYaml(s.T(), output, &deployment)
+	for _, container := range deployment.Spec.Template.Spec.Containers {
+		for _, port := range container.Ports {
+			s.Require().Equal("http2", port.Name)
+		}
+		s.Require().Equal("http2", container.ReadinessProbe.HTTPGet.Port.String())
+		s.Require().Equal("http2", container.LivenessProbe.HTTPGet.Port.String())
 	}
 }
 
