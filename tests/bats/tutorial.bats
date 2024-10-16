@@ -13,7 +13,7 @@ setup() {
   export WITH_CREDS='--with-client-creds-file ./creds.json'
   export HOST='--host https://platform.opentdf.local'
 
-  export OTDFCTL_CMD="./otdfctl $HOST $WITH_CREDS"
+  export OTDFCTL_CMD="$BATS_TEST_DIRNAME/otdfctl $HOST $WITH_CREDS"
 
 }
 
