@@ -19,7 +19,7 @@ setup() {
 
 @test "List namespaces" {
   # Run the command to list namespaces
-  run otdfctl $HOST $WITH_CREDS policy attributes namespaces list --json
+  run $OTDFCTL_CMD policy attributes namespaces list --json
     
   echo "Command output: $output" # Debugging line
   
