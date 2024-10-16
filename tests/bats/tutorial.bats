@@ -8,7 +8,7 @@ setup() {
   bats_load_library bats-file
   bats_load_library bats-detik/detik.bash
 
-  echo '{"clientId":"opentdf","clientSecret":"secret"}' > client_creds.json
+  echo -n '{"clientId":"opentdf","clientSecret":"secret"}' > client_creds.json
 
   export OTDFCTL_CMD="otdfctl --host https://platform.opentdf.local --with-client-creds-file ./client_creds.json"
 
@@ -16,7 +16,7 @@ setup() {
 
 @test "List namespaces" {
   # Run the command to list namespaces
-  run $OTDFCTL_CMD policy attributes namespaces list  --json
+  run $OTDFCTL_CMD policy attributes namespaces list --json
     
   echo "Command output: $output" # Debugging line
   
@@ -27,7 +27,7 @@ setup() {
 
 @test "Create namespace and verify the output" {
   # Run the command to create a namespace
-  run $OTDFCTL_CMD policy attributes namespaces create --name demo.com  --json
+  run $OTDFCTL_CMD policy attributes namespaces create --name demo.com --json
 
   # Assert that the command was successful
   assert_success
@@ -57,7 +57,7 @@ setup() {
   created_id=$(cat /tmp/created_namespace_id.txt)
 
   # Run the command to list namespaces
-  run $OTDFCTL_CMD policy attributes namespaces list  --json
+  run $OTDFCTL_CMD policy attributes namespaces list --json
 
   # Assert that the command was successful
   assert_success
@@ -76,7 +76,7 @@ setup() {
   namespace_id=$(cat /tmp/created_namespace_id.txt)
 
   # Run the command to get the namespace by ID
-  run $OTDFCTL_CMD policy attributes namespaces get --id=$namespace_id  --json
+  run $OTDFCTL_CMD policy attributes namespaces get --id=$namespace_id --json
 
   # Assert that the command was successful
   assert_success
@@ -97,7 +97,7 @@ setup() {
   namespace_id=$(cat /tmp/created_namespace_id.txt)
 
   # Run the command to create an attribute
-  run $OTDFCTL_CMD policy attributes create --name role -s $namespace_id -r ANY_OF  --json
+  run $OTDFCTL_CMD policy attributes create --name role -s $namespace_id -r ANY_OF --json
 
   # Assert that the command was successful
   assert_success
@@ -132,7 +132,7 @@ setup() {
   attribute_id=$(cat /tmp/created_attribute_id.txt)
 
   # Run the command to create the admin value
-  run $OTDFCTL_CMD policy attributes values create -a $attribute_id --value admin  --json
+  run $OTDFCTL_CMD policy attributes values create -a $attribute_id --value admin --json
 
   # Assert that the command was successful
   assert_success
@@ -167,7 +167,7 @@ setup() {
   attribute_id=$(cat /tmp/created_attribute_id.txt)
 
   # Run the command to create the developer value
-  run $OTDFCTL_CMD policy attributes values create -a $attribute_id --value developer  --json
+  run $OTDFCTL_CMD policy attributes values create -a $attribute_id --value developer --json
 
   # Assert that the command was successful
   assert_success
@@ -202,7 +202,7 @@ setup() {
   attribute_id=$(cat /tmp/created_attribute_id.txt)
 
   # Run the command to create the guest value
-  run $OTDFCTL_CMD policy attributes values create -a $attribute_id --value guest  --json
+  run $OTDFCTL_CMD policy attributes values create -a $attribute_id --value guest --json
 
   # Assert that the command was successful
   assert_success
@@ -257,7 +257,7 @@ setup() {
 
 @test "Create subject condition set and verify the output" {
   # Run the command to create the subject condition set
-  run $OTDFCTL_CMD policy subject-condition-sets create -s '[ { "condition_groups": [ { "conditions": [ { "subject_external_selector_value": ".clientId", "operator": 1, "subject_external_values": [ "opentdf" ] } ], "boolean_operator": 1 } ] } ]'  --json
+  run $OTDFCTL_CMD policy subject-condition-sets create -s '[ { "condition_groups": [ { "conditions": [ { "subject_external_selector_value": ".clientId", "operator": 1, "subject_external_values": [ "opentdf" ] } ], "boolean_operator": 1 } ] } ]' --json
 
   # Assert that the command was successful
   assert_success
@@ -298,7 +298,7 @@ setup() {
   subject_condition_set_id=$(cat /tmp/subject_condition_set_id.txt)
 
   # Run the command to create the subject mapping
-  run $OTDFCTL_CMD policy subject-mappings create --action-standard DECRYPT --attribute-value-id $developer_value_id --subject-condition-set-id $subject_condition_set_id  --json
+  run $OTDFCTL_CMD policy subject-mappings create --action-standard DECRYPT --attribute-value-id $developer_value_id --subject-condition-set-id $subject_condition_set_id --json
 
   # Assert that the command was successful
   assert_success
@@ -437,7 +437,7 @@ setup() {
   subject_condition_set_id=$(cat /tmp/subject_condition_set_id.txt)
 
   # Run the command to create the subject mapping
-  run $OTDFCTL_CMD policy subject-mappings create --action-standard DECRYPT --attribute-value-id $guest_value_id --subject-condition-set-id $subject_condition_set_id  --json
+  run $OTDFCTL_CMD policy subject-mappings create --action-standard DECRYPT --attribute-value-id $guest_value_id --subject-condition-set-id $subject_condition_set_id --json
 
   # Assert that the command was successful
   assert_success
