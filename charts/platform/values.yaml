@@ -254,6 +254,8 @@ server:
     audience: "http://localhost:8080"
     # -- Identity provider issuer
     issuer: http://platform-keycloak/realms/opentdf
+    # -- The oidc client id, leveraged by otdfctl
+    public_client_id: 'opentdf-public'
     policy:
       ## -- Default policy for all requests
       default: #  "role:readonly"
