@@ -16,6 +16,7 @@ setup() {
   export OTDFCTL_CMD="otdfctl $HOST $WITH_CREDS"
 
   run_otdfctl () {
+    echo "$OTDFCTL_CMD $*"
     run bash -c '$OTDFCTL_CMD $*'
   }
 
