@@ -44,8 +44,8 @@ jobs:
             otdfctl/go.sum
       - name: "Build otdfctl"
         run: |
-          mkdir -p $HOME/.local/bin
-          go build -o $HOME/.local/bin/otdfctl .
+          # mkdir -p $HOME/.local/bin
+          go build -o ../tests/bats .
         working-directory: otdfctl
       - uses: bats-core/bats-action@472edde1138d59aca53ff162fb8d996666d21e4a
       - name: "Install mkcert"

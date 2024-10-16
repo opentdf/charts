@@ -2,7 +2,7 @@
 
 # Ensure kubectl is installed
 setup() {
-  export BATS_LIB_PATH="${BATS_LIB_PATH}:/usr/lib"
+  # export BATS_LIB_PATH="${BATS_LIB_PATH}:/usr/lib"
   bats_load_library bats-support
   bats_load_library bats-assert
   bats_load_library bats-file
@@ -13,7 +13,7 @@ setup() {
   export WITH_CREDS='--with-client-creds-file ./creds.json'
   export HOST='--host https://platform.opentdf.local'
 
-  export OTDFCTL_CMD="otdfctl $HOST $WITH_CREDS"
+  export OTDFCTL_CMD="./otdfctl $HOST $WITH_CREDS"
 
 }
 
