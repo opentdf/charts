@@ -35,7 +35,7 @@ setup() {
 
 @test "Create namespace and verify the output" {
   # Run the command to create a namespace
-  run_otdfctl policy attributes namespaces create --name demo.com --json
+  run_otdfctl policy attributes namespaces create --name demo.com  --json
 
   # Assert that the command was successful
   assert_success
