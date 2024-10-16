@@ -123,9 +123,9 @@ podDisruptionBudget:
   # -- Enable pod disruption budget
   enabled: false
   # -- Maximum number of pods that can be unavailble
-  maxUnavailable: 1
+  maxUnavailable:
   # -- Minimum number of pods that must be available
-  minAvailable: 1
+  minAvailable:
 
 # -- Add ability for downstream chart to merge additional volumes
 volumeTemplate: "platform.volumesEmpty.tpl"

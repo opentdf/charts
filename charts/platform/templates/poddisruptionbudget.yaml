@@ -1,6 +1,6 @@
 {{- if and .Values.podDisruptionBudget.enabled}}
 ---
-apiVersion: policy/v1beta1
+apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
   name: {{ include "chart.fullname" . }}-pdb
@@ -15,5 +15,5 @@ spec:
 {{- end }}
   selector:
     matchLabels:
-      app.kubernetes.io/name: {{ include "chart.fullname" . }}
+      {{- include "chart.selectorLabels" . | nindent 6 }}
 {{- end }}
