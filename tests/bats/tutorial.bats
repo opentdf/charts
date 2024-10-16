@@ -8,15 +8,22 @@ setup() {
   bats_load_library bats-file
   bats_load_library bats-detik/detik.bash
 
-  echo -n '{"clientId":"opentdf","clientSecret":"secret"}' > client_creds.json
+  echo -n '{"clientId":"opentdf","clientSecret":"secret"}' > creds.json
 
-  export OTDFCTL_CMD="otdfctl --host https://platform.opentdf.local --with-client-creds-file ./client_creds.json"
+  export WITH_CREDS='--with-client-creds-file ./creds.json'
+  export HOST='--host https://platform.opentdf.local'
+
+  export OTDFCTL_CMD="otdfctl $HOST $WITH_CREDS"
+
+  run_otdfctl () {
+    run bash -c '$OTDFCTL_CMD $*'
+  }
 
 }
 
 @test "List namespaces" {
   # Run the command to list namespaces
-  run $OTDFCTL_CMD policy attributes namespaces list --json
+  run_otdfctl policy attributes namespaces list --json
     
   echo "Command output: $output" # Debugging line
   
@@ -27,7 +34,7 @@ setup() {
 
 @test "Create namespace and verify the output" {
   # Run the command to create a namespace
-  run $OTDFCTL_CMD policy attributes namespaces create --name demo.com --json
+  run_otdfctl policy attributes namespaces create --name demo.com --json
 
   # Assert that the command was successful
   assert_success
@@ -57,7 +64,7 @@ setup() {
   created_id=$(cat /tmp/created_namespace_id.txt)
 
   # Run the command to list namespaces
-  run $OTDFCTL_CMD policy attributes namespaces list --json
+  run_otdfctl policy attributes namespaces list --json
 
   # Assert that the command was successful
   assert_success
@@ -76,7 +83,7 @@ setup() {
   namespace_id=$(cat /tmp/created_namespace_id.txt)
 
   # Run the command to get the namespace by ID
-  run $OTDFCTL_CMD policy attributes namespaces get --id=$namespace_id --json
+  run_otdfctl policy attributes namespaces get --id=$namespace_id --json
 
   # Assert that the command was successful
   assert_success
@@ -97,7 +104,7 @@ setup() {
   namespace_id=$(cat /tmp/created_namespace_id.txt)
 
   # Run the command to create an attribute
-  run $OTDFCTL_CMD policy attributes create --name role -s $namespace_id -r ANY_OF --json
+  run_otdfctl policy attributes create --name role -s $namespace_id -r ANY_OF --json
 
   # Assert that the command was successful
   assert_success
@@ -132,7 +139,7 @@ setup() {
   attribute_id=$(cat /tmp/created_attribute_id.txt)
 
   # Run the command to create the admin value
-  run $OTDFCTL_CMD policy attributes values create -a $attribute_id --value admin --json
+  run_otdfctl policy attributes values create -a $attribute_id --value admin --json
 
   # Assert that the command was successful
   assert_success
@@ -167,7 +174,7 @@ setup() {
   attribute_id=$(cat /tmp/created_attribute_id.txt)
 
   # Run the command to create the developer value
-  run $OTDFCTL_CMD policy attributes values create -a $attribute_id --value developer --json
+  run_otdfctl policy attributes values create -a $attribute_id --value developer --json
 
   # Assert that the command was successful
   assert_success
@@ -202,7 +209,7 @@ setup() {
   attribute_id=$(cat /tmp/created_attribute_id.txt)
 
   # Run the command to create the guest value
-  run $OTDFCTL_CMD policy attributes values create -a $attribute_id --value guest --json
+  run_otdfctl policy attributes values create -a $attribute_id --value guest --json
 
   # Assert that the command was successful
   assert_success
@@ -237,7 +244,7 @@ setup() {
   attribute_id=$(cat /tmp/created_attribute_id.txt)
 
   # Run the command to get the attribute by ID
-  run $OTDFCTL_CMD policy attributes get --id=$attribute_id --tls-no-verify --json
+  run_otdfctl policy attributes get --id=$attribute_id --tls-no-verify --json
 
   # Assert that the command was successful
   assert_success
@@ -257,7 +264,7 @@ setup() {
 
 @test "Create subject condition set and verify the output" {
   # Run the command to create the subject condition set
-  run $OTDFCTL_CMD policy subject-condition-sets create -s '[ { "condition_groups": [ { "conditions": [ { "subject_external_selector_value": ".clientId", "operator": 1, "subject_external_values": [ "opentdf" ] } ], "boolean_operator": 1 } ] } ]' --json
+  run_otdfctl policy subject-condition-sets create -s '[ { "condition_groups": [ { "conditions": [ { "subject_external_selector_value": ".clientId", "operator": 1, "subject_external_values": [ "opentdf" ] } ], "boolean_operator": 1 } ] } ]' --json
 
   # Assert that the command was successful
   assert_success
@@ -298,7 +305,7 @@ setup() {
   subject_condition_set_id=$(cat /tmp/subject_condition_set_id.txt)
 
   # Run the command to create the subject mapping
-  run $OTDFCTL_CMD policy subject-mappings create --action-standard DECRYPT --attribute-value-id $developer_value_id --subject-condition-set-id $subject_condition_set_id --json
+  run_otdfctl policy subject-mappings create --action-standard DECRYPT --attribute-value-id $developer_value_id --subject-condition-set-id $subject_condition_set_id --json
 
   # Assert that the command was successful
   assert_success
@@ -353,7 +360,7 @@ setup() {
 
 @test "Decrypt TDF3 file and verify the output" {
   # Run the command to decrypt the TDF3 file
-  run $OTDFCTL_CMD decrypt --tdf-type tdf3 opentdf-example.tdf
+  run_otdfctl decrypt --tdf-type tdf3 opentdf-example.tdf
 
   # Assert that the command was successful
   assert_success
@@ -364,7 +371,7 @@ setup() {
 
 @test "Decrypt nanoTDF file and verify the output" {
   # Run the command to decrypt the nanoTDF file
-  run $OTDFCTL_CMD decrypt --tdf-type nano opentdf-example.nano.tdf
+  run_otdfctl decrypt --tdf-type nano opentdf-example.nano.tdf
 
   # Assert that the command was successful
   assert_success
@@ -399,7 +406,7 @@ setup() {
 
 @test "Decrypt TDF3 file with attributes and expect failure" {
   # Run the command to decrypt the TDF3 file
-  run $OTDFCTL_CMD decrypt --tdf-type tdf3 opentdf-example.tdf
+  run_otdfctl decrypt --tdf-type tdf3 opentdf-example.tdf
 
   # Assert that the command failed
   assert_failure
@@ -411,7 +418,7 @@ setup() {
 
 @test "Decrypt nanoTDF file with attributes and expect failure" {
   # Run the command to decrypt the nanoTDF file
-  run $OTDFCTL_CMD decrypt --tdf-type nano opentdf-example.nano.tdf
+  run_otdfctl decrypt --tdf-type nano opentdf-example.nano.tdf
 
   # Assert that the command failed
   assert_failure
@@ -437,7 +444,7 @@ setup() {
   subject_condition_set_id=$(cat /tmp/subject_condition_set_id.txt)
 
   # Run the command to create the subject mapping
-  run $OTDFCTL_CMD policy subject-mappings create --action-standard DECRYPT --attribute-value-id $guest_value_id --subject-condition-set-id $subject_condition_set_id --json
+  run_otdfctl policy subject-mappings create --action-standard DECRYPT --attribute-value-id $guest_value_id --subject-condition-set-id $subject_condition_set_id --json
 
   # Assert that the command was successful
   assert_success
@@ -468,7 +475,7 @@ setup() {
 
 @test "Decrypt TDF3 file with new subject mapping and verify the output" {
   # Run the command to decrypt the TDF3 file
-  run $OTDFCTL_CMD decrypt --tdf-type tdf3 opentdf-example.tdf
+  run_otdfctl decrypt --tdf-type tdf3 opentdf-example.tdf
 
   # Assert that the command was successful
   assert_success
@@ -479,7 +486,7 @@ setup() {
 
 @test "Decrypt nanoTDF file with new subject mapping and verify the output" {
   # Run the command to decrypt the nanoTDF file
-  run $OTDFCTL_CMD decrypt --tdf-type nano opentdf-example.nano.tdf
+  run_otdfctl decrypt --tdf-type nano opentdf-example.nano.tdf
 
   # Assert that the command was successful
   assert_success
