@@ -1,6 +1,6 @@
 # platform
 
-![Version: 0.6.2](https://img.shields.io/badge/Version-0.6.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: nightly](https://img.shields.io/badge/AppVersion-nightly-informational?style=flat-square)
+![Version: 0.7.0](https://img.shields.io/badge/Version-0.7.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: nightly](https://img.shields.io/badge/AppVersion-nightly-informational?style=flat-square)
 
 A Helm Chart for OpenTDF Platform
 
@@ -177,6 +177,9 @@ Download the [keycloak_data.yaml](https://raw.githubusercontent.com/opentdf/plat
 | nodeSelector | object | `{}` | Target specific nodes in the cluster |
 | playground | bool | `false` |  |
 | podAnnotations | object | `{}` | Extra annotations to add to the pod |
+| podDisruptionBudget.enabled | bool | `false` | Enable pod disruption budget |
+| podDisruptionBudget.maxUnavailable | string | `nil` | Maximum number of pods that can be unavailble |
+| podDisruptionBudget.minAvailable | string | `nil` | Minimum number of pods that must be available |
 | podLabels | object | `{}` | Extra labels to add to the pod |
 | podSecurityContext | object | `{"runAsNonRoot":true,"seccompProfile":{"type":"RuntimeDefault"}}` | The pod security context (https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod) |
 | postgresql.auth.database | string | `"opentdf"` |  |
@@ -205,6 +208,7 @@ Download the [keycloak_data.yaml](https://raw.githubusercontent.com/opentdf/plat
 | server.auth.policy.csv | string | `nil` |  |
 | server.auth.policy.default | string | `nil` |  |
 | server.auth.policy.map | string | `nil` |  |
+| server.auth.public_client_id | string | `"opentdf-public"` | The oidc client id, leveraged by otdfctl |
 | server.auth.skew | string | `"1m"` | The amount of drift allowed between the server and the client for the Access Token |
 | server.cors.allowcredentials | bool | `true` | Allow credentials |
 | server.cors.allowedheaders | list | `["Accept","Authorization","Content-Type","X-CSRF-Token","X-Request-ID"]` | The allowed request headers |
