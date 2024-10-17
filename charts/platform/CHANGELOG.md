@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.0](https://github.com/opentdf/charts/compare/platform-0.7.1...platform-v0.8.0) (2024-10-17)
+
+
+### Features
+
+* Add pod disruption budget capability ([#87](https://github.com/opentdf/charts/issues/87)) ([549a779](https://github.com/opentdf/charts/commit/549a77962f7913e75cfcffb82a9a2d10c8970695))
+
 ## [0.7.1](https://github.com/opentdf/charts/compare/platform-0.7.0...platform-v0.7.1) (2024-10-16)
 
 
