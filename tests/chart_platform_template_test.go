@@ -7,7 +7,9 @@ import (
 	"github.com/stretchr/testify/suite"
 	yaml3 "gopkg.in/yaml.v3"
 	appv1 "k8s.io/api/apps/v1"
+	policyv1 "k8s.io/api/policy/v1"
 	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/util/intstr"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -657,4 +659,51 @@ func (s *PlatformChartTemplateSuite) Test_DB_Not_Required_Expect_EnvVars_Not_Set
 		}
 	}
 	s.Require().False(envVarFound)
+}
+
+func (s *PlatformChartTemplateSuite) Test_PBD_Not_Enabled() {
+	releaseName := "basic"
+
+	namespaceName := "opentdf-" + strings.ToLower(random.UniqueId())
+
+	options := &helm.Options{
+		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
+		SetValues: map[string]string{
+			"image.tag":                "latest",
+			"sdk_config.client_secret": "test",
+			"podDisruptionBudget.enabled": "false",
+		},
+	}
+
+	_, err := helm.RenderTemplateE(s.T(), options, s.chartPath, releaseName, []string{"templates/poddisruptionbudget.yaml"})
+	s.Require().Error(err)
+	s.Require().ErrorContains(err, "could not find template templates/poddisruptionbudget.yaml in chart")
+}
+
+func (s *PlatformChartTemplateSuite) Test_PBD_Enabled() {
+	releaseName := "basic"
+
+	namespaceName := "opentdf-" + strings.ToLower(random.UniqueId())
+
+	options := &helm.Options{
+		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
+		SetValues: map[string]string{
+			"image.tag":                "latest",
+			"sdk_config.client_secret": "test",
+			"podDisruptionBudget.enabled": "true",
+			"podDisruptionBudget.minAvailable": "1",
+		},
+	}
+
+	output := helm.RenderTemplate(s.T(), options, s.chartPath, releaseName, []string{"templates/poddisruptionbudget.yaml"})
+
+	var pdb policyv1.PodDisruptionBudget
+	helm.UnmarshalK8SYaml(s.T(), output, &pdb)
+
+	s.Require().Equal(pdb.Spec.Selector.MatchLabels["app.kubernetes.io/name"], "platform")
+	s.Require().Equal(pdb.Spec.Selector.MatchLabels["app.kubernetes.io/instance"], releaseName)
+	oneIntStr := intstr.FromInt(1)
+	s.Require().Equal(pdb.Spec.MinAvailable, &oneIntStr)
+	var nilIntOrString *intstr.IntOrString = nil
+	s.Require().Equal(pdb.Spec.MaxUnavailable, nilIntOrString)
 }
