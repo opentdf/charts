@@ -10,9 +10,9 @@ spec:
   type: {{ .Values.service.type }}
   ports:
     - port: {{ .Values.service.port }}
-      targetPort: http2
+      targetPort: {{ include "platform.portName" . }}
       appProtocol:  {{ include "determine.appProtocol" . }}
       protocol: TCP
-      name: http2
+      name: {{ include "platform.portName" . }}
   selector:
     {{- include "chart.selectorLabels" . | nindent 4 }}

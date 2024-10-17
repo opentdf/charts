@@ -47,7 +47,7 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - name: http2
+            - name: {{ include "platform.portName" . }}
               containerPort: {{ .Values.server.port }}
               protocol: TCP
           {{ if not .Values.server.disableHealthChecks }}
@@ -55,12 +55,12 @@ spec:
             httpGet:
               scheme: {{ if .Values.server.tls.enabled }}HTTPS{{ else }}HTTP{{ end }}              
               path: /healthz
-              port: http2
+              port: {{ include "platform.portName" . }}
           readinessProbe:
             httpGet:
               scheme: {{ if .Values.server.tls.enabled }}HTTPS{{ else }}HTTP{{ end }}
               path: /healthz?service=all
-              port: http2
+              port: {{ include "platform.portName" . }}
           {{ end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}

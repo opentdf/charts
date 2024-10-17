@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.7.1](https://github.com/opentdf/charts/compare/platform-0.7.0...platform-v0.7.1) (2024-10-16)
+
+
+### Bug Fixes
+
+* **ci:** Add public_client_id to server.auth config ([#89](https://github.com/opentdf/charts/issues/89)) ([6829c87](https://github.com/opentdf/charts/commit/6829c8783566a955bb76287bdd640a7b2507ebc8))
+* **core:** deprecate keycloak-from-config ([#81](https://github.com/opentdf/charts/issues/81)) ([da5a685](https://github.com/opentdf/charts/commit/da5a6856a0b14fcc6eab5810d4cf5a9518d68abe)), closes [#80](https://github.com/opentdf/charts/issues/80)
+* port naming/app protocol tls.enabled ([#90](https://github.com/opentdf/charts/issues/90)) ([613f67e](https://github.com/opentdf/charts/commit/613f67e860972dc8d27bf0fc6fb55daa89bf8b7a))
+
 ## [0.7.0](https://github.com/opentdf/charts/compare/platform-0.6.2...platform-v0.7.0) (2024-08-20)
 
 

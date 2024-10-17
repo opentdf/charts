@@ -132,9 +132,17 @@ This takes an array of three values:
 {{- end -}}
 {{- end -}}
 
+{{- define "platform.portName" -}}
+{{- if .Values.server.tls.enabled -}}
+https
+{{- else -}}
+http2
+{{- end -}}
+{{- end -}}
+
 {{- define "determine.appProtocol" -}}
 {{- if .Values.server.tls.enabled -}}
-http2
+https
 {{- else -}}
 {{- if (include "isOpenshift" .) -}}
 h2c
