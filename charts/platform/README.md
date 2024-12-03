@@ -1,14 +1,11 @@
 # platform
 
-![Version: 0.7.1](https://img.shields.io/badge/Version-0.7.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: nightly](https://img.shields.io/badge/AppVersion-nightly-informational?style=flat-square)
+![Version: 0.8.0](https://img.shields.io/badge/Version-0.8.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.4.31](https://img.shields.io/badge/AppVersion-v0.4.31-informational?style=flat-square)
 
 A Helm Chart for OpenTDF Platform
 
 > [!WARNING]
 > This chart is currently under active development and breaking changes may occur.
-
-> [!NOTE]
-> Until a stable platform release is available, the current appVersion is set to `nightly`.
 
 ## Requirements
 
