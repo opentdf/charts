@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.1](https://github.com/opentdf/charts/compare/platform-0.8.0...platform-v0.8.1) (2024-12-04)
+
+
+### Bug Fixes
+
+* set appVersion to v0.4.32 ([#92](https://github.com/opentdf/charts/issues/92)) ([f94d5dc](https://github.com/opentdf/charts/commit/f94d5dc64353c14821537ed9761f7e08a2500aeb))
+
 ## [0.8.0](https://github.com/opentdf/charts/compare/platform-0.7.1...platform-v0.8.0) (2024-10-17)
 
 
