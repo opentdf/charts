@@ -51,9 +51,8 @@ jobs:
           skip_upload: true
 
       - name: Generate Index
-        run: helm repo index charts --merge --url https://opentdf.github.io/charts/
-        working-directory: charts
-
+        run: helm repo index charts --url https://opentdf.github.io/charts/ --merge index.yaml 
+        
       - name: Upload Index
         uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea
         with:
