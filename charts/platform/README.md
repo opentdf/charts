@@ -1,6 +1,6 @@
 # platform
 
-![Version: 0.8.0](https://img.shields.io/badge/Version-0.8.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.4.32](https://img.shields.io/badge/AppVersion-v0.4.32-informational?style=flat-square)
+![Version: 0.8.1](https://img.shields.io/badge/Version-0.8.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.4.32](https://img.shields.io/badge/AppVersion-v0.4.32-informational?style=flat-square)
 
 A Helm Chart for OpenTDF Platform
 
@@ -113,7 +113,7 @@ Download the [keycloak_data.yaml](https://raw.githubusercontent.com/opentdf/plat
 | Repository | Name | Version |
 |------------|------|---------|
 | oci://registry-1.docker.io/bitnamicharts | keycloak | 22.1.1 |
-| oci://registry-1.docker.io/bitnamicharts | postgresql | 15.5.21 |
+| oci://registry-1.docker.io/bitnamicharts | postgresql | 16.2.5 |
 
 ## Values
 
