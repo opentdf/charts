@@ -47,7 +47,6 @@ jobs:
         uses: helm/chart-releaser-action@d1e09fd16821c091b45aa754f65bae4dd675d425
         env:
           CR_TOKEN: "${{ steps.app-token.outputs.token }}"
-          CR_RELEASE_NAME_TEMPLATE: "{{ .Name }}: {{ .Version }}"
         with:
           skip_upload: true
 
