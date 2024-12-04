@@ -44,9 +44,65 @@ jobs:
           helm version
 
       - name: Run chart-releaser
-        uses: helm/chart-releaser-action@a917fd15b20e8b64b94d9158ad54cd6345335584
+        uses: helm/chart-releaser-action@d1e09fd16821c091b45aa754f65bae4dd675d425
         env:
           CR_TOKEN: "${{ steps.app-token.outputs.token }}"
+          CR_RELEASE_NAME_TEMPLATE: "{{ .Name }}: {{ .Version }}"
         with:
-          skip_existing: true
-          pages_branch: main
+          skip_upload: true
+
+      - name: Generate Index
+        run: helm repo index charts --merge --url https://opentdf.github.io/charts/
+        working-directory: charts
+
+      - name: Upload Index
+        uses: actions/github-script@0.9.0
+        with:
+          github-token: ${{ steps.app-token.outputs.token }}
+          script: |
+            const fs = require('fs');
+            
+            try {
+              // Read the index.yaml file
+              const content = fs.readFileSync('index.yaml', 'utf8');
+              
+              // Get the current commit SHA to use as the base
+              const { data: ref } = await github.rest.git.getRef({
+                owner: context.repo.owner,
+                repo: context.repo.name,
+                ref: 'heads/main'
+              });
+              
+              // Get the current file (if it exists) to get its SHA
+              let fileSha;
+              try {
+                const { data: file } = await github.rest.repos.getContent({
+                  owner: context.repo.owner,
+                  repo: context.repo.name,
+                  path: 'index.yaml'
+                });
+                fileSha = file.sha;
+              } catch (e) {
+                // File doesn't exist yet, that's ok
+                console.log('No existing index.yaml found');
+              }
+              
+              // Create or update the file
+              await github.rest.repos.createOrUpdateFileContents({
+                owner: context.repo.owner,
+                repo: context.repo.name,
+                path: 'index.yaml',
+                message: 'Update index.yaml',
+                content: Buffer.from(content).toString('base64'),
+                sha: fileSha,
+                branch: 'main'
+              });
+              
+              console.log('Successfully updated index.yaml');
+              
+            } catch (error) {
+              console.log('Error:', error);
+              core.setFailed(error.message);
+            }
+
+        
