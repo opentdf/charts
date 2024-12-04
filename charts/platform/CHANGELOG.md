@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.2](https://github.com/opentdf/charts/compare/platform-0.8.1...platform-v0.8.2) (2024-12-04)
+
+
+### Bug Fixes
+
+* update postgres chart version 16.2.5 ([#95](https://github.com/opentdf/charts/issues/95)) ([768c407](https://github.com/opentdf/charts/commit/768c4072f215733ef57bb68e2ae617666a9cfeaf))
+
 ## [0.8.1](https://github.com/opentdf/charts/compare/platform-0.8.0...platform-v0.8.1) (2024-12-04)
 
 
