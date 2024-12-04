@@ -1,5 +1,69 @@
 # Changelog
 
+## [0.4.0](https://github.com/opentdf/charts/compare/platform-v0.8.2...platform-v0.4.0) (2024-12-04)
+
+
+### ⚠ BREAKING CHANGES
+
+* yaml config for kas ([#52](https://github.com/opentdf/charts/issues/52))
+
+### Features
+
+* ability to add extra service definitions ([#62](https://github.com/opentdf/charts/issues/62)) ([e35695e](https://github.com/opentdf/charts/commit/e35695e2137446faf5a07cb5312d121a9f389ab2))
+* ability to load envFrom a configmap or secret ([e35695e](https://github.com/opentdf/charts/commit/e35695e2137446faf5a07cb5312d121a9f389ab2))
+* ability to set extra environment variables ([e35695e](https://github.com/opentdf/charts/commit/e35695e2137446faf5a07cb5312d121a9f389ab2))
+* add ability to merge custom volumes and volumeMount templates ([0666d4f](https://github.com/opentdf/charts/commit/0666d4f8e250cf1b002c77beda846aed51e9b54e))
+* add cors configuration support ([#60](https://github.com/opentdf/charts/issues/60)) ([f175e88](https://github.com/opentdf/charts/commit/f175e88b04e7846e343ec0d460c2cf365af47dcd))
+* add entity resolution service to values ([#41](https://github.com/opentdf/charts/issues/41)) ([3eb303d](https://github.com/opentdf/charts/commit/3eb303d2a9e372ac835679e56b393f5c8ff0bf6b))
+* Add pod disruption budget capability ([#87](https://github.com/opentdf/charts/issues/87)) ([549a779](https://github.com/opentdf/charts/commit/549a77962f7913e75cfcffb82a9a2d10c8970695))
+* **common:** add templating for hostaliases ([#66](https://github.com/opentdf/charts/issues/66)) ([efc773c](https://github.com/opentdf/charts/commit/efc773cb38f6a5db6f6fff083245dd2aafa0a3cf))
+* initial platform helm chart setup ([#1](https://github.com/opentdf/charts/issues/1)) ([a3eba3f](https://github.com/opentdf/charts/commit/a3eba3fa508a7d0c7b39aa0845c997bbefa3b608))
+* platform configuration template for child charts ([#76](https://github.com/opentdf/charts/issues/76)) ([02f8839](https://github.com/opentdf/charts/commit/02f8839076ba7c2eb48e049af160488bb5333ce0))
+* platform mode and global sdk configuration support ([#73](https://github.com/opentdf/charts/issues/73)) ([0666d4f](https://github.com/opentdf/charts/commit/0666d4f8e250cf1b002c77beda846aed51e9b54e))
+* **platform:** add headless service ([#55](https://github.com/opentdf/charts/issues/55)) ([c7c8611](https://github.com/opentdf/charts/commit/c7c8611168fb4185bce5015d3c3d089688fff57a))
+* **platform:** additional certs projected volumes ([#57](https://github.com/opentdf/charts/issues/57)) ([d1205b4](https://github.com/opentdf/charts/commit/d1205b4b77602587fd28c3ce69734ce49a8c7152))
+* **platform:** propagate playground setting to platform ([#56](https://github.com/opentdf/charts/issues/56)) ([2aaa497](https://github.com/opentdf/charts/commit/2aaa49749bc24df9ee29fcf1f3e729c8a47e3e2a))
+* yaml config for kas ([#52](https://github.com/opentdf/charts/issues/52)) ([e5b4c1a](https://github.com/opentdf/charts/commit/e5b4c1a1e7320d2738ba04693c9927d225a5d64c))
+
+
+### Bug Fixes
+
+* add auth skew configuration ([0666d4f](https://github.com/opentdf/charts/commit/0666d4f8e250cf1b002c77beda846aed51e9b54e))
+* add optional required field for db to drive db configuration ([#78](https://github.com/opentdf/charts/issues/78)) ([81f64ca](https://github.com/opentdf/charts/commit/81f64ca04c6b322a3b2cb3132487c1969a3f0a29))
+* allow enablement of pprof in service ([#68](https://github.com/opentdf/charts/issues/68)) ([060f9f6](https://github.com/opentdf/charts/commit/060f9f65c5de91e8eac2f5bf9ef1b95aee8c72d1))
+* change file paths to be more generic ([#42](https://github.com/opentdf/charts/issues/42)) ([acf9487](https://github.com/opentdf/charts/commit/acf94873ca44daaf3b94917ef0a9babc65e45418))
+* change version ([#20](https://github.com/opentdf/charts/issues/20)) ([5a22524](https://github.com/opentdf/charts/commit/5a225244624e577a3842566bc75abd6ec2034a48))
+* changes service to http2 from http ([#32](https://github.com/opentdf/charts/issues/32)) ([a548707](https://github.com/opentdf/charts/commit/a548707c04ef2a62803713bb3d8d3e810f37b690))
+* **ci:** Add public_client_id to server.auth config ([#89](https://github.com/opentdf/charts/issues/89)) ([6829c87](https://github.com/opentdf/charts/commit/6829c8783566a955bb76287bdd640a7b2507ebc8))
+* **core:** deprecate keycloak-from-config ([#81](https://github.com/opentdf/charts/issues/81)) ([da5a685](https://github.com/opentdf/charts/commit/da5a6856a0b14fcc6eab5810d4cf5a9518d68abe)), closes [#80](https://github.com/opentdf/charts/issues/80)
+* correct h2c service appProtocol ([#77](https://github.com/opentdf/charts/issues/77)) ([25a1ae8](https://github.com/opentdf/charts/commit/25a1ae862937707fb42a28d037b97849a575e914))
+* enable extra keycloak features needed by platform ([#63](https://github.com/opentdf/charts/issues/63)) ([d877541](https://github.com/opentdf/charts/commit/d8775412be5dc967477a29ea191c972a3a035a4d))
+* only mount keycloak cert if ingress and tls enabled ([5cacbb8](https://github.com/opentdf/charts/commit/5cacbb814060f531ea3cccbea2375f41e33c4d20))
+* platform chart readme ([#22](https://github.com/opentdf/charts/issues/22)) ([fc0b23c](https://github.com/opentdf/charts/commit/fc0b23c0fd824900f6f96e39a87cf90e1e29f961))
+* platform optional health check ([#28](https://github.com/opentdf/charts/issues/28)) ([4a977d1](https://github.com/opentdf/charts/commit/4a977d1577b02056e63e68809c8580dc57a01a89))
+* **platform:** extra certs overwriting files in /etc/ssl/certs ([#70](https://github.com/opentdf/charts/issues/70)) ([5cacbb8](https://github.com/opentdf/charts/commit/5cacbb814060f531ea3cccbea2375f41e33c4d20))
+* **platform:** update crypto provider and kas keyring configuration ([d1205b4](https://github.com/opentdf/charts/commit/d1205b4b77602587fd28c3ce69734ce49a8c7152))
+* **platform:** update kas key paths to new config format ([#48](https://github.com/opentdf/charts/issues/48)) ([9c4bd5b](https://github.com/opentdf/charts/commit/9c4bd5bf64dfe8114e2aff03fbaa8aff70ecb09d))
+* port naming/app protocol tls.enabled ([#90](https://github.com/opentdf/charts/issues/90)) ([613f67e](https://github.com/opentdf/charts/commit/613f67e860972dc8d27bf0fc6fb55daa89bf8b7a))
+* remove container command ([#39](https://github.com/opentdf/charts/issues/39)) ([0af92ca](https://github.com/opentdf/charts/commit/0af92cab269b7770092c1b9f1e68e629d2cb2d48))
+* remove defaultMode on trusted-certs volume ([5cacbb8](https://github.com/opentdf/charts/commit/5cacbb814060f531ea3cccbea2375f41e33c4d20))
+* set appVersion to nightly ([#37](https://github.com/opentdf/charts/issues/37)) ([54ec9b1](https://github.com/opentdf/charts/commit/54ec9b1faf4c3f4627b8cb94381dde2fa41df245))
+* set appVersion to v0.4.32 ([#92](https://github.com/opentdf/charts/issues/92)) ([f94d5dc](https://github.com/opentdf/charts/commit/f94d5dc64353c14821537ed9761f7e08a2500aeb))
+* set default security context values for container ([5cacbb8](https://github.com/opentdf/charts/commit/5cacbb814060f531ea3cccbea2375f41e33c4d20))
+* set pod security context defaults ([5cacbb8](https://github.com/opentdf/charts/commit/5cacbb814060f531ea3cccbea2375f41e33c4d20))
+* support openshift compatibility for service appProtocol ([81f64ca](https://github.com/opentdf/charts/commit/81f64ca04c6b322a3b2cb3132487c1969a3f0a29))
+* sync service configuration with platform ([#64](https://github.com/opentdf/charts/issues/64)) ([63dc6ba](https://github.com/opentdf/charts/commit/63dc6ba38ea283e6a7a1881bfe5a4e224c8e6206))
+* trusted-cert volume and mount defined when not expected ([#75](https://github.com/opentdf/charts/issues/75)) ([73cde0e](https://github.com/opentdf/charts/commit/73cde0e2dbecb51ff426c396f2daf7ef071f4834))
+* unquote cors config values ([#61](https://github.com/opentdf/charts/issues/61)) ([1bb67ff](https://github.com/opentdf/charts/commit/1bb67ffc0118de644452a0fe7d89ee2bcdb58f1f))
+* update postgres chart version 16.2.5 ([#95](https://github.com/opentdf/charts/issues/95)) ([768c407](https://github.com/opentdf/charts/commit/768c4072f215733ef57bb68e2ae617666a9cfeaf))
+* upgrade keycloak chart to 22.1.1 ([0666d4f](https://github.com/opentdf/charts/commit/0666d4f8e250cf1b002c77beda846aed51e9b54e))
+* upgrade postgresql chart to 15.5.21 ([0666d4f](https://github.com/opentdf/charts/commit/0666d4f8e250cf1b002c77beda846aed51e9b54e))
+
+
+### Miscellaneous Chores
+
+* release 0.4.0 ([#46](https://github.com/opentdf/charts/issues/46)) ([97cd502](https://github.com/opentdf/charts/commit/97cd50274a2047e68ed67ebefa775f5b657d4b5b))
+
 ## [0.8.2](https://github.com/opentdf/charts/compare/platform-0.8.1...platform-v0.8.2) (2024-12-04)
 
 
