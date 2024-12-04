@@ -11,7 +11,7 @@ spec:
       kind: Rule
       services:
         - name: platform-keycloak
-          namespace: opentdf-sd1jsk
+          namespace: opentdf-orscjy
           port: 80
           scheme: http
           passHostHeader: true
@@ -19,7 +19,7 @@ spec:
       kind: Rule
       services:
         - name: opentdf-platform
-          namespace: opentdf-sd1jsk
+          namespace: opentdf-orscjy
           port: 9000
           scheme: h2c
           passHostHeader: true
