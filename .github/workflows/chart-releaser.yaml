@@ -64,13 +64,6 @@ jobs:
               // Read the index.yaml file
               const content = fs.readFileSync('index.yaml', 'utf8');
               
-              // Get the current commit SHA to use as the base
-              const { data: ref } = await github.rest.git.getRef({
-                owner: context.repo.owner,
-                repo: context.repo.name,
-                ref: 'heads/main'
-              });
-              
               // Get the current file (if it exists) to get its SHA
               let fileSha;
               try {
