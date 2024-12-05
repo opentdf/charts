@@ -5,7 +5,7 @@ on:
   branches:
     - main
   paths:
-    - 'index.html'
+    - 'index.yaml'
     - '**/*.md
 
 jobs:
