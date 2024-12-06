@@ -269,10 +269,10 @@ server:
         g, opentdf-admin, role:admin
         g, opentdf-standard, role:standard
       ## Custom policy that overrides builtin policy (see examples https://github.com/casbin/casbin/tree/master/examples)
-      csv: #|
+      csv: # |
       #  p, role:admin, *, *, allow
       ## Custom model (see https://casbin.org/docs/syntax-for-models/)
-      model: #|
+      model: # |
       #  [request_definition]
       #  r = sub, res, act, obj
       #
