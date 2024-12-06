@@ -49,6 +49,12 @@ jobs:
           CR_TOKEN: "${{ steps.app-token.outputs.token }}"
         with:
           skip_upload: true
+          skip_existing: true
+
+      - name: Upload Chart to Release
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: gh release upload ${{github.event.release.tag_name}} ./.cr-release-packages/*.tgz
 
       - name: Generate Index
         run: cr index -o ${{github.repository_owner}} -r ${{ github.event.repository.name }} -t ${{steps.app-token.outputs.token}} -i ./index.yaml 
