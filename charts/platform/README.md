@@ -1,6 +1,6 @@
 # platform
 
-![Version: 0.8.1](https://img.shields.io/badge/Version-0.8.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.4.32](https://img.shields.io/badge/AppVersion-v0.4.32-informational?style=flat-square)
+![Version: 0.8.2](https://img.shields.io/badge/Version-0.8.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.4.32](https://img.shields.io/badge/AppVersion-v0.4.32-informational?style=flat-square)
 
 A Helm Chart for OpenTDF Platform
 
@@ -133,7 +133,7 @@ Download the [keycloak_data.yaml](https://raw.githubusercontent.com/opentdf/plat
 | db.required | bool | `true` | If database connection info is required for the service (default: true) |
 | db.sslmode | string | `"prefer"` | The database ssl mode ( disable, prefer, require, verify-ca, verify-full ) |
 | db.user | string | `"opentdf"` | The database user |
-| envFrom | list | `[]` | Environment variables from a configmap or secret  |
+| envFrom | list | `[]` | Environment variables from a configmap or secret |
 | extraEnv | list | `[]` | Extra environment variables to add to the container |
 | fullnameOverride | string | `""` | Overrides the generated fullname |
 | hostAliases | list | `[]` | Host Alias entries to add to pods |
@@ -201,10 +201,11 @@ Download the [keycloak_data.yaml](https://raw.githubusercontent.com/opentdf/plat
 | server.auth.audience | string | `"http://localhost:8080"` | Audience of provided by the identity provider |
 | server.auth.dpopskew | string | `"1h"` | The amount of drift allowed between the server and the client for the DPoP Proof Token |
 | server.auth.issuer | string | `"http://platform-keycloak/realms/opentdf"` | Identity provider issuer |
-| server.auth.policy.claim | string | `nil` |  |
 | server.auth.policy.csv | string | `nil` |  |
-| server.auth.policy.default | string | `nil` |  |
-| server.auth.policy.map | string | `nil` |  |
+| server.auth.policy.extension | string | `"g, opentdf-admin, role:admin\ng, opentdf-standard, role:standard\n"` |  |
+| server.auth.policy.groups_claim | string | `nil` |  |
+| server.auth.policy.model | string | `nil` |  |
+| server.auth.policy.username_claim | string | `nil` |  |
 | server.auth.public_client_id | string | `"opentdf-public"` | The oidc client id, leveraged by otdfctl |
 | server.auth.skew | string | `"1m"` | The amount of drift allowed between the server and the client for the Access Token |
 | server.cors.allowcredentials | bool | `true` | Allow credentials |
@@ -233,7 +234,7 @@ Download the [keycloak_data.yaml](https://raw.githubusercontent.com/opentdf/plat
 | services.entityresolution.clientid | string | `nil` | Client Id for Entity Resolver |
 | services.entityresolution.clientsecret | string | `nil` | Client Secret for Entity Resolver |
 | services.entityresolution.realm | string | `nil` | Entity Resolver Realm |
-| services.entityresolution.subgroups | bool | `false` | Subgroups  |
+| services.entityresolution.subgroups | bool | `false` | Subgroups |
 | services.entityresolution.url | string | `nil` | Identity Provider Entity Resolver |
 | services.extraServices | object | `{}` | Additional services |
 | services.kas.config | object | `{"keyring":[{"alg":"ec:secp256r1","kid":"e1"},{"alg":"rsa:2048","kid":"r1"}]}` | KAS service Configuration as yaml |
