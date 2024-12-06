@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.3](https://github.com/opentdf/charts/compare/platform-0.8.2...platform-0.8.3) (2024-12-06)
+
+
+### Bug Fixes
+
+* auth policy to set backward compatible group to role mapppings ([#106](https://github.com/opentdf/charts/issues/106)) ([172b0ec](https://github.com/opentdf/charts/commit/172b0ec983d58ef5654a8dcea111e0a4ed24aa67))
+
 ## [0.8.2](https://github.com/opentdf/charts/compare/platform-0.8.1...platform-v0.8.2) (2024-12-04)
 
 
