@@ -7,7 +7,7 @@
             "bump-minor-pre-major": true,
             "separate-pull-requests": true,
             "include-component-in-tag": true,
-            "include-v-in-tag": true
+            "include-v-in-tag": false
         }
     },
     "release-search-depth": 100,
