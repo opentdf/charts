@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.4](https://github.com/opentdf/charts/compare/platform-0.8.3...platform-0.8.4) (2025-01-29)
+
+
+### Bug Fixes
+
+* add override for appprotocol ([#110](https://github.com/opentdf/charts/issues/110)) ([03f08bf](https://github.com/opentdf/charts/commit/03f08bf8d7199389db89e5700118ac5b32d70f65))
+
 ## [0.8.3](https://github.com/opentdf/charts/compare/platform-0.8.2...platform-0.8.3) (2024-12-06)
 
 
