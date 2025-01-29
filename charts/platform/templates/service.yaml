@@ -11,7 +11,7 @@ spec:
   ports:
     - port: {{ .Values.service.port }}
       targetPort: {{ include "platform.portName" . }}
-      appProtocol:  {{ include "determine.appProtocol" . }}
+      appProtocol:  {{ .Values.service.appProtocol | default (include "determine.appProtocol" .) }}
       protocol: TCP
       name: {{ include "platform.portName" . }}
   selector:
