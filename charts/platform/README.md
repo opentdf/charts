@@ -1,6 +1,6 @@
 # platform
 
-![Version: 0.8.2](https://img.shields.io/badge/Version-0.8.2-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.4.32](https://img.shields.io/badge/AppVersion-v0.4.32-informational?style=flat-square)
+![Version: 0.8.3](https://img.shields.io/badge/Version-0.8.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.4.32](https://img.shields.io/badge/AppVersion-v0.4.32-informational?style=flat-square)
 
 A Helm Chart for OpenTDF Platform
 
@@ -224,6 +224,7 @@ Download the [keycloak_data.yaml](https://raw.githubusercontent.com/opentdf/plat
 | server.tls.enabled | bool | `false` | Enables tls for platform server |
 | server.tls.secret | string | `nil` | The server tls certificate. If not set, a self-signed certificate is generated |
 | service.annotations | object | `{}` | Extra annotations to add to the service |
+| service.appProtocol | string | `""` | explicit appProtocol for the service |
 | service.port | int | `9000` | The port of the service |
 | service.type | string | `"ClusterIP"` | The type of service to create |
 | serviceAccount.annotations | object | `{}` | Extra annotations to add to the service account |

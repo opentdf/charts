@@ -72,6 +72,8 @@ service:
   port: 9000
   # -- Extra annotations to add to the service
   annotations: {}
+  # -- explicit appProtocol for the service
+  appProtocol: ""
 
 ingress:
   # -- Enable Ingress
