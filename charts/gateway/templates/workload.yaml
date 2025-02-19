@@ -1,0 +1,145 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ include "gateway.fullname" . }}
+  labels:
+    {{- include "gateway.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+    {{- include "gateway.labels" . | nindent 6 }}
+  serviceName:  
+  replicas: {{ .Values.replicas }}
+  volumeClaimTemplates:
+    - metadata:
+        name: postfix-dir
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: {{ .Values.persistentVolumeStorageClassName }}
+        resources:
+          requests:
+            storage: {{ .Values.persistentVolumeSize }}
+  template:
+    metadata:
+    {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      labels:
+        {{ include "gateway.labels" . | nindent 8 }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      serviceAccountName: {{ include "gateway.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      initContainers:
+        - name: cert-generator
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}" 
+          # todo move this into a bash script? or remove apk add bash from the below line
+          command: ['sh', '-c', 'openssl genrsa -out /etc/postfix/tls/{{ .Values.gatewayHostname }}/client.key 2048 && openssl req -new -key /etc/postfix/tls/{{ .Values.gatewayHostname }}/client.key -x509 -subj /CN={{ .Values.gatewayHostname }} -days 3650 -out /etc/postfix/tls/{{ .Values.gatewayHostname }}/client.pem']
+          volumeMounts:
+          - name: cert-dir
+            mountPath: /etc/postfix/tls/{{ .Values.gatewayHostname }}
+      containers:
+        - name: gateway # Gateway Container
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          volumeMounts:
+          - name: cert-dir
+            mountPath: /etc/postfix/tls/{{ .Values.gatewayHostname }}
+          {{- if or .Values.dkimPublicKey .Values.dkimPrivateKey }}
+          - name: dkim-dir
+            mountPath: /etc/opendkim/keys
+          {{- end }}
+          {{- if .Values.abacExtraCas }}
+          - name: abac-cas
+            mountPath: /etc/virtru-gateway/abac-cas
+            readOnly: true
+          {{- end }} 
+          - name: postfix-dir
+            mountPath: /var/spool/postfix
+          ports:
+            - containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          envFrom:
+          - configMapRef:
+              name: {{ include "gateway.fullname" . }} 
+          env:
+          {{- if .Values.saslDownstreamCredentials }}
+          - name: GATEWAY_SMTP_SASL_ACCOUNTS
+            valueFrom:
+              secretKeyRef:
+                key: gateway-sasl-auth-downstream
+                name: "{{ include "gateway.fullname" . }}"
+          {{- end }}
+          {{- if .Values.saslUpstreamCredentials }}
+          - name: GATEWAY_SMTPD_SASL_ACCOUNTS
+            valueFrom:
+              secretKeyRef:
+                key: gateway-sasl-auth-upstream
+                name: "{{ include "gateway.fullname" . }}"
+          {{- end }}
+          {{- if .Values.xheaderAuthSecret }}
+          - name: GATEWAY_XHEADER_AUTH_SECRET
+            valueFrom:
+              secretKeyRef:
+                key: gateway-xheader-auth-secret
+                name: "{{ include "gateway.fullname" . }}"
+          {{- end }}
+          - name: GATEWAY_ABAC_OIDC_CLIENT_SECRET
+            valueFrom:
+              secretKeyRef:
+                key: gateway-abac-oidc-client-secret
+                name: "{{ include "gateway.fullname" . }}"
+          readinessProbe:
+            tcpSocket:
+              port: 25
+            initialDelaySeconds: 30
+            periodSeconds: 5
+            successThreshold: 1
+            failureThreshold: 3
+            timeoutSeconds: 20
+          livenessProbe:
+            tcpSocket:
+              port: 25
+            initialDelaySeconds: 60
+            periodSeconds: 5
+            successThreshold: 1
+            failureThreshold: 2
+            timeoutSeconds: 60
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+      {{- if .Values.abacExtraCas }}
+      - name: abac-cas
+        configMap:
+          name: {{ include "gateway.fullname" . }}
+          items:
+          {{- range $index, $unused := .Values.abacExtraCas }}
+            - key: ABAC_CA_{{ $index }}
+              path: abac-ca-{{ $index }}.crt
+          {{- end }}
+      {{- end }}
+      - name: cert-dir
+        emptyDir: {}
+      {{- if or .Values.dkimPublicKey .Values.dkimPrivateKey }}
+      - name: dkim-dir
+        secret:
+          defaultMode: 420
+          secretName: "{{ include "gateway.fullname" . }}-dkim"
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

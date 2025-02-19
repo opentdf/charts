@@ -1,0 +1,76 @@
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  labels:
+    app: gateway
+  name: {{ include "gateway.fullname" . }}
+data:
+  GATEWAY_MODE: {{ required "gatewayMode is required" .Values.gatewayMode | quote }}
+  GATEWAY_TOPOLOGY: {{ required "gatewayTopology is required" .Values.gatewayTopology | quote }}
+  {{- if .Values.gatewayHostname }}
+  GATEWAY_HOSTNAME: {{ .Values.gatewayHostname | quote }}
+  {{- end }}
+  GATEWAY_ORGANIZATION_DOMAIN: {{ required "primaryMailingDomain is required" .Values.primaryMailingDomain | quote }}
+  GATEWAY_TRANSPORT_MAPS: {{ .Values.gatewayTransportMaps | quote }}
+  GATEWAY_RELAY_ADDRESSES: {{ .Values.inboundRelayAddresses | quote }}
+  MAX_QUEUE_LIFETIME: {{ .Values.maxQueueLifetime | quote }}
+  MAX_BACKOFF_TIME: {{ .Values.maxBackoffTime | quote }}
+  MIN_BACKOFF_TIME: {{ .Values.minBackoffTime | quote }}
+  QUEUE_RUN_DELAY: {{ .Values.queueRunDelay | quote }}
+  {{- if .Values.dkimSelector }}
+  GATEWAY_DKIM_DOMAINS: "{{ .Values.dkimSelector }}._domainkey.{{ .Values.primaryMailingDomain }}"
+  {{- end }}
+  GATEWAY_PROXY_PROTOCOL: {{ .Values.proxyProtocol | ternary "1" "0" | quote }}
+  GATEWAY_VERBOSE_LOGGING: {{ .Values.verboseLogging | ternary "1" "0" | quote }}
+  {{- if .Values.smtpUseTls }}
+  GATEWAY_SMTP_SECURITY_LEVEL: {{ .Values.smtpSecurityLevel | quote }}
+  GATEWAY_SMTP_USE_TLS: "1"
+  {{- if .Values.smtpTlsComplianceDownstream }}
+  GATEWAY_SMTP_TLS_COMPLIANCE_DOWNSTREAM: {{ .Values.smtpTlsComplianceDownstream | quote }}
+  {{- end }}
+  {{- end }}
+  {{- if .Values.saslDownstreamCredentials }}
+  GATEWAY_SMTP_SASL_ENABLED_DOWNSTREAM: "1"
+  GATEWAY_SMTP_SASL_SECURITY_OPTIONS: {{ .Values.saslDownstreamSecurityOptions }}
+  {{- end }}
+  {{- if .Values.smtpdUseTls }}
+  GATEWAY_SMTPD_SECURITY_LEVEL: {{ .Values.smtpdSecurityLevel | quote }}
+  GATEWAY_SMTPD_USE_TLS: "1"
+  {{- if .Values.smtpdTlsComplianceUpstream }}
+  GATEWAY_SMTPD_TLS_COMPLIANCE_UPSTREAM: {{ .Values.smtpdTlsComplianceUpstream }}
+  {{- end }}
+  {{- end }}
+  {{- if .Values.saslUpstreamCredentials }}
+  GATEWAY_SMTPD_SASL_ENABLED: "1"
+  GATEWAY_SMTPD_SASL_MECHANISMS: {{ .Values.saslUpstreamMechanisms | quote }}
+  {{- end }}
+  GATEWAY_REPLACEMENT_FROM_ENABLED: {{ .Values.replaceFromEnabled | ternary "1" "0" | quote}}
+  {{- if .Values.cacheSmtpConnections }}
+  {{- if eq (typeOf .Values.cacheSmtpConnections) "string" }}
+  GATEWAY_SMTP_CACHE_CONNECTIONS: {{ .Values.cacheSmtpConnections | quote }}
+  {{- else }}
+  GATEWAY_SMTP_CACHE_CONNECTIONS: "1" 
+  {{- end }}
+  {{- else }}
+  GATEWAY_SMTP_CACHE_CONNECTIONS: "0" 
+  {{- end }}
+  {{- if .Values.cacheSmtpConnectionsTimeLimit }}
+  GATEWAY_SMTP_CONNECTION_CACHE_TIME_LIMIT: {{ .Values.cacheSmtpConnectionsTimeLimit | quote }}
+  {{- end }}
+  {{- if .Values.tlsPolicyMaps }}
+  GATEWAY_SMTP_TLS_POLICY_MAPS: {{ .Values.tlsPolicyMaps | quote }}
+  {{- end }}
+  GATEWAY_ABAC_OIDC_CLIENT_ID: {{ .Values.abacOidcClientId | quote }}
+  GATEWAY_ABAC_PLATFORM_ENDPOINT: {{ .Values.abacPlatformEndpoint | quote }}
+  GATEWAY_ABAC_TAGGING_PDP_ENDPOINT: {{ .Values.abacTaggingPdpEndpoint | quote}}
+  GATEWAY_ABAC_TRIM_BLOCKED_RECIPIENTS: {{ .Values.abacTrimBlockedRecipients | ternary "1" "0" | quote }}
+  GATEWAY_ABAC_PLAINTEXT_CONNECTION: {{ .Values.abacPlaintextConnection | ternary "1" "0" | quote}}
+  GATEWAY_ABAC_ENCRYPT_EMAIL: {{ .Values.abacEncryptEmail | ternary "1" "0" | quote }}
+  GATEWAY_ABAC_ENCRYPT_EMAIL_BODY: {{ .Values.abacEncryptEmailBody | ternary "1" "0" | quote}}
+  GATEWAY_ABAC_TAGGING_PDP_ASSERTION_TYPE: {{ .Values.abacTaggingPdpAssertionType | quote }}
+  {{- if .Values.abacExtraCas }}
+  GATEWAY_ABAC_SDK_TRUSTED_CERT_DIRECTORY: /etc/virtru-gateway/abac-cas
+  {{- range $index, $value := .Values.abacExtraCas }}
+  ABAC_CA_{{ $index }}: {{ $value | quote }}
+  {{- end }}
+  {{- end }}
