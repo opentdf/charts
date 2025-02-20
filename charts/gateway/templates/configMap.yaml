@@ -5,8 +5,14 @@ metadata:
     app: gateway
   name: {{ include "gateway.fullname" . }}
 data:
-  GATEWAY_MODE: {{ required "gatewayMode is required" .Values.gatewayMode | quote }}
-  GATEWAY_TOPOLOGY: {{ required "gatewayTopology is required" .Values.gatewayTopology | quote }}
+  {{- if eq (required "gatewayMode is required" .Values.gatewayMode) "encrypt" }}
+  GATEWAY_MODE: "abac-encrypt"
+  {{- else if eq .Values.gatewayMode "decrypt" }}
+  GATEWAY_MODE: "abac-decrypt"
+  {{- else }}
+  {{ fail (printf "Invalid value for gatewayMode: [%s]" .Values.gatewayMode) }}
+  {{- end }}
+  GATEWAY_TOPOLOGY: {{ required "gatewayTopology is required" .Values.gatewayTopology| quote }}
   {{- if .Values.gatewayHostname }}
   GATEWAY_HOSTNAME: {{ .Values.gatewayHostname | quote }}
   {{- end }}
@@ -31,7 +37,8 @@ data:
   {{- end }}
   {{- if .Values.saslDownstreamCredentials }}
   GATEWAY_SMTP_SASL_ENABLED_DOWNSTREAM: "1"
-  GATEWAY_SMTP_SASL_SECURITY_OPTIONS: {{ .Values.saslDownstreamSecurityOptions }}
+  GATEWAY_SMTP_SASL_SECURITY_OPTIONS: {{ .Values.saslDownstreamSecurityOptions | quote }}
+  GATEWAY_SMTP_SASL_ACCOUNTS: {{ .Values.saslDownstreamCredentials | quote }}
   {{- end }}
   {{- if .Values.smtpdUseTls }}
   GATEWAY_SMTPD_SECURITY_LEVEL: {{ .Values.smtpdSecurityLevel | quote }}
@@ -43,6 +50,7 @@ data:
   {{- if .Values.saslUpstreamCredentials }}
   GATEWAY_SMTPD_SASL_ENABLED: "1"
   GATEWAY_SMTPD_SASL_MECHANISMS: {{ .Values.saslUpstreamMechanisms | quote }}
+  GATEWAY_SMTPD_SASL_ACCOUNTS: {{ .Values.saslUpstreamCredentials | quote }}
   {{- end }}
   GATEWAY_REPLACEMENT_FROM_ENABLED: {{ .Values.replaceFromEnabled | ternary "1" "0" | quote}}
   {{- if .Values.cacheSmtpConnections }}
@@ -60,9 +68,9 @@ data:
   {{- if .Values.tlsPolicyMaps }}
   GATEWAY_SMTP_TLS_POLICY_MAPS: {{ .Values.tlsPolicyMaps | quote }}
   {{- end }}
-  GATEWAY_ABAC_OIDC_CLIENT_ID: {{ .Values.abacOidcClientId | quote }}
-  GATEWAY_ABAC_PLATFORM_ENDPOINT: {{ .Values.abacPlatformEndpoint | quote }}
-  GATEWAY_ABAC_TAGGING_PDP_ENDPOINT: {{ .Values.abacTaggingPdpEndpoint | quote}}
+  GATEWAY_ABAC_OIDC_CLIENT_ID: {{ require "abacOidcClientID is required" .Values.abacOidcClientId | quote }}
+  GATEWAY_ABAC_PLATFORM_ENDPOINT: {{ require .Values.abacPlatformEndpoint "abacPlatformEndpoint is required" | quote }}
+  GATEWAY_ABAC_TAGGING_PDP_ENDPOINT: {{ require .Values.abacTaggingPdpEndpoint "abacTaggingPdpEndpoint is required" | quote }}
   GATEWAY_ABAC_TRIM_BLOCKED_RECIPIENTS: {{ .Values.abacTrimBlockedRecipients | ternary "1" "0" | quote }}
   GATEWAY_ABAC_PLAINTEXT_CONNECTION: {{ .Values.abacPlaintextConnection | ternary "1" "0" | quote}}
   GATEWAY_ABAC_ENCRYPT_EMAIL: {{ .Values.abacEncryptEmail | ternary "1" "0" | quote }}
@@ -73,4 +81,7 @@ data:
   {{- range $index, $value := .Values.abacExtraCas }}
   ABAC_CA_{{ $index }}: {{ $value | quote }}
   {{- end }}
+  {{- end }}
+  {{- if .Values.xHeaderAuthSecret }}
+  GATEWAY_XHEADER_AUTH_ENABLED: "1"
   {{- end }}

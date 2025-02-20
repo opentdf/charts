@@ -1,27 +1,20 @@
 replicaCount: 2
-
 image:
-  repository: us-central1-docker.pkg.dev/prj-sb-deployment-sveb/dspgateway/gateway
-  pullPolicy: Always
+  repository: registry.opentdf.io/platform/gateway 
+  pullPolicy: IfNotPresent 
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "2.57.0-BACK-2295-encrypt-message-body-2fc3becf"
+  tag: ""
 
 nameOverride: ""
 fullnameOverride: ""
-
 serviceAccount:
   create: false
   name: "default"
-
 podAnnotations: {}
-
 podSecurityContext: {}
-
 securityContext: {}
-
 ingress:
   enabled: false
-
 resources: {}
   # limits:
   #   cpu: 500m
@@ -29,152 +22,105 @@ resources: {}
   # requests:
   #   cpu: 500m
   #   memory: 500Mi
-
 nodeSelector: {}
-
 tolerations: []
-
 affinity: {}
-
 autoscaling:
   enabled: false
   minReplicas: 1
   maxReplicas: 100
   targetCPUUtilizationPercentage: 80
   targetMemoryUtilizationPercentage: 80
-
 service:
   type: LoadBalancer
   loadBalancerIP: ''
   port: 25
 
+# persistentVolumeStorageClassName is the storage class to use for the persistent volume that we use to store the email queue
 persistentVolumeStorageClassName: standard
+# persistentVolumeSize is the size of the persistent volume that we use to store the email queue
 persistentVolumeSize: 1Gi
-
-gatewayMode: abac-encrypt
+# gatewayMode is the mode the gateway should run in, either encrypt or decrypt
+gatewayMode: encrypt
+# gatewayTopology is the topology the gateway should run in, either inbound or outbound
 gatewayTopology: inbound
-
+# gatewayHostname is the hostname that the gateway should use. A self-signed certificate will be generated for this hostname
 gatewayHostname: gateway1-pep-qa.apps.dsp.shp.virtru.us
-primaryMailingDomain: dsppepqa.lab
-
-# Next hop for Virtru gateway, typical mail flow is:
-# mail server => Virtru gateway => back to your mail server => final delivery
-# example.com=>[mail.example.com]:25
+# gatewayTransportMaps maps domains to mail servers for the next hop. e.g. example.com=>smtp.example.com,example.net=>smtp.example.net
 gatewayTransportMaps: ''
-
-# allows email from any domain
+# comma-separated list of CIDR addresses that are allowed to relay mail through the gateway
 inboundRelayAddresses: 0.0.0.0/0
-
-maxQueueLifetime: 5m
-maxBackoffTime: 45s
-minBackoffTime: 30s
-queueRunDelay: 30s
-
-dkimSelector: ''
-dkimPrivateKey: ''
-
-proxyProtocol: false 
+# maxQueueLifetime is the maximum amount of time a message can stay in the queue before being bounced (postfix maximal_queue_lifetime)
+maxQueueLifetime: "5m"
+# maxBackoffTime is the maximum amount of time the gateway will wait before retrying a message (postfix maximal_backoff_time)
+maxBackoffTime: "45s"
+# minBackoffTime is the minimum amount of time the gateway will wait before retrying a message (postfix minimal_backoff_time)
+minBackoffTime: "30s"
+# queueRunDelay is the amount of time the gateway will wait before checking the queue for messages to send (postfix queue_run_delay)
+queueRunDelay: "30s"
+# primaryMailingDomain is the domain we use to rewrite the from address for inbound mail. This allows us to deliver email that is
+#   authenticated by DKIM. In order for this to work DKIM must be set up for this domain
+primaryMailingDomain: ""
+# dkimSelector is the selector for the DKIM key to use for mail
+dkimSelector: ""
+# dkimPrivateKey is the private key for the DKIM key
+dkimPrivateKey: ""
+# replaceFromEnabled is whether the gateway should replace the from address with the authenticated address
+replaceFromEnabled: false
+# proxyProtocol is whether the gateway should use the proxy protocol
+proxyProtocol: false
+# verboseLogging is whether the gateway should log verbose information
 verboseLogging: false
-
-xHeaderAuthSecret: ''
-
+# xHeaderAuthSecret is the secret used to authenticate senders via xHeaders. If set the `X-Header-Virtru-Auth` header must be set to this value
+#   in order to send mail through the gateway
+xHeaderAuthSecret: ""
+# smtpUseTls is whether the gateway should use TLS when sending mail
 smtpUseTls: true
+# smtpSecurityLevel is the security level the gateway should use when sending mail
 smtpSecurityLevel: mandatory
+# smtpTlsComplianceDownstream is the compliance level the gateway should use when sending mail downstream
 smtpTlsComplianceDownstream: MEDIUM
-
-# server.example.com=>user@server.example.com=>password
-saslDownstreamCredentials: ''
+# saslDownstreamCredentials maps usernames to passwords for downstream authentication (gateway sending email).
+#   e.g. username1=>password1,username2=>password2
+saslDownstreamCredentials: ""
+# saslDownstreamSecurityOptions is the security options the gateway should use when authenticating downstream
 saslDownstreamSecurityOptions: noanonymous
-
-# mail-sender@example.com=>password
-saslUpstreamCredentials: ''
+# saslUpstreamCredentials maps usernames to passwords for upstream authentication (gateway receiving email). e.g. username1=>password1,username2=>password2
+#   e.g. username1=>password1,username2=>password2
+saslUpstreamCredentials: ""
+# saslUpstreamMechanisms is the mechanisms the gateway should use when receiving email
 saslUpstreamMechanisms: PLAIN
-
+# smtpdUseTls is whether the gateway should use TLS when receiving mail
 smtpdUseTls: true
+# smtpdSecurityLevel is the security level the gateway should use when receiving mail
 smtpdSecurityLevel: mandatory
+# smtpdTlsComplianceUpstream is the compliance level the gateway should use when receiving mail upstream
 smtpdTlsComplianceUpstream: MEDIUM
-
-replaceFromEnabled: true
-
+# cacheSmtpConnections controls whether the gateway should cache outgoing SMTP connections. true to cache everything,
+#   false to not cache anything, or a comma-separated list of domains to cache connections for
 cacheSmtpConnections: true
+# cacheSmtpConnectionsTimeLimit is the amount of time to cache outgoing SMTP connections for
 cacheSmtpConnectionsTimeLimit: 5s
-
-# example.com=>none,example.net=>maybe
-tlsPolicyMaps: ''
-
-abacOidcClientId: "dsp-email-gateway" # the client id that gateway should use to communicate with the platform
-abacOidcClientSecret: "<a secret>"
-abacPlatformEndpoint: "platform-dsp-pep-qa.apps.dsp.shp.virtru.us:443" # the endpoint where the platform is deployed
-abacTaggingPdpEndpoint: "tagging-pdp-dsp-pep-qa.apps.dsp.shp.virtru.us:443" # the endpoint where the tagging PDP is deployed
+# tlsPolicyMaps maps domains to TLS policies. e.g. example.com=>may,example.net=>encrypt. Valid policies
+#   can be found here: https://www.postfix.org/TLS_README.html#client_tls_policy
+tlsPolicyMaps: ""
+# abacOidcClientId is the client id that gateway should use to communicate with the platform
+abacOidcClientId: "" # the client id that gateway should use to communicate with the platform
+# abacOiDcClientSecret is the client secret that gateway should use to communicate with the platform
+abacOidcClientSecret: ""
+# abacPlatformEndpoint is the URL where the platform is deployed. Hostname and port
+abacPlatformEndpoint: "" # the endpoint where the platform is deployed
+# abacTaggingPdpEndpoint is the URL where the tagging PDP is deployed. Hostname and port
+abacTaggingPdpEndpoint: "" # the endpoint where the tagging PDP is deployed
+# abacTaggingPdpAssertionType is the assertion type to use, currently `urn:us:gov:ic:edh` or `urn:nato:stanag:5636:A:1:elements:json`.
 abacTaggingPdpAssertionType: "urn:nato:stanag:5636:A:1:elements:json" # the assertion type to use with the tagging pdp, currently `urn:us:gov:ic:edh` or `urn:nato:stanag:5636:A:1:elements:json`
+# abacTrimBlockedRecipients is whether we should remove header recipients that are not entitled to receive an email
 abacTrimBlockedRecipients: true # remove header recipients that are not entitled to receive an email
+# abacPlaintextConnection is whether we should communicate with the platform and the tagging PDP over a plaintext connection
 abacPlaintextConnection: false # whether we should communicate with the platform and the tagging PDP over a plaintext connection
+# abaEncryptEmail is whether we should encrypt when running in encrypt mode
 abacEncryptEmail: true # whether we should encrypt when running in inbound encrypt mode. if this is not set we only do access checks and blocking
+# abacEncryptEmailBody is whether we should encrypt the email body when running in encrypt mode
 abacEncryptEmailBody: true # whether we should encrypt the email body when running in inbound encrypt mode. if this is not set we encrypt the attachments only
-abacExtraCas:
-  - |
-    -----BEGIN CERTIFICATE-----
-    MIID5zCCAs+gAwIBAgIUAiUDfPPZ9ONeu5zZwMgg58TkpxcwDQYJKoZIhvcNAQEL
-    BQAwgYIxCzAJBgNVBAYTAlVTMQswCQYDVQQIDAJEQzETMBEGA1UEBwwKV2FzaGlu
-    Z3RvbjEPMA0GA1UECgwGVmlydHJ1MRQwEgYDVQQLDAtFbmdpbmVlcmluZzEqMCgG
-    A1UEAwwhZHNwLXBlcC1xYS5hcHBzLmRzcC5zaHAudmlydHJ1LnVzMB4XDTI0MDcx
-    MjE0MDM0NVoXDTI5MDcxMTE0MDM0NVowgYIxCzAJBgNVBAYTAlVTMQswCQYDVQQI
-    DAJEQzETMBEGA1UEBwwKV2FzaGluZ3RvbjEPMA0GA1UECgwGVmlydHJ1MRQwEgYD
-    VQQLDAtFbmdpbmVlcmluZzEqMCgGA1UEAwwhZHNwLXBlcC1xYS5hcHBzLmRzcC5z
-    aHAudmlydHJ1LnVzMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEApFCC
-    D69ahG4dXXKo7DtcqB8By9RcPnJiWHujb4RJm0Am3y6kA4GY+2ah6cbb3Rryns5O
-    FJ9gJPz8KnSDnYsGbrbTud2KbPuNBrU+CQ2bGOAKJcQ4T9Gs/d86YFL/qsEwxBbw
-    raQU9fERBZQsJ7oOQ/iCaL6V2+BwoFfKWom0hDCE1jL4l6nWWifhJLJI0pV5gScm
-    NzvPDFb/PPnDHLpXzP6s6zKIIOIXXKoaTVf8IK/WKHq73GCOw4ewSzEr3nf9lSIP
-    mZgtyKo6d5vQdCcOUyegNrRPgsKwHyiEMnKTj6f8ZBUh7hwN8WrKDc5gN95Fj8Yh
-    b/HclY+yc07dcRG63QIDAQABo1MwUTAdBgNVHQ4EFgQUPFda09YQGrov+i2+4qp4
-    HLEkcrMwHwYDVR0jBBgwFoAUPFda09YQGrov+i2+4qp4HLEkcrMwDwYDVR0TAQH/
-    BAUwAwEB/zANBgkqhkiG9w0BAQsFAAOCAQEAbm8LtbP/+D9jafOHcTi7W5hZ7X8z
-    okp0BppndeeRB/wCPNnhhFSLkPqP5faJMxEbklU7T8xznjMQOFZlSA9lMjMR5W/G
-    x5YLPIGuHltOhXPmjp61MkC3PGh7rHPTt1JQx7KPScLZaSQ9zhH0TttskLgBRc4o
-    OTfWE7EgaHqa54xyH6zK5pZRvIMhtl6yc03JFYvFAQQmT3YNxiyhUe4Y+E4I/dFw
-    SHIzl4PmDwmuxjMUjmMiqS0QMgLpZXjHTLgFLdGkf7uJlIEVcOTFBv1MHjsvMvIu
-    MabvV4xtOTTBYrrp+HN+N8UdSjBnXWtXAUApWyQuhQ8HFGTESZoWrFL18g==
-    -----END CERTIFICATE-----
-  - |
-    -----BEGIN CERTIFICATE-----
-    MIIDZzCCAk+gAwIBAgIIEUCquxV2NqIwDQYJKoZIhvcNAQELBQAwJjEkMCIGA1UE
-    AwwbaW5ncmVzcy1vcGVyYXRvckAxNzA4NjI5ODk1MB4XDTI0MDIyMjE5MjQ1NVoX
-    DTI2MDIyMTE5MjQ1NlowIzEhMB8GA1UEAwwYKi5hcHBzLmRzcC5zaHAudmlydHJ1
-    LnVzMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA0MNhV4owBl+YDsQi
-    O0g9lqZzqkk00cyBADfCbC/troue8QqsCWCoc2KTc+niW+VqYro9na9i4GxBW6Cb
-    42HfccP2bFyrXrcDknKyA3lzj8WvwAr+e606rcFEEFj8E/gur3CoPtmUd3TWhPfL
-    6vXgDHG28aLY4ztuV3yq7W+bMW+wYWcnxwbbtSS3NeCPs/TDCvAO38Xgk+HK9NYH
-    ToYiRiRZx+lLVwFRtq/YRi1QZ02niRBRKxlK1pEApvykK6yEksv8etcazRHojrwY
-    l533Sj6J11TLQe18PokCeLBh604NMU+IiSJ6+1zjsDu3lr/CjV2yxCrjxo1iFVEI
-    sk7MnwIDAQABo4GbMIGYMA4GA1UdDwEB/wQEAwIFoDATBgNVHSUEDDAKBggrBgEF
-    BQcDATAMBgNVHRMBAf8EAjAAMB0GA1UdDgQWBBQCQPj1JORFQuuCUMUhXqn+oHpn
-    KDAfBgNVHSMEGDAWgBRLBpZPQJSaaV6Cnj0vbvoN2LCdiDAjBgNVHREEHDAaghgq
-    LmFwcHMuZHNwLnNocC52aXJ0cnUudXMwDQYJKoZIhvcNAQELBQADggEBADkobEm0
-    o/zBsIrSUAyuoVjofGqr7OirVIDjziWnANvytPOCn01UcvwRsGYWK8MxnekmIWmz
-    6K9f5h0me4c504oyqPy5Jt2HIHqQkVKMclxMMOKO+Ckg5AAHWKTgzp7t7i3G2tBy
-    vr24D0uDhZ9tprhtqFFkX0KCBW8BAqSn9tcZ62ybDOL5FIwx3tfB5ujxcRp2u74M
-    VAg0Q1otLrve7E2ZGSuDUbJd+S5z2dSzdib/NbBMEswTKVGr5OGILmnRlFJRpCrr
-    kjwFLKfcRCcXtOQxg2HQqWHs7rGBUMp89vTJp67EAmE+335yYz2XkeSxalUVm/tK
-    bUibOLXV0C9ytOA=
-    -----END CERTIFICATE-----
-  - |
-    -----BEGIN CERTIFICATE-----
-    MIIDDDCCAfSgAwIBAgIBATANBgkqhkiG9w0BAQsFADAmMSQwIgYDVQQDDBtpbmdy
-    ZXNzLW9wZXJhdG9yQDE3MDg2Mjk4OTUwHhcNMjQwMjIyMTkyNDU1WhcNMjYwMjIx
-    MTkyNDU2WjAmMSQwIgYDVQQDDBtpbmdyZXNzLW9wZXJhdG9yQDE3MDg2Mjk4OTUw
-    ggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCuWr0BrQyQyAG9c+ivUQry
-    a/ZK5f2Xkl0ACNg1gu3ARfdK3GybgA9SjEm2m17UH1XjlX0UwVHmuENYITuBhRjt
-    f568w6A2d5if6Nf85ncvxeihOQZ9HbRwE0ZhnTi0yFPplpzuoOBXfieAf5baXu7u
-    Xl3LFYR7eVZMH8DRv58EMBsAHQXQeD79TVIrpX0C8GrevmLj788i+pacpohQhuIv
-    rjiNo9rrs50u3vf9c5MSOBbEpycjl9m7WuyU+qE/7FiVHS1EPY9Eq/XtpovCi23P
-    CyubAEJ4LQMoaCGeaW7YnZhp0flMbo3ScXvjnEhvdVTVMJy7Pn09MXyfLqWIFlpB
-    AgMBAAGjRTBDMA4GA1UdDwEB/wQEAwICpDASBgNVHRMBAf8ECDAGAQH/AgEAMB0G
-    A1UdDgQWBBRLBpZPQJSaaV6Cnj0vbvoN2LCdiDANBgkqhkiG9w0BAQsFAAOCAQEA
-    hejLRo/fWNmcTqRFN5y9/416gnVqZ9WkFiunKsZAaEPKeu7q0ESjfZEXEyvGKKqF
-    4kffVy8YgbFSKgmLCqfGt1rmxy76//BSEOBU2T7wFt8EbaT7n7inYmeh5wTQDpAB
-    LyV4efxxdPdY4gv2uU45ti12p/GxFx58AMyPqPCvNhN67rc98OQiXbUXalFWJAyO
-    Eddsf7C4Y2iey+lDRAzTFrGg7RwhOwgU5RO3g+XzTf0UpcvrNmVWgNGJrPvc5vVr
-    6D6O3Q5R3GC63w7bHmt7cct/6bT9/YiBpuslE7mR8IcvYtkNoHpqgNcir8+PWSNn
-    vIocbqTwH/Bm/WqKqjVVQQ==
-    -----END CERTIFICATE-----
+# abacExtraCas is a list of additional CAs to trust when communicating with the platform and the tagging PDP in PEM format
+abacExtraCas: []

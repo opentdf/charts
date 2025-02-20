@@ -36,8 +36,7 @@ spec:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       initContainers:
         - name: cert-generator
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}" 
-          # todo move this into a bash script? or remove apk add bash from the below line
+          image: &gateway_image "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           command: ['sh', '-c', 'openssl genrsa -out /etc/postfix/tls/{{ .Values.gatewayHostname }}/client.key 2048 && openssl req -new -key /etc/postfix/tls/{{ .Values.gatewayHostname }}/client.key -x509 -subj /CN={{ .Values.gatewayHostname }} -days 3650 -out /etc/postfix/tls/{{ .Values.gatewayHostname }}/client.pem']
           volumeMounts:
           - name: cert-dir
@@ -46,7 +45,7 @@ spec:
         - name: gateway # Gateway Container
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          image: *gateway_image
           volumeMounts:
           - name: cert-dir
             mountPath: /etc/postfix/tls/{{ .Values.gatewayHostname }}
@@ -62,7 +61,7 @@ spec:
           - name: postfix-dir
             mountPath: /var/spool/postfix
           ports:
-            - containerPort: {{ .Values.service.port }}
+            - containerPort: 25
               protocol: TCP
           envFrom:
           - configMapRef:
