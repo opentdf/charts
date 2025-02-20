@@ -49,10 +49,10 @@ data:
   {{- if eq (typeOf .Values.cacheSmtpConnections) "string" }}
   GATEWAY_SMTP_CACHE_CONNECTIONS: {{ .Values.cacheSmtpConnections | quote }}
   {{- else }}
-  GATEWAY_SMTP_CACHE_CONNECTIONS: "1" 
+  GATEWAY_SMTP_CACHE_CONNECTIONS: "1"
   {{- end }}
   {{- else }}
-  GATEWAY_SMTP_CACHE_CONNECTIONS: "0" 
+  GATEWAY_SMTP_CACHE_CONNECTIONS: "0"
   {{- end }}
   {{- if .Values.cacheSmtpConnectionsTimeLimit }}
   GATEWAY_SMTP_CONNECTION_CACHE_TIME_LIMIT: {{ .Values.cacheSmtpConnectionsTimeLimit | quote }}

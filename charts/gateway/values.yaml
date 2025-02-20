@@ -1,7 +1,7 @@
 replicaCount: 2
 
 image:
-  repository: us-central1-docker.pkg.dev/prj-sb-deployment-sveb/dspgateway/gateway 
+  repository: us-central1-docker.pkg.dev/prj-sb-deployment-sveb/dspgateway/gateway
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: "2.57.0-BACK-2295-encrypt-message-body-2fc3becf"
@@ -62,7 +62,7 @@ primaryMailingDomain: dsppepqa.lab
 # example.com=>[mail.example.com]:25
 gatewayTransportMaps: ''
 
-# allows email from any domain 
+# allows email from any domain
 inboundRelayAddresses: 0.0.0.0/0
 
 maxQueueLifetime: 5m
@@ -83,11 +83,11 @@ smtpSecurityLevel: mandatory
 smtpTlsComplianceDownstream: MEDIUM
 
 # server.example.com=>user@server.example.com=>password
-saslDownstreamCredentials: '' 
+saslDownstreamCredentials: ''
 saslDownstreamSecurityOptions: noanonymous
 
 # mail-sender@example.com=>password
-saslUpstreamCredentials: '' 
+saslUpstreamCredentials: ''
 saslUpstreamMechanisms: PLAIN
 
 smtpdUseTls: true
@@ -110,7 +110,7 @@ abacTaggingPdpAssertionType: "urn:nato:stanag:5636:A:1:elements:json" # the asse
 abacTrimBlockedRecipients: true # remove header recipients that are not entitled to receive an email
 abacPlaintextConnection: false # whether we should communicate with the platform and the tagging PDP over a plaintext connection
 abacEncryptEmail: true # whether we should encrypt when running in inbound encrypt mode. if this is not set we only do access checks and blocking
-abacEncryptEmailBody: true # whether we should encrypt the email body when running in inbound encrypt mode. if this is not set we encrypt the attachments only 
+abacEncryptEmailBody: true # whether we should encrypt the email body when running in inbound encrypt mode. if this is not set we encrypt the attachments only
 abacExtraCas:
   - |
     -----BEGIN CERTIFICATE-----

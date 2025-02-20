@@ -8,7 +8,7 @@ spec:
   selector:
     matchLabels:
     {{- include "gateway.labels" . | nindent 6 }}
-  serviceName:  
+  serviceName:
   replicas: {{ .Values.replicas }}
   volumeClaimTemplates:
     - metadata:
@@ -58,7 +58,7 @@ spec:
           - name: abac-cas
             mountPath: /etc/virtru-gateway/abac-cas
             readOnly: true
-          {{- end }} 
+          {{- end }}
           - name: postfix-dir
             mountPath: /var/spool/postfix
           ports:
@@ -66,7 +66,7 @@ spec:
               protocol: TCP
           envFrom:
           - configMapRef:
-              name: {{ include "gateway.fullname" . }} 
+              name: {{ include "gateway.fullname" . }}
           env:
           {{- if .Values.saslDownstreamCredentials }}
           - name: GATEWAY_SMTP_SASL_ACCOUNTS
