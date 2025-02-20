@@ -36,10 +36,27 @@ service:
   loadBalancerIP: ''
   port: 25
 
-# persistentVolumeStorageClassName is the storage class to use for the persistent volume that we use to store the email queue
-persistentVolumeStorageClassName: standard
-# persistentVolumeSize is the size of the persistent volume that we use to store the email queue
-persistentVolumeSize: 1Gi
+# abacOidcClientId is the client id that gateway should use to communicate with the platform
+abacOidcClientId: "" # the client id that gateway should use to communicate with the platform
+# abacOiDcClientSecret is the client secret that gateway should use to communicate with the platform
+abacOidcClientSecret: ""
+# abacPlatformEndpoint is the URL where the platform is deployed. Hostname and port
+abacPlatformEndpoint: "" # the endpoint where the platform is deployed
+# abacTaggingPdpEndpoint is the URL where the tagging PDP is deployed. Hostname and port
+abacTaggingPdpEndpoint: "" # the endpoint where the tagging PDP is deployed
+# abacTaggingPdpAssertionType is the assertion type to use, currently `urn:us:gov:ic:edh` or `urn:nato:stanag:5636:A:1:elements:json`.
+abacTaggingPdpAssertionType: "urn:nato:stanag:5636:A:1:elements:json" # the assertion type to use with the tagging pdp, currently `urn:us:gov:ic:edh` or `urn:nato:stanag:5636:A:1:elements:json`
+# abacTrimBlockedRecipients is whether we should remove header recipients that are not entitled to receive an email
+abacTrimBlockedRecipients: true # remove header recipients that are not entitled to receive an email
+# abacPlaintextConnection is whether we should communicate with the platform and the tagging PDP over a plaintext connection
+abacPlaintextConnection: false # whether we should communicate with the platform and the tagging PDP over a plaintext connection
+# abaEncryptEmail is whether we should encrypt when running in encrypt mode
+abacEncryptEmail: true # whether we should encrypt when running in inbound encrypt mode. if this is not set we only do access checks and blocking
+# abacEncryptEmailBody is whether we should encrypt the email body when running in encrypt mode
+abacEncryptEmailBody: true # whether we should encrypt the email body when running in inbound encrypt mode. if this is not set we encrypt the attachments only
+# abacExtraCas is a list of additional CAs to trust when communicating with the platform and the tagging PDP in PEM format
+abacExtraCas: []
+
 # gatewayMode is the mode the gateway should run in, either encrypt or decrypt
 gatewayMode: encrypt
 # gatewayTopology is the topology the gateway should run in, either inbound or outbound
@@ -50,6 +67,11 @@ gatewayHostname: gateway1-pep-qa.apps.dsp.shp.virtru.us
 gatewayTransportMaps: ''
 # comma-separated list of CIDR addresses that are allowed to relay mail through the gateway
 inboundRelayAddresses: 0.0.0.0/0
+
+# persistentVolumeStorageClassName is the storage class to use for the persistent volume that we use to store the email queue
+persistentVolumeStorageClassName: standard
+# persistentVolumeSize is the size of the persistent volume that we use to store the email queue
+persistentVolumeSize: 1Gi
 # maxQueueLifetime is the maximum amount of time a message can stay in the queue before being bounced (postfix maximal_queue_lifetime)
 maxQueueLifetime: "5m"
 # maxBackoffTime is the maximum amount of time the gateway will wait before retrying a message (postfix maximal_backoff_time)
@@ -104,23 +126,3 @@ cacheSmtpConnectionsTimeLimit: 5s
 # tlsPolicyMaps maps domains to TLS policies. e.g. example.com=>may,example.net=>encrypt. Valid policies
 #   can be found here: https://www.postfix.org/TLS_README.html#client_tls_policy
 tlsPolicyMaps: ""
-# abacOidcClientId is the client id that gateway should use to communicate with the platform
-abacOidcClientId: "" # the client id that gateway should use to communicate with the platform
-# abacOiDcClientSecret is the client secret that gateway should use to communicate with the platform
-abacOidcClientSecret: ""
-# abacPlatformEndpoint is the URL where the platform is deployed. Hostname and port
-abacPlatformEndpoint: "" # the endpoint where the platform is deployed
-# abacTaggingPdpEndpoint is the URL where the tagging PDP is deployed. Hostname and port
-abacTaggingPdpEndpoint: "" # the endpoint where the tagging PDP is deployed
-# abacTaggingPdpAssertionType is the assertion type to use, currently `urn:us:gov:ic:edh` or `urn:nato:stanag:5636:A:1:elements:json`.
-abacTaggingPdpAssertionType: "urn:nato:stanag:5636:A:1:elements:json" # the assertion type to use with the tagging pdp, currently `urn:us:gov:ic:edh` or `urn:nato:stanag:5636:A:1:elements:json`
-# abacTrimBlockedRecipients is whether we should remove header recipients that are not entitled to receive an email
-abacTrimBlockedRecipients: true # remove header recipients that are not entitled to receive an email
-# abacPlaintextConnection is whether we should communicate with the platform and the tagging PDP over a plaintext connection
-abacPlaintextConnection: false # whether we should communicate with the platform and the tagging PDP over a plaintext connection
-# abaEncryptEmail is whether we should encrypt when running in encrypt mode
-abacEncryptEmail: true # whether we should encrypt when running in inbound encrypt mode. if this is not set we only do access checks and blocking
-# abacEncryptEmailBody is whether we should encrypt the email body when running in encrypt mode
-abacEncryptEmailBody: true # whether we should encrypt the email body when running in inbound encrypt mode. if this is not set we encrypt the attachments only
-# abacExtraCas is a list of additional CAs to trust when communicating with the platform and the tagging PDP in PEM format
-abacExtraCas: []
