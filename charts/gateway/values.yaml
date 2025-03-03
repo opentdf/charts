@@ -58,20 +58,20 @@ abacEncryptEmailBody: true # whether we should encrypt the email body when runni
 abacExtraCas: []
 
 # gatewayMode is the mode the gateway should run in, either encrypt or decrypt
-gatewayMode: encrypt
+gatewayMode: "encrypt"
 # gatewayTopology is the topology the gateway should run in, either inbound or outbound
-gatewayTopology: inbound
+gatewayTopology: "inbound"
 # gatewayHostname is the hostname that the gateway should use. A self-signed certificate will be generated for this hostname
-gatewayHostname: gateway1-pep-qa.apps.dsp.shp.virtru.us
+gatewayHostname: ""
 # gatewayTransportMaps maps domains to mail servers for the next hop. e.g. example.com=>smtp.example.com,example.net=>smtp.example.net
-gatewayTransportMaps: ''
+gatewayTransportMaps: ""
 # comma-separated list of CIDR addresses that are allowed to relay mail through the gateway
-inboundRelayAddresses: 0.0.0.0/0
+inboundRelayAddresses: "0.0.0.0/0"
 
 # persistentVolumeStorageClassName is the storage class to use for the persistent volume that we use to store the email queue
-persistentVolumeStorageClassName: standard
+persistentVolumeStorageClassName: "standard"
 # persistentVolumeSize is the size of the persistent volume that we use to store the email queue
-persistentVolumeSize: 1Gi
+persistentVolumeSize: "1Gi"
 # maxQueueLifetime is the maximum amount of time a message can stay in the queue before being bounced (postfix maximal_queue_lifetime)
 maxQueueLifetime: "5m"
 # maxBackoffTime is the maximum amount of time the gateway will wait before retrying a message (postfix maximal_backoff_time)
@@ -99,30 +99,30 @@ xHeaderAuthSecret: ""
 # smtpUseTls is whether the gateway should use TLS when sending mail
 smtpUseTls: true
 # smtpSecurityLevel is the security level the gateway should use when sending mail
-smtpSecurityLevel: mandatory
+smtpSecurityLevel: "mandatory"
 # smtpTlsComplianceDownstream is the compliance level the gateway should use when sending mail downstream
-smtpTlsComplianceDownstream: MEDIUM
+smtpTlsComplianceDownstream: "MEDIUM"
 # saslDownstreamCredentials maps usernames to passwords for downstream authentication (gateway sending email).
 #   e.g. username1=>password1,username2=>password2
 saslDownstreamCredentials: ""
 # saslDownstreamSecurityOptions is the security options the gateway should use when authenticating downstream
-saslDownstreamSecurityOptions: noanonymous
+saslDownstreamSecurityOptions: "noanonymous"
 # saslUpstreamCredentials maps usernames to passwords for upstream authentication (gateway receiving email). e.g. username1=>password1,username2=>password2
 #   e.g. username1=>password1,username2=>password2
 saslUpstreamCredentials: ""
 # saslUpstreamMechanisms is the mechanisms the gateway should use when receiving email
-saslUpstreamMechanisms: PLAIN
+saslUpstreamMechanisms: "PLAIN"
 # smtpdUseTls is whether the gateway should use TLS when receiving mail
 smtpdUseTls: true
 # smtpdSecurityLevel is the security level the gateway should use when receiving mail
-smtpdSecurityLevel: mandatory
+smtpdSecurityLevel: "mandatory"
 # smtpdTlsComplianceUpstream is the compliance level the gateway should use when receiving mail upstream
-smtpdTlsComplianceUpstream: MEDIUM
+smtpdTlsComplianceUpstream: "MEDIUM"
 # cacheSmtpConnections controls whether the gateway should cache outgoing SMTP connections. true to cache everything,
 #   false to not cache anything, or a comma-separated list of domains to cache connections for
 cacheSmtpConnections: true
 # cacheSmtpConnectionsTimeLimit is the amount of time to cache outgoing SMTP connections for
-cacheSmtpConnectionsTimeLimit: 5s
+cacheSmtpConnectionsTimeLimit: "5s"
 # tlsPolicyMaps maps domains to TLS policies. e.g. example.com=>may,example.net=>encrypt. Valid policies
 #   can be found here: https://www.postfix.org/TLS_README.html#client_tls_policy
 tlsPolicyMaps: ""
