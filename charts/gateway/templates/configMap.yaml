@@ -69,8 +69,8 @@ data:
   GATEWAY_SMTP_TLS_POLICY_MAPS: {{ .Values.tlsPolicyMaps | quote }}
   {{- end }}
   GATEWAY_ABAC_OIDC_CLIENT_ID: {{ required "abacOidcClientID is required" .Values.abacOidcClientId | quote }}
-  GATEWAY_ABAC_PLATFORM_ENDPOINT: {{ required .Values.abacPlatformEndpoint "abacPlatformEndpoint is required" | quote }}
-  GATEWAY_ABAC_TAGGING_PDP_ENDPOINT: {{ required .Values.abacTaggingPdpEndpoint "abacTaggingPdpEndpoint is required" | quote }}
+  GATEWAY_ABAC_PLATFORM_ENDPOINT: {{ required "abacPlatformEndpoint is required" .Values.abacPlatformEndpoint | quote }}
+  GATEWAY_ABAC_TAGGING_PDP_ENDPOINT: {{ required "abacTaggingPdpEndpoint is required" .Values.abacTaggingPdpEndpoint | quote }}
   GATEWAY_ABAC_TRIM_BLOCKED_RECIPIENTS: {{ .Values.abacTrimBlockedRecipients | ternary "1" "0" | quote }}
   GATEWAY_ABAC_PLAINTEXT_CONNECTION: {{ .Values.abacPlaintextConnection | ternary "1" "0" | quote}}
   GATEWAY_ABAC_ENCRYPT_EMAIL: {{ .Values.abacEncryptEmail | ternary "1" "0" | quote }}
