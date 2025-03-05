@@ -1,3 +1,7 @@
 # CODEOWNERS
 
 * @opentdf/sre
+
+# @opentdf/security added on 2025-02-04 go.sum,go.mod
+tests/go.sum @opentdf/sre @opentdf/security
+tests/go.mod @opentdf/sre @opentdf/security
