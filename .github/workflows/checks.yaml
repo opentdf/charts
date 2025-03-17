@@ -58,7 +58,7 @@ jobs:
         shell: bash
         env:
           K3D_VERSION: "v5.8.3"
-          K3D_SHA256SUM: "0fe23b8c0a151e9c41d16f9d861be26df65e5ab7f35115424220aad5a83c566b"
+          K3D_SHA256SUM: "dbaa79a76ace7f4ca230a1ff41dc7d8a5036a8ad0309e9c54f9bf3836dbe853e"
         run: |
           curl -sSLO "https://github.com/k3d-io/k3d/releases/download/${K3D_VERSION}/k3d-linux-amd64"
           echo "${K3D_SHA256SUM}  k3d-linux-amd64" | sha256sum -c --quiet --strict
