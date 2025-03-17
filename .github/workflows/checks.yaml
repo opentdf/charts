@@ -19,7 +19,7 @@ jobs:
   platform_integration:
     strategy:
       matrix:
-        k3s_image: ["latest", "v1.28.12-k3s1","v1.27.16-k3s1","v1.26.15-k3s1"]
+        k3s_image: ["latest", "v1.31.6-k3s1", "v1.30.10-k3s1", "v1.29.14-k3s1", "v1.28.12-k3s1"]
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332
