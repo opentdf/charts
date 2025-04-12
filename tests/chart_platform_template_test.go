@@ -1,18 +1,19 @@
 package test
 
 import (
+	"path/filepath"
+	"strings"
+	"testing"
+
 	"github.com/gruntwork-io/terratest/modules/helm"
 	"github.com/gruntwork-io/terratest/modules/k8s"
 	"github.com/gruntwork-io/terratest/modules/random"
 	"github.com/stretchr/testify/suite"
 	yaml3 "gopkg.in/yaml.v3"
 	appv1 "k8s.io/api/apps/v1"
-	policyv1 "k8s.io/api/policy/v1"
 	corev1 "k8s.io/api/core/v1"
+	policyv1 "k8s.io/api/policy/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
-	"path/filepath"
-	"strings"
-	"testing"
 )
 
 type PlatformChartTemplateSuite struct {
@@ -91,6 +92,24 @@ func (s *PlatformChartTemplateSuite) Test_Set_Mode_KAS_No_SDK_Config_Defined_Exp
 	_, err := helm.RenderTemplateE(s.T(), options, s.chartPath, releaseName, []string{})
 	s.Require().Error(err)
 	s.Require().ErrorContains(err, "Mode does not contain 'core' or 'all'. You must configure the sdk_config")
+}
+func (s *PlatformChartTemplateSuite) Test_SDK_Config_Client_ID_Set_Without_Secret_Expect_Error() {
+	releaseName := "client-id-no-secret"
+
+	namespaceName := "opentdf-" + strings.ToLower(random.UniqueId())
+
+	options := &helm.Options{
+		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
+		SetValues: map[string]string{
+			"image.tag":            "latest",
+			"sdk_config.client_id": "test-client-id",
+			// client_secret and existingSecret are intentionally omitted
+		},
+	}
+
+	_, err := helm.RenderTemplateE(s.T(), options, s.chartPath, releaseName, []string{})
+	s.Require().Error(err)
+	s.Require().ErrorContains(err, "If sdk_config.client_id is set, you must also set either sdk_config.client_secret or both sdk_config.existingSecret.name and sdk_config.existingSecret.key")
 }
 
 func (s *PlatformChartTemplateSuite) Test_Playground_Enabled_AND_Keycloak_Ing_Enabled_Trusted_Cert_Mounted() {
@@ -669,8 +688,8 @@ func (s *PlatformChartTemplateSuite) Test_PBD_Not_Enabled() {
 	options := &helm.Options{
 		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
 		SetValues: map[string]string{
-			"image.tag":                "latest",
-			"sdk_config.client_secret": "test",
+			"image.tag":                   "latest",
+			"sdk_config.client_secret":    "test",
 			"podDisruptionBudget.enabled": "false",
 		},
 	}
@@ -688,9 +707,9 @@ func (s *PlatformChartTemplateSuite) Test_PBD_Enabled() {
 	options := &helm.Options{
 		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
 		SetValues: map[string]string{
-			"image.tag":                "latest",
-			"sdk_config.client_secret": "test",
-			"podDisruptionBudget.enabled": "true",
+			"image.tag":                        "latest",
+			"sdk_config.client_secret":         "test",
+			"podDisruptionBudget.enabled":      "true",
 			"podDisruptionBudget.minAvailable": "1",
 		},
 	}
@@ -706,4 +725,148 @@ func (s *PlatformChartTemplateSuite) Test_PBD_Enabled() {
 	s.Require().Equal(pdb.Spec.MinAvailable, &oneIntStr)
 	var nilIntOrString *intstr.IntOrString = nil
 	s.Require().Equal(pdb.Spec.MaxUnavailable, nilIntOrString)
+}
+
+func (s *PlatformChartTemplateSuite) Test_SDK_Config_Is_Not_Set_When_Client_ID_Is_Empty() {
+	releaseName := "basic"
+
+	namespaceName := "opentdf-" + strings.ToLower(random.UniqueId())
+
+	options := &helm.Options{
+		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
+	}
+
+	output := helm.RenderTemplate(s.T(), options, s.chartPath, releaseName, []string{"templates/config.yaml"})
+
+	var config corev1.ConfigMap
+	helm.UnmarshalK8SYaml(s.T(), output, &config)
+
+	s.Require().Contains(config.Data, "opentdf.yaml")
+	configData := config.Data["opentdf.yaml"]
+	s.Require().NotEmpty(configData, "opentdf.yaml data should not be empty")
+
+	var parsedConfig map[string]interface{}
+	err := yaml3.Unmarshal([]byte(configData), &parsedConfig)
+	s.Require().NoError(err, "Failed to unmarshal opentdf.yaml content")
+
+	// Assert that the 'sdk_config' key is NOT present in the parsed config
+	_, sdkConfigExists := parsedConfig["sdk_config"]
+	s.Require().False(sdkConfigExists, "sdk_config key should not exist when client_id is not set")
+
+}
+
+func (s *PlatformChartTemplateSuite) Test_SDK_Config_Is_Set_When_Client_ID_Is_Not_Empty() {
+	releaseName := "basic"
+
+	namespaceName := "opentdf-" + strings.ToLower(random.UniqueId())
+
+	options := &helm.Options{
+		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
+		SetValues: map[string]string{
+			"sdk_config.client_id":     "test-client-id",     // Set client_id to a non-empty value
+			"sdk_config.client_secret": "test-client-secret", // Set client_secret to a non-empty value,
+		},
+	}
+
+	output := helm.RenderTemplate(s.T(), options, s.chartPath, releaseName, []string{"templates/config.yaml"})
+
+	var config corev1.ConfigMap
+	helm.UnmarshalK8SYaml(s.T(), output, &config)
+
+	s.Require().Contains(config.Data, "opentdf.yaml")
+	configData := config.Data["opentdf.yaml"]
+	s.Require().NotEmpty(configData, "opentdf.yaml data should not be empty")
+
+	var parsedConfig map[string]interface{}
+	err := yaml3.Unmarshal([]byte(configData), &parsedConfig)
+	s.Require().NoError(err, "Failed to unmarshal opentdf.yaml content")
+
+	// Assert that the 'sdk_config' key is present in the parsed config
+	sdkConfig, sdkConfigExists := parsedConfig["sdk_config"]
+	s.Require().True(sdkConfigExists, "sdk_config key should exist when client_id is set")
+	s.Require().IsType(map[string]interface{}{}, sdkConfig, "sdk_config should be a map")
+}
+
+func (s *PlatformChartTemplateSuite) Test_Core_SDK_Connection_Is_Set_When_Endpoint_Is_Not_Empty() {
+	releaseName := "basic"
+
+	namespaceName := "opentdf-" + strings.ToLower(random.UniqueId())
+
+	options := &helm.Options{
+		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
+		SetValues: map[string]string{
+			"sdk_config.client_id":                 "test-client-id",     // Set client_id to a non-empty value
+			"sdk_config.client_secret":             "test-client-secret", // Set client_secret to a non-empty value
+			"sdk_config.connections.core.endpoint": "test-endpoint",      // Set endpoint to a non-empty value
+		},
+	}
+
+	output := helm.RenderTemplate(s.T(), options, s.chartPath, releaseName, []string{"templates/config.yaml"})
+
+	var config corev1.ConfigMap
+	helm.UnmarshalK8SYaml(s.T(), output, &config)
+
+	s.Require().Contains(config.Data, "opentdf.yaml")
+	configData := config.Data["opentdf.yaml"]
+	s.Require().NotEmpty(configData, "opentdf.yaml data should not be empty")
+
+	var parsedConfig map[string]interface{}
+	err := yaml3.Unmarshal([]byte(configData), &parsedConfig)
+	s.Require().NoError(err, "Failed to unmarshal opentdf.yaml content")
+
+	// Assert that the 'sdk_config' key is present in the parsed config
+	sdkConfig, sdkConfigExists := parsedConfig["sdk_config"]
+	s.Require().True(sdkConfigExists, "sdk_config key should exist when client_id is set")
+	s.Require().IsType(map[string]interface{}{}, sdkConfig, "sdk_config should be a map")
+
+	// Assert that the 'sdk_config.core.endpoint' key is present and has the correct value
+	endpoint, endpointExists := sdkConfig.(map[string]interface{})["core"].(map[string]interface{})["endpoint"]
+	s.Require().True(endpointExists, "sdk_config.core.endpoint key should exist when endpoint is set")
+	s.Require().Equal("test-endpoint", endpoint, "sdk_config.core.endpoint should have the correct value")
+	s.Require().IsType("", endpoint, "sdk_config.core.endpoint should be a string")
+}
+
+func (s *PlatformChartTemplateSuite) Test_Two_SDK_Config_Connections_Are_Set_When_Endpoints_Are_Not_Empty() {
+	releaseName := "basic"
+
+	namespaceName := "opentdf-" + strings.ToLower(random.UniqueId())
+
+	options := &helm.Options{
+		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
+		SetValues: map[string]string{
+			"sdk_config.connections.core.endpoint":  "test-endpoint",      // Set endpoint to a non-empty value
+			"sdk_config.connections.core2.endpoint": "test-endpoint2",     // Set another endpoint to a non-empty value
+			"sdk_config.client_id":                  "test-client-id",     // Set client_id to a non-empty value
+			"sdk_config.client_secret":              "test-client-secret", // Set client_secret to a non-empty value
+		},
+	}
+
+	output := helm.RenderTemplate(s.T(), options, s.chartPath, releaseName, []string{"templates/config.yaml"})
+
+	var config corev1.ConfigMap
+	helm.UnmarshalK8SYaml(s.T(), output, &config)
+
+	s.Require().Contains(config.Data, "opentdf.yaml")
+	configData := config.Data["opentdf.yaml"]
+	s.Require().NotEmpty(configData, "opentdf.yaml data should not be empty")
+
+	var parsedConfig map[string]interface{}
+	err := yaml3.Unmarshal([]byte(configData), &parsedConfig)
+	s.Require().NoError(err, "Failed to unmarshal opentdf.yaml content")
+
+	// Assert that the 'sdk_config' key is present in the parsed config
+	sdkConfig, sdkConfigExists := parsedConfig["sdk_config"]
+	s.Require().True(sdkConfigExists, "sdk_config key should exist when client_id is set")
+	s.Require().IsType(map[string]interface{}{}, sdkConfig, "sdk_config should be a map")
+
+	// Assert that the 'sdk_config.core.endpoint' key is present and has the correct value
+	endpoint, endpointExists := sdkConfig.(map[string]interface{})["core"].(map[string]interface{})["endpoint"]
+	s.Require().True(endpointExists, "sdk_config.core.endpoint key should exist when endpoint is set")
+	s.Require().Equal("test-endpoint", endpoint, "sdk_config.core.endpoint should have the correct value")
+	s.Require().IsType("", endpoint, "sdk_config.core.endpoint should be a string")
+	// Assert that the 'sdk_config.core2.endpoint' key is present and has the correct value
+	endpoint2, endpointExists := sdkConfig.(map[string]interface{})["core2"].(map[string]interface{})["endpoint"]
+	s.Require().True(endpointExists, "sdk_config.core2.endpoint key should exist when endpoint is set")
+	s.Require().Equal("test-endpoint2", endpoint2, "sdk_config.core2.endpoint should have the correct value")
+	s.Require().IsType("", endpoint2, "sdk_config.core2.endpoint should be a string")
 }

@@ -10,10 +10,10 @@ kubeAPI: # same as `--api-port myhost.my.domain:6445` (where the name would reso
   hostIP: "0.0.0.0" # where the Kubernetes API will be listening on
   hostPort: "6445" # where the Kubernetes API listening port will be mapped to on your host system
 ports:
-  - port: 80:80 # same as `--port '8080:80@loadbalancer'`
+  - port: 9080:80 # same as `--port '8080:80@loadbalancer'`
     nodeFilters:
       - loadbalancer
-  - port: 443:443 # same as `--port '8080:80@loadbalancer'`
+  - port: 9443:443 # same as `--port '8080:80@loadbalancer'`
     nodeFilters:
       - loadbalancer
 hostAliases: # /etc/hosts style entries to be injected into /etc/hosts in the node containers and in the NodeHosts section in CoreDNS

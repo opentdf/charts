@@ -1,6 +1,6 @@
 # platform
 
-![Version: 0.8.3](https://img.shields.io/badge/Version-0.8.3-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.4.32](https://img.shields.io/badge/AppVersion-v0.4.32-informational?style=flat-square)
+![Version: 0.8.4](https://img.shields.io/badge/Version-0.8.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.4.32](https://img.shields.io/badge/AppVersion-v0.4.32-informational?style=flat-square)
 
 A Helm Chart for OpenTDF Platform
 
@@ -192,11 +192,18 @@ Download the [keycloak_data.yaml](https://raw.githubusercontent.com/opentdf/plat
 | resources | object | `{}` | Resources to allocate to the container |
 | sdk_config.client_id | string | `""` | Oauth2 Client Id |
 | sdk_config.client_secret | string | `""` | Oauth2 Client Secret |
-| sdk_config.endpoint | string | `""` | The core platform endpoint |
+| sdk_config.connections | object | `{"core":{"endpoint":"","insecure":false,"plaintext":false},"entityresolution":{"endpoint":"","insecure":false,"plaintext":false}}` | Connection info to support different modes of operation.  More connections can be added by adding a new section underneath connections. |
+| sdk_config.connections.core | object | `{"endpoint":"","insecure":false,"plaintext":false}` | Defines connection info to an external Core Platform Service (e.g. This would be used if running a standalone KAS) |
+| sdk_config.connections.core.endpoint | string | `""` | The core platform endpoint |
+| sdk_config.connections.core.insecure | bool | `false` | Whether to verify the certificate of the core platform endpoint |
+| sdk_config.connections.core.plaintext | bool | `false` | Plaintext Insecure Connection |
+| sdk_config.connections.entityresolution | object | `{"endpoint":"","insecure":false,"plaintext":false}` | Defines connection info to an external Entity Resolution Service |
+| sdk_config.connections.entityresolution.endpoint | string | `""` | The entity resolution endpoint |
+| sdk_config.connections.entityresolution.insecure | bool | `false` | Whether to verify the certificate of the entity resolution endpoint |
+| sdk_config.connections.entityresolution.plaintext | bool | `false` | Plaintext Insecure Connection |
 | sdk_config.existingSecret | object | `{"key":"","name":""}` | Oauth2 Client Secret Kubernetes Secret |
 | sdk_config.existingSecret.key | string | `""` | The key in the secret containing the client secret |
 | sdk_config.existingSecret.name | string | `""` | The kubernetes secret containing the client secret |
-| sdk_config.plaintext | bool | `false` | Plaintext Insecure Connection |
 | securityContext | object | `{"allowPrivilegeEscalation":false,"capabilities":{"drop":["ALL"]},"runAsNonRoot":true,"seccompProfile":{"type":"RuntimeDefault"}}` | The container security context (https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-container) |
 | server.auth.audience | string | `"http://localhost:8080"` | Audience of provided by the identity provider |
 | server.auth.dpopskew | string | `"1h"` | The amount of drift allowed between the server and the client for the DPoP Proof Token |

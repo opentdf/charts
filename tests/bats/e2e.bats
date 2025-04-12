@@ -10,7 +10,12 @@ setup() {
 
   echo '{"clientId":"opentdf","clientSecret":"secret"}' >client_creds.json
 
-  export OTDFCTL_CMD="otdfctl --host https://platform.opentdf.local --with-client-creds-file ./client_creds.json"
+  # Default otdfctl cmd
+  local default_otdfctl_cmd="otdfctl --host https://platform.opentdf.local:9443 --with-client-creds-file ./client_creds.json"
+
+  OTDFCTL_CMD="${OTDFCTL_CMD_OVERRIDE:-$default_otdfctl_cmd}"
+
+  export OTDFCTL_CMD
 
 }
 
@@ -237,7 +242,7 @@ setup() {
   attribute_id=$(cat /tmp/created_attribute_id.txt)
 
   # Run the command to get the attribute by ID
-  run $OTDFCTL_CMD policy attributes get --id=$attribute_id --tls-no-verify --json
+  run $OTDFCTL_CMD policy attributes get --id=$attribute_id --json
 
   # Assert that the command was successful
   assert_success
@@ -327,6 +332,65 @@ setup() {
   echo "$subject_mapping_id" >/tmp/subject_mapping_id.txt
 }
 
+@test "Create KAS Grant and verify the output" {
+  # Fetch the base64 encoded PEM from the secret
+  encoded_pem=$(kubectl get secret kas-private-keys -n $KUBE_NAMESPACE -o jsonpath='{.data.kas-cert\.pem}')
+
+  # Check if the fetch was successful
+  if [[ -z "$encoded_pem" ]]; then
+    echo "Error: Could not retrieve kas-cert.pem from secret kas-private-keys." >&2
+    exit 1
+  fi
+
+  # Decode the base64 content
+  decoded_pem=$(echo "$encoded_pem" | base64 --decode) # Or base64 -d
+
+  # Define the base JSON structure without the PEM data
+  # Use null as a placeholder which jq can easily replace
+  base_json_structure='{
+  "cached": {
+    "keys": [
+      {
+        "pem": null,
+        "kid": "r1",
+        "alg": 1
+      }
+    ]
+  }
+}'
+
+  # Use jq to insert the decoded PEM into the structure
+  public_keys_json=$(echo "$base_json_structure" | jq --arg pem_data "$decoded_pem" '.cached.keys[0].pem = $pem_data')
+
+  # Check if jq command was successful
+  if [[ $? -ne 0 ]]; then
+    echo "Error: jq command failed to construct JSON." >&2
+    exit 1
+  fi
+
+  run $OTDFCTL_CMD policy kas-registry create --uri "https://kas.opentdf.local:9443/kas" --public-keys "$public_keys_json" --json
+
+  # Assert that the command was successful
+  assert_success
+
+  # Extract created kas id
+  kas_id=$(echo "$output" | jq -r '.id')
+
+  # Read the created developer value ID from the temporary file
+  if [ ! -f /tmp/developer_value_id.txt ]; then
+    echo "Developer value ID file does not exist."
+    exit 1
+  fi
+  developer_value_id=$(cat /tmp/developer_value_id.txt)
+
+  # Create grant to developer value
+  run $OTDFCTL_CMD policy kas-grants assign --value-id $developer_value_id --kas-id $kas_id
+
+  # Assert that the grant was created successfully
+  assert_success
+
+}
+
 @test "Create TDF3 file and verify the output" {
   # Run the command to create a TDF3 file without attributes
   run bash -c 'echo "my first encrypted tdf" | $OTDFCTL_CMD encrypt -o opentdf-example.tdf --tdf-type tdf3'
@@ -406,7 +470,7 @@ setup() {
 
   # Assert that the output contains the expected error message
   assert_output --partial 'ERROR    Failed to decrypt file:'
-  assert_output --partial 'kao unwrap failed for split {https://platform.opentdf.local:443/kas }: could not find policy in rewrap response'
+  assert_output --partial 'kao unwrap failed for split {https://platform.opentdf.local:9443/kas }: could not find policy in rewrap response'
 }
 
 @test "Decrypt nanoTDF file with attributes and expect failure" {
@@ -485,5 +549,41 @@ setup() {
   assert_success
 
   # Assert that the decrypted output is as expected
+  assert_output "my first encrypted tdf"
+}
+
+@test "Create and Decrypt with External KAS" {
+  # Check we can reach kas.opentdf.local
+  run curl -f -sS https://kas.opentdf.local:9443/kas/v2/kas_public_key
+  assert_success
+
+  run jq --raw-output '.kid' <<<"$output"
+  assert_success
+  assert_output "r1"
+
+  # Run the command to create a TDF3 file with attributes
+  run bash -c 'echo "my first encrypted tdf" | $OTDFCTL_CMD encrypt -o opentdf-grant-example.tdf --tdf-type tdf3 --attr https://demo.com/attr/role/value/developer'
+
+  # Assert that the command was successful
+  assert_success
+
+  # Assert that the TDF3 file is created
+  [ -f opentdf-grant-example.tdf ]
+  assert_success
+
+  run unzip -o opentdf-grant-example.tdf
+  assert_success
+
+  run jq '.encryptionInformation.keyAccess | length' 0.manifest.json
+  assert_success
+  assert_output "1"
+
+  run jq --raw-output '.encryptionInformation.keyAccess[0].url' 0.manifest.json
+  assert_success
+  assert_output "https://kas.opentdf.local:9443/kas" "Expected KAS URL to be https://kas.opentdf.local:9443/kas, but got $output"
+
+  # Decrypt TDF with external kas
+  run $OTDFCTL_CMD decrypt --tdf-type tdf3 opentdf-grant-example.tdf
+  assert_success
   assert_output "my first encrypted tdf"
 }
