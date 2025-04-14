@@ -310,10 +310,25 @@ server:
 mode: all
 
 sdk_config:
-  # -- The core platform endpoint
-  endpoint: ""
-  # -- Plaintext Insecure Connection
-  plaintext: false
+  # -- Connection info to support different modes of operation. 
+  # More connections can be added by adding a new section underneath connections.
+  connections:
+    # -- Defines connection info to an external Core Platform Service (e.g. This would be used if running a standalone KAS)
+    core:
+      # -- The core platform endpoint
+      endpoint: ""
+      # -- Plaintext Insecure Connection
+      plaintext: false
+      # -- Whether to verify the certificate of the core platform endpoint
+      insecure: false
+    # -- Defines connection info to an external Entity Resolution Service
+    entityresolution:
+      # -- The entity resolution endpoint
+      endpoint: ""
+      # -- Plaintext Insecure Connection
+      plaintext: false
+      # -- Whether to verify the certificate of the entity resolution endpoint
+      insecure: false
   # -- Oauth2 Client Id
   client_id: ""
   # -- Oauth2 Client Secret

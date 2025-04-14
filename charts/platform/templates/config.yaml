@@ -17,12 +17,24 @@ data:
       password:
     {{- end }}
     mode: {{ .Values.mode | quote }}
+    {{- if .Values.sdk_config.client_id }}
     sdk_config:
-      endpoint: {{ .Values.sdk_config.endpoint | quote }}
-      plaintext: {{ .Values.sdk_config.plaintext }}
+      {{- /* Loop through each key-value pair in the connections map */}}
+      {{- if .Values.sdk_config.connections }}
+        {{- range $name, $config := .Values.sdk_config.connections }}
+          {{- /* Check if the 'endpoint' key exists within the connection's config and is not empty */}}
+          {{- if and (hasKey $config "endpoint") (ne (trim $config.endpoint) "") }}
+            {{- /* Output the connection name (key) with indent 4 */}}
+            {{- $name | nindent 6 }}:
+              {{- /* Output the connection's config (value) as YAML, indented by 6 spaces */}}
+              {{- $config | toYaml | nindent 8 }}
+          {{- end }} {{- /* End of the 'if endpoint exists' check */}}
+        {{- end }} {{- /* End of the range loop */}}
+      {{- end }}
       client_id: {{ .Values.sdk_config.client_id | quote }}
       {{- if .Values.sdk_config.client_secret }}
       client_secret: {{ .Values.sdk_config.client_secret | quote }}
+      {{- end }}
       {{- end }}
     server:
       port: {{ .Values.server.port | quote }}

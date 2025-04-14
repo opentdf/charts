@@ -19,7 +19,14 @@ jobs:
   platform_integration:
     strategy:
       matrix:
-        k3s_image: ["latest", "v1.31.6-k3s1", "v1.30.10-k3s1", "v1.29.14-k3s1", "v1.28.12-k3s1"]
+        k3s_image:
+          [
+            "latest",
+            "v1.31.6-k3s1",
+            "v1.30.10-k3s1",
+            "v1.29.14-k3s1",
+            "v1.28.12-k3s1",
+          ]
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332
@@ -52,7 +59,7 @@ jobs:
         run: go install filippo.io/mkcert@2a46726cebac0ff4e1f133d90b4e4c42f1edf44a
       - run: |
           mkcert -install
-          mkcert -cert-file tls.crt -key-file tls.key opentdf.local keycloak.opentdf.local platform.opentdf.local
+          mkcert -cert-file tls.crt -key-file tls.key kas.opentdf.local keycloak.opentdf.local platform.opentdf.local
       - name: "Download k3d"
         id: "download-k3d"
         shell: bash
@@ -70,10 +77,13 @@ jobs:
       - name: "Create k3d cluster"
         id: "create-k3d-cluster"
         run: |
-          echo "127.0.0.1 platform.opentdf.local keycloak.opentdf.local" | sudo tee -a /etc/hosts
+          echo "127.0.0.1 platform.opentdf.local kas.opentdf.local keycloak.opentdf.local" | sudo tee -a /etc/hosts
           echo "127.0.0.1 k3d.registry" | sudo tee -a /etc/hosts
           docker network create platform-k3d --subnet 10.255.127.0/24 --ip-range 10.255.127.192/26 --gateway 10.255.127.1
           k3d cluster create --config ".github/k3d-config.yaml" --image "rancher/k3s:${{ matrix.k3s_image }}" --wait --timeout 60s
           sleep 30 # wait for the cluster to be ready
-      - run: go test ./
+      - run: go mod download
+        working-directory: tests
+      - name: Run Integration Tests
+        run: go test -v ./
         working-directory: tests
