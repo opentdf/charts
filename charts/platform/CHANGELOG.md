@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.5](https://github.com/opentdf/charts/compare/platform-0.8.4...platform-0.8.5) (2025-04-14)
+
+
+### Bug Fixes
+
+* update sdk_config to match platform configuration ([#117](https://github.com/opentdf/charts/issues/117)) ([c0f65fb](https://github.com/opentdf/charts/commit/c0f65fb1a0e86d77cf3803a80f8a98ca6fd4d83e))
+
 ## [0.8.4](https://github.com/opentdf/charts/compare/platform-0.8.3...platform-0.8.4) (2025-01-29)
 
 
