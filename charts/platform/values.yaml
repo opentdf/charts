@@ -173,6 +173,9 @@ envFrom: []
 # - secretRef:
 #     name: secret
 
+# -- Mode defines the set of services to run (all, core, kas). Example mode: core,kas
+mode: all
+
 logger:
   # -- The platform log level ( debug, info, warn, error )
   level: info
@@ -192,6 +195,8 @@ db:
   database: opentdf
   # -- The database user
   user: opentdf
+  # -- The schema for the database.
+  schema: opentdf
   # -- The database ssl mode ( disable, prefer, require, verify-ca, verify-full )
   sslmode: prefer
   password:
@@ -200,6 +205,23 @@ db:
       name: opentdf-db-credentials
       # -- The key in the secret containing the database user password
       key: password
+  # -- Whether to run the database migration or not.
+  runMigration: true
+  # -- Connection timeout duration (seconds).
+  connect_timeout_seconds: 15
+  pool:
+    # -- Maximum number of connections per pool.
+    max_connection_count: 4
+    # -- Minimum number of connections per pool.
+    min_connection_count: 0
+    # -- Maximum seconds per connection lifetime.
+    max_connection_lifetime_seconds: 3600
+    # -- Minimum number of idle connections per pool.
+    min_idle_connections_count: 0
+    # -- Maximum seconds allowed for idle connection.
+    max_connection_idle_seconds: 1800
+    # -- Interval seconds per health check.
+    health_check_period_seconds: 60
 
 server:
   # -- The server port
@@ -306,11 +328,43 @@ server:
           private: /etc/platform/kas/kas-ec-private.pem
           cert: /etc/platform/kas/kas-ec-cert.pem
 
-# -- Mode defines the set of services to run (all, core, kas). Example mode: core,kas
-mode: all
+trace:
+  # -- Enable distributed tracing
+  enabled: false
+  provider:
+    # -- Tracing provider (file or otlp)
+    name:
+    file:
+      # -- Path to trace file output
+      path:
+      # -- Enable pretty-printed JSON
+      prettyPrint:
+      # -- Maximum file size in MB
+      maxSize:
+      # -- Maximum number of backup files
+      maxBackups:
+      # -- Maximum age of files in days
+      maxAge:
+      # -- Enable compression of trace files
+      compress:
+    otlp:
+      # -- Protocol to use (grpc or http/grpc)
+      protocol:
+      # -- Endpoint URL for the collector
+      endpoint:
+      # -- Whether to use an insecure connection
+      insecure: false
+      # -- Headers to include in OTLP requests
+      headers: {}
+
+# -- Platform Cache Manager Settings
+cache:
+  ristretto:
+    # -- Maximum cost (i.e. 1mb, 1gb) for the cache (default: 1gb)
+    max_cost: 1gb
 
 sdk_config:
-  # -- Connection info to support different modes of operation. 
+  # -- Connection info to support different modes of operation.
   # More connections can be added by adding a new section underneath connections.
   connections:
     # -- Defines connection info to an external Core Platform Service (e.g. This would be used if running a standalone KAS)
@@ -357,15 +411,31 @@ services:
   kas:
     # -- KAS service Configuration as yaml
     config:
+      # -- Preview feature enablement
+      preview_features:
+        # -- Whether tdf based ecc support is enabled.
+        ec_tdf_enabled: false
+        # -- Whether new key management features are enabled.
+        key_management: false
+
+      root_key:
       # -- Default keys for clients to use
       keyring:
         - kid: e1
           alg: ec:secp256r1
         - kid: r1
           alg: rsa:2048
+    # -- Key needed when key_management feature is enabled (openssl rand 32 -hex)
+    # openssl rand 32 -hex | kubectl create secret generic kas-root-key --from-file=root_key=/dev/stdin
+    root_key_secret:
+      name: kas-root-key
+      key: root_key
+    # -- KAS secret containing keys
+    # @deprecated Use `private_keys_secret` instead. This value will be removed in a future release.
+    privateKeysSecret: kas-private-keys
     # -- KAS secret containing keys
     # kas-private.pem , kas-cert.pem , kas-ec-private.pem , kas-ec-cert.pem
-    privateKeysSecret: kas-private-keys
+    private_keys_secret: ""
   authorization:
     {}
     # -- Overide embedded rego policy

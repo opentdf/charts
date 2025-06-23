@@ -82,6 +82,13 @@ spec:
                 name: {{ .Values.sdk_config.existingSecret.name }}
                 key: {{ .Values.sdk_config.existingSecret.key }}
           {{- end }}
+          {{- if and (or (contains "all" .Values.mode) (contains "kas" .Values.mode)) .Values.services.kas.config.preview_features.key_management }}
+          - name: {{include "platform.envVarPrefix" .}}_KAS_ROOT_KEY
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.services.kas.root_key_secret.name }}
+                key: {{ .Values.services.kas.root_key_secret.key }}
+          {{- end }}
             {{- with .Values.extraEnv }}
             {{- toYaml . | nindent 10 }}
             {{- end }}

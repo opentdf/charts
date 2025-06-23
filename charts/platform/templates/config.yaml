@@ -1,5 +1,6 @@
 {{ $data := dict "Release" $.Release "Chart" $.Chart "Values" $.Values "Files" $.Files "Capabilities" .Capabilities }}
 {{ include "sdk_config.validate" . }}
+{{ include "platform.kas.validate" . }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -36,6 +37,8 @@ data:
       client_secret: {{ .Values.sdk_config.client_secret | quote }}
       {{- end }}
       {{- end }}
+    trace:
+      {{- .Values.trace | toYaml | nindent 6 }}
     server:
       port: {{ .Values.server.port | quote }}
       enable_pprof: {{ .Values.server.enable_pprof }}
