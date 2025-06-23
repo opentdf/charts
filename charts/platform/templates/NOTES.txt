@@ -11,6 +11,11 @@ Keycloak Application: {{ .Values.keycloak.ingress.hostname }}
 Keycloak Admin Application: {{ .Values.keycloak.adminIngress.hostname }}                                                                                                        
 {{- end }}
 
+{{- if and .Values.services.kas.privateKeysSecret (not .Values.services.kas.private_keys_secret) }}
+WARNING: The `services.kas.privateKeysSecret` value is deprecated and will be removed in a future release.
+Please use `services.kas.private_keys_secret` instead.
+{{- end -}}
+
 1. Get the application URL by running these commands:
 {{- if .Values.ingress.enabled }}
 {{- range $host := .Values.ingress.hosts }}
