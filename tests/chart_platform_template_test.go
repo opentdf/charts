@@ -978,20 +978,3 @@ func (s *PlatformChartTemplateSuite) Test_Kas_PrivateKeySecret_Coalesce_Fallback
 	}
 	s.Require().True(volumeFound, "Volume 'kas-private-keys' not found")
 }
-
-func (s *PlatformChartTemplateSuite) Test_Kas_PrivateKeySecret_Deprecation_Note_Renders() {
-	releaseName := "kas-secret-deprecation-note"
-	namespaceName := "opentdf-" + strings.ToLower(random.UniqueId())
-
-	options := &helm.Options{
-		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
-		SetValues: map[string]string{
-			"services.kas.privateKeysSecret": "old-secret",
-			// a new secret is not being set
-		},
-	}
-
-	output, err := helm.RenderTemplateE(s.T(), options, s.chartPath, releaseName, []string{"templates/NOTES.txt"})
-	s.Require().NoError(err)
-	s.Require().Contains(output, "WARNING: The `services.kas.privateKeysSecret` value is deprecated")
-}

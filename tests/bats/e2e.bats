@@ -368,13 +368,19 @@ setup() {
     exit 1
   fi
 
-  run $OTDFCTL_CMD policy kas-registry create --uri "https://kas.opentdf.local:9443/kas" --public-keys "$public_keys_json" --json
+  run $OTDFCTL_CMD policy kas-registry create --uri "https://kas.opentdf.local:9443/kas" --json
 
   # Assert that the command was successful
   assert_success
 
   # Extract created kas id
   kas_id=$(echo "$output" | jq -r '.id')
+
+  # Create KAS Key Public_Key Only
+  run $OTDFCTL_CMD policy kas-registry key create --kas https://kas.opentdf.local:9443/kas --key-id r1 --algorithm "rsa:2048" --mode public_key --public-key-pem $encoded_pem --json
+  assert_success
+
+  key_id=$(echo "$output" | jq -r '.id')
 
   # Read the created developer value ID from the temporary file
   if [ ! -f /tmp/developer_value_id.txt ]; then
@@ -384,7 +390,7 @@ setup() {
   developer_value_id=$(cat /tmp/developer_value_id.txt)
 
   # Create grant to developer value
-  run $OTDFCTL_CMD policy kas-grants assign --value-id $developer_value_id --kas-id $kas_id
+  run $OTDFCTL_CMD policy attribute value key assign --value $developer_value_id --key-id $key_id
 
   # Assert that the grant was created successfully
   assert_success
