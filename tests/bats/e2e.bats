@@ -351,7 +351,7 @@ setup() {
   echo "$subject_mapping_id" >/tmp/subject_mapping_id.txt
 }
 
-@test "Create KAS Grant and verify the output" {
+@test "Create KAS Key Mapping and verify the output" {
   # Fetch the base64 encoded PEM from the secret
   encoded_pem=$(kubectl get secret kas-private-keys -n $KUBE_NAMESPACE -o jsonpath='{.data.kas-cert\.pem}')
 
@@ -378,7 +378,7 @@ setup() {
   kas_id=$(echo "$output" | jq -r '.id')
 
   # Create KAS Key Public_Key Only
-  run $OTDFCTL_CMD policy kas-registry key create --kas https://kas.opentdf.local:9443/kas --key-id r1 --algorithm "rsa:2048" --mode "public_key" --public-key-pem "$encoded_pem" --json
+  run $OTDFCTL_CMD policy kas-registry key create --kas "https://kas.opentdf.local:9443/kas" --key-id "r1" --algorithm "rsa:2048" --mode "public_key" --public-key-pem "$encoded_pem" --json
   if [ "$status" -ne 0 ]; then
     echo "Error: 'otdfctl policy kas-registry key create' failed with status $status." >&2
     echo "Output: $output" >&2
@@ -394,7 +394,7 @@ setup() {
   fi
   developer_value_id=$(cat /tmp/developer_value_id.txt)
 
-  # Create grant to developer value
+  # Create key mapping to developer value
   run $OTDFCTL_CMD policy attribute value key assign --value $developer_value_id --key-id $key_id
   if [ "$status" -ne 0 ]; then
     echo "Error: 'otdfctl policy attribute value key assign' failed with status $status." >&2
@@ -596,7 +596,7 @@ setup() {
   assert_output "r1"
 
   # Run the command to create a TDF3 file with attributes
-  run bash -c 'echo "my first encrypted tdf" | $OTDFCTL_CMD encrypt -o opentdf-grant-example.tdf --tdf-type tdf3 --attr https://demo.com/attr/role/value/developer'
+  run bash -c 'echo "my first encrypted tdf" | $OTDFCTL_CMD encrypt -o opentdf-key-mapping-example.tdf --tdf-type tdf3 --attr https://demo.com/attr/role/value/developer'
   if [ "$status" -ne 0 ]; then
     echo "Error: 'otdfctl encrypt for external KAS' failed with status $status." >&2
     echo "Output: $output" >&2
@@ -604,9 +604,9 @@ setup() {
   fi
 
   # Assert that the TDF3 file is created
-  assert_file_exist opentdf-grant-example.tdf
+  assert_file_exist opentdf-key-mapping-example.tdf
 
-  run unzip -o opentdf-grant-example.tdf
+  run unzip -o opentdf-key-mapping-example.tdf
   if [ "$status" -ne 0 ]; then
     echo "Error: 'unzip tdf' failed with status $status." >&2
     echo "Output: $output" >&2
