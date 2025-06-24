@@ -395,7 +395,7 @@ setup() {
   developer_value_id=$(cat /tmp/developer_value_id.txt)
 
   # Create key mapping to developer value
-  run $OTDFCTL_CMD policy attribute value key assign --value $developer_value_id --key-id $key_id
+  run $OTDFCTL_CMD policy attribute value key assign --value "$developer_value_id" --key-id "$key_id"
   if [ "$status" -ne 0 ]; then
     echo "Error: 'otdfctl policy attribute value key assign' failed with status $status." >&2
     echo "Output: $output" >&2
@@ -521,7 +521,7 @@ setup() {
   subject_condition_set_id=$(cat /tmp/subject_condition_set_id.txt)
 
   # Run the command to create the subject mapping
-  run $OTDFCTL_CMD policy subject-mappings create --action-standard DECRYPT --attribute-value-id $guest_value_id --subject-condition-set-id $subject_condition_set_id --json
+  run $OTDFCTL_CMD policy subject-mappings create --action read --attribute-value-id $guest_value_id --subject-condition-set-id $subject_condition_set_id --json
   if [ "$status" -ne 0 ]; then
     echo "Error: 'otdfctl policy subject-mappings create' failed with status $status." >&2
     echo "Output: $output" >&2
