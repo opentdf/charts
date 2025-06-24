@@ -385,6 +385,7 @@ setup() {
     return 1
   fi
 
+  echo "KEY: $output"
   key_id=$(echo "$output" | jq -r '.kas_key.key.id')
 
   # Read the created developer value ID from the temporary file
