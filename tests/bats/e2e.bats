@@ -490,7 +490,7 @@ setup() {
 
   # Assert that the output contains the expected error message
   assert_output --partial 'ERROR    Failed to decrypt file:'
-  assert_output --partial 'kao unwrap failed for split {https://platform.opentdf.local:9443/kas }: could not find policy in rewrap response'
+  assert_output --partial 'kao unwrap failed for split {https://platform.opentdf.local:9443/kas }: permission_denied: request error'
 }
 
 @test "Decrypt nanoTDF file with attributes and expect failure" {
@@ -630,7 +630,7 @@ setup() {
   assert_output "https://kas.opentdf.local:9443/kas" "Expected KAS URL to be https://kas.opentdf.local:9443/kas, but got $output"
 
   # Decrypt TDF with external kas
-  run $OTDFCTL_CMD decrypt --tdf-type tdf3 opentdf-grant-example.tdf
+  run $OTDFCTL_CMD decrypt --tdf-type tdf3 opentdf-key-mapping-example.tdf
   if [ "$status" -ne 0 ]; then
     echo "Error: 'otdfctl decrypt external KAS TDF' failed with status $status." >&2
     echo "Output: $output" >&2
