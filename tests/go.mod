@@ -7,7 +7,7 @@ toolchain go1.24.2
 require (
 	github.com/gruntwork-io/terratest v0.48.2
 	github.com/stretchr/testify v1.10.0
-	github.com/traefik/traefik/v3 v3.3.6
+	github.com/traefik/traefik/v3 v3.4.1
 	gopkg.in/yaml.v3 v3.0.1
 	k8s.io/api v0.31.1
 	k8s.io/apimachinery v0.31.1
