@@ -870,3 +870,111 @@ func (s *PlatformChartTemplateSuite) Test_Two_SDK_Config_Connections_Are_Set_Whe
 	s.Require().Equal("test-endpoint2", endpoint2, "sdk_config.core2.endpoint should have the correct value")
 	s.Require().IsType("", endpoint2, "sdk_config.core2.endpoint should be a string")
 }
+
+func (s *PlatformChartTemplateSuite) Test_KeyManagement_Enabled_Without_RootKeySecret_Expect_Error() {
+	releaseName := "key-management-no-secret"
+
+	namespaceName := "opentdf-" + strings.ToLower(random.UniqueId())
+
+	options := &helm.Options{
+		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
+		SetValues: map[string]string{
+			"services.kas.config.preview_features.key_management": "true",
+			"services.kas.root_key_secret.name":                   "",
+			"services.kas.root_key_secret.key":                    "",
+		},
+	}
+
+	_, err := helm.RenderTemplateE(s.T(), options, s.chartPath, releaseName, []string{})
+	s.Require().Error(err)
+	s.Require().ErrorContains(err, "When services.kas.config.preview_features.key_management is true, you must set both services.kas.root_key_secret.name and services.kas.root_key_secret.key")
+}
+
+func (s *PlatformChartTemplateSuite) Test_KeyManagement_Enabled_With_RootKeySecret_Expect_EnvVar_Set() {
+	releaseName := "key-management-with-secret"
+
+	namespaceName := "opentdf-" + strings.ToLower(random.UniqueId())
+
+	options := &helm.Options{
+		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
+		SetValues: map[string]string{
+			"services.kas.config.preview_features.key_management": "true",
+			"services.kas.root_key_secret.name":                   "my-root-key-secret",
+			"services.kas.root_key_secret.key":                    "my-root-key",
+		},
+	}
+
+	output := helm.RenderTemplate(s.T(), options, s.chartPath, releaseName, []string{"templates/deployment.yaml"})
+	var deployment appv1.Deployment
+	helm.UnmarshalK8SYaml(s.T(), output, &deployment)
+
+	envVarFound := false
+	for _, container := range deployment.Spec.Template.Spec.Containers {
+		for _, envVar := range container.Env {
+			if envVar.Name == "OPENTDF_KAS_ROOT_KEY" {
+				s.Require().Equal("my-root-key-secret", envVar.ValueFrom.SecretKeyRef.Name)
+				s.Require().Equal("my-root-key", envVar.ValueFrom.SecretKeyRef.Key)
+				envVarFound = true
+			}
+		}
+	}
+	s.Require().True(envVarFound)
+}
+
+func (s *PlatformChartTemplateSuite) Test_Kas_PrivateKeySecret_Coalesce_NewValueTakesPrecedence() {
+	releaseName := "kas-secret-coalesce-new"
+	namespaceName := "opentdf-" + strings.ToLower(random.UniqueId())
+
+	options := &helm.Options{
+		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
+		SetValues: map[string]string{
+			"mode":                             "kas",
+			"sdk_config.client_id":             "test",
+			"sdk_config.client_secret":         "test",
+			"services.kas.private_keys_secret": "new-secret",
+			"services.kas.privateKeysSecret":   "old-secret",
+		},
+	}
+
+	output := helm.RenderTemplate(s.T(), options, s.chartPath, releaseName, []string{"templates/deployment.yaml"})
+	var deployment appv1.Deployment
+	helm.UnmarshalK8SYaml(s.T(), output, &deployment)
+
+	volumeFound := false
+	for _, volume := range deployment.Spec.Template.Spec.Volumes {
+		if volume.Name == "kas-private-keys" {
+			s.Require().Equal("new-secret", volume.Secret.SecretName)
+			volumeFound = true
+		}
+	}
+	s.Require().True(volumeFound, "Volume 'kas-private-keys' not found")
+}
+
+func (s *PlatformChartTemplateSuite) Test_Kas_PrivateKeySecret_Coalesce_FallbackToOldValue() {
+	releaseName := "kas-secret-coalesce-old"
+	namespaceName := "opentdf-" + strings.ToLower(random.UniqueId())
+
+	options := &helm.Options{
+		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
+		SetValues: map[string]string{
+			"mode":                             "kas",
+			"sdk_config.client_id":             "test",
+			"sdk_config.client_secret":         "test",
+			"services.kas.private_keys_secret": "", // Default empty value
+			"services.kas.privateKeysSecret":   "old-secret",
+		},
+	}
+
+	output := helm.RenderTemplate(s.T(), options, s.chartPath, releaseName, []string{"templates/deployment.yaml"})
+	var deployment appv1.Deployment
+	helm.UnmarshalK8SYaml(s.T(), output, &deployment)
+
+	volumeFound := false
+	for _, volume := range deployment.Spec.Template.Spec.Volumes {
+		if volume.Name == "kas-private-keys" {
+			s.Require().Equal("old-secret", volume.Secret.SecretName)
+			volumeFound = true
+		}
+	}
+	s.Require().True(volumeFound, "Volume 'kas-private-keys' not found")
+}

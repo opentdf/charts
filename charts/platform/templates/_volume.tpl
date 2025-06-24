@@ -14,7 +14,7 @@ volumes:
   {{- if or (contains "all" .Values.mode) (contains "kas" .Values.mode) }}
   - name: kas-private-keys
     secret:
-      secretName: {{ .Values.services.kas.privateKeysSecret }}
+      secretName: {{ coalesce .Values.services.kas.private_keys_secret .Values.services.kas.privateKeysSecret }}
     {{- if .Values.server.tls.enabled }}
   {{- end }}
   - name: tls

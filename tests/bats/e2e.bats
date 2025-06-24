@@ -22,20 +22,21 @@ setup() {
 @test "List namespaces" {
   # Run the command to list namespaces
   run $OTDFCTL_CMD policy attributes namespaces list --json
-
-  echo "Command output: $output" # Debugging line
-
-  # Assert that the command was successful
-  assert_success
-
+  if [ "$status" -ne 0 ]; then
+    echo "Error: 'otdfctl policy attributes namespaces list' failed with status $status." >&2
+    echo "Output: $output" >&2
+    return 1
+  fi
 }
 
 @test "Create namespace and verify the output" {
   # Run the command to create a namespace
   run $OTDFCTL_CMD policy attributes namespaces create --name demo.com --json
-
-  # Assert that the command was successful
-  assert_success
+  if [ "$status" -ne 0 ]; then
+    echo "Error: 'otdfctl policy attributes namespaces create' failed with status $status." >&2
+    echo "Output: $output" >&2
+    return 1
+  fi
 
   # Assert that the output contains the namespace name
   assert_output --partial '"name": "demo.com"'
@@ -63,9 +64,11 @@ setup() {
 
   # Run the command to list namespaces
   run $OTDFCTL_CMD policy attributes namespaces list --json
-
-  # Assert that the command was successful
-  assert_success
+  if [ "$status" -ne 0 ]; then
+    echo "Error: 'otdfctl policy attributes namespaces list' failed with status $status." >&2
+    echo "Output: $output" >&2
+    return 1
+  fi
 
   # Assert that the output contains the newly created namespace
   echo "$output" | jq -e '.[] | select(.id == "'$created_id'")' >/dev/null
@@ -82,9 +85,11 @@ setup() {
 
   # Run the command to get the namespace by ID
   run $OTDFCTL_CMD policy attributes namespaces get --id=$namespace_id --json
-
-  # Assert that the command was successful
-  assert_success
+  if [ "$status" -ne 0 ]; then
+    echo "Error: 'otdfctl policy attributes namespaces get' failed with status $status." >&2
+    echo "Output: $output" >&2
+    return 1
+  fi
 
   # Assert that the output contains the namespace details
   assert_output --partial '"id": "'$namespace_id'"'
@@ -103,9 +108,11 @@ setup() {
 
   # Run the command to create an attribute
   run $OTDFCTL_CMD policy attributes create --name role -s $namespace_id -r ANY_OF --json
-
-  # Assert that the command was successful
-  assert_success
+  if [ "$status" -ne 0 ]; then
+    echo "Error: 'otdfctl policy attributes create' failed with status $status." >&2
+    echo "Output: $output" >&2
+    return 1
+  fi
 
   # Assert that the output contains the attribute details
   assert_output --partial '"id": "'
@@ -138,9 +145,11 @@ setup() {
 
   # Run the command to create the admin value
   run $OTDFCTL_CMD policy attributes values create -a $attribute_id --value admin --json
-
-  # Assert that the command was successful
-  assert_success
+  if [ "$status" -ne 0 ]; then
+    echo "Error: 'otdfctl policy attributes values create' failed with status $status." >&2
+    echo "Output: $output" >&2
+    return 1
+  fi
 
   # Assert that the output contains the value details
   assert_output --partial '"id": "'
@@ -173,9 +182,11 @@ setup() {
 
   # Run the command to create the developer value
   run $OTDFCTL_CMD policy attributes values create -a $attribute_id --value developer --json
-
-  # Assert that the command was successful
-  assert_success
+  if [ "$status" -ne 0 ]; then
+    echo "Error: 'otdfctl policy attributes values create' failed with status $status." >&2
+    echo "Output: $output" >&2
+    return 1
+  fi
 
   # Assert that the output contains the value details
   assert_output --partial '"id": "'
@@ -208,9 +219,11 @@ setup() {
 
   # Run the command to create the guest value
   run $OTDFCTL_CMD policy attributes values create -a $attribute_id --value guest --json
-
-  # Assert that the command was successful
-  assert_success
+  if [ "$status" -ne 0 ]; then
+    echo "Error: 'otdfctl policy attributes values create' failed with status $status." >&2
+    echo "Output: $output" >&2
+    return 1
+  fi
 
   # Assert that the output contains the value details
   assert_output --partial '"id": "'
@@ -243,9 +256,11 @@ setup() {
 
   # Run the command to get the attribute by ID
   run $OTDFCTL_CMD policy attributes get --id=$attribute_id --json
-
-  # Assert that the command was successful
-  assert_success
+  if [ "$status" -ne 0 ]; then
+    echo "Error: 'otdfctl policy attributes get' failed with status $status." >&2
+    echo "Output: $output" >&2
+    return 1
+  fi
 
   # Assert that the output contains the attribute details
   assert_output --partial '"id": "'$attribute_id'"'
@@ -263,9 +278,11 @@ setup() {
 @test "Create subject condition set and verify the output" {
   # Run the command to create the subject condition set
   run $OTDFCTL_CMD policy subject-condition-sets create -s '[ { "condition_groups": [ { "conditions": [ { "subject_external_selector_value": ".clientId", "operator": 1, "subject_external_values": [ "opentdf" ] } ], "boolean_operator": 1 } ] } ]' --json
-
-  # Assert that the command was successful
-  assert_success
+  if [ "$status" -ne 0 ]; then
+    echo "Error: 'otdfctl policy subject-condition-sets create' failed with status $status." >&2
+    echo "Output: $output" >&2
+    return 1
+  fi
 
   # Assert that the output contains the subject condition set details
   assert_output --partial '"id": "'
@@ -303,10 +320,12 @@ setup() {
   subject_condition_set_id=$(cat /tmp/subject_condition_set_id.txt)
 
   # Run the command to create the subject mapping
-  run $OTDFCTL_CMD policy subject-mappings create --action-standard DECRYPT --attribute-value-id $developer_value_id --subject-condition-set-id $subject_condition_set_id --json
-
-  # Assert that the command was successful
-  assert_success
+  run $OTDFCTL_CMD policy subject-mappings create --action read --attribute-value-id $developer_value_id --subject-condition-set-id $subject_condition_set_id --json
+  if [ "$status" -ne 0 ]; then
+    echo "Error: 'otdfctl policy subject-mappings create' failed with status $status." >&2
+    echo "Output: $output" >&2
+    return 1
+  fi
 
   # Assert that the output contains the subject mapping details
   assert_output --partial '"id": "'
@@ -332,7 +351,7 @@ setup() {
   echo "$subject_mapping_id" >/tmp/subject_mapping_id.txt
 }
 
-@test "Create KAS Grant and verify the output" {
+@test "Create KAS Key Mapping and verify the output" {
   # Fetch the base64 encoded PEM from the secret
   encoded_pem=$(kubectl get secret kas-private-keys -n $KUBE_NAMESPACE -o jsonpath='{.data.kas-cert\.pem}')
 
@@ -342,39 +361,31 @@ setup() {
     exit 1
   fi
 
-  # Decode the base64 content
-  decoded_pem=$(echo "$encoded_pem" | base64 --decode) # Or base64 -d
-
-  # Define the base JSON structure without the PEM data
-  # Use null as a placeholder which jq can easily replace
-  base_json_structure='{
-  "cached": {
-    "keys": [
-      {
-        "pem": null,
-        "kid": "r1",
-        "alg": 1
-      }
-    ]
-  }
-}'
-
-  # Use jq to insert the decoded PEM into the structure
-  public_keys_json=$(echo "$base_json_structure" | jq --arg pem_data "$decoded_pem" '.cached.keys[0].pem = $pem_data')
-
   # Check if jq command was successful
   if [[ $? -ne 0 ]]; then
     echo "Error: jq command failed to construct JSON." >&2
     exit 1
   fi
 
-  run $OTDFCTL_CMD policy kas-registry create --uri "https://kas.opentdf.local:9443/kas" --public-keys "$public_keys_json" --json
-
-  # Assert that the command was successful
-  assert_success
+  run $OTDFCTL_CMD policy kas-registry create --uri "https://kas.opentdf.local:9443/kas" --json
+  if [ "$status" -ne 0 ]; then
+    echo "Error: 'otdfctl policy kas-registry create' failed with status $status." >&2
+    echo "Output: $output" >&2
+    return 1
+  fi
 
   # Extract created kas id
   kas_id=$(echo "$output" | jq -r '.id')
+
+  # Create KAS Key Public_Key Only
+  run $OTDFCTL_CMD policy kas-registry key create --kas "https://kas.opentdf.local:9443/kas" --key-id "r1" --algorithm "rsa:2048" --mode "public_key" --public-key-pem "$encoded_pem" --json
+  if [ "$status" -ne 0 ]; then
+    echo "Error: 'otdfctl policy kas-registry key create' failed with status $status." >&2
+    echo "Output: $output" >&2
+    return 1
+  fi
+
+  key_id=$(echo "$output" | jq -r '.key.id')
 
   # Read the created developer value ID from the temporary file
   if [ ! -f /tmp/developer_value_id.txt ]; then
@@ -383,44 +394,49 @@ setup() {
   fi
   developer_value_id=$(cat /tmp/developer_value_id.txt)
 
-  # Create grant to developer value
-  run $OTDFCTL_CMD policy kas-grants assign --value-id $developer_value_id --kas-id $kas_id
-
-  # Assert that the grant was created successfully
-  assert_success
-
+  # Create key mapping to developer value
+  run $OTDFCTL_CMD policy attribute value key assign --value "$developer_value_id" --key-id "$key_id"
+  if [ "$status" -ne 0 ]; then
+    echo "Error: 'otdfctl policy attribute value key assign' failed with status $status." >&2
+    echo "Output: $output" >&2
+    return 1
+  fi
 }
 
 @test "Create TDF3 file and verify the output" {
   # Run the command to create a TDF3 file without attributes
   run bash -c 'echo "my first encrypted tdf" | $OTDFCTL_CMD encrypt -o opentdf-example.tdf --tdf-type tdf3'
-
-  # Assert that the command was successful
-  assert_success
+  if [ "$status" -ne 0 ]; then
+    echo "Error: 'otdfctl encrypt tdf3' failed with status $status." >&2
+    echo "Output: $output" >&2
+    return 1
+  fi
 
   # Assert that the TDF3 file is created
-  [ -f opentdf-example.tdf ]
-  assert_success
+  assert_file_exist opentdf-example.tdf
 }
 
 @test "Create nanoTDF file and verify the output" {
   # Run the command to create a nanoTDF file without attributes
   run bash -c 'echo "my first encrypted tdf" | $OTDFCTL_CMD encrypt -o opentdf-example.nano.tdf --tdf-type nano'
-
-  # Assert that the command was successful
-  assert_success
+  if [ "$status" -ne 0 ]; then
+    echo "Error: 'otdfctl encrypt nano' failed with status $status." >&2
+    echo "Output: $output" >&2
+    return 1
+  fi
 
   # Assert that the nanoTDF file is created
-  [ -f opentdf-example.nano.tdf ]
-  assert_success
+  assert_file_exist opentdf-example.nano.tdf
 }
 
 @test "Decrypt TDF3 file and verify the output" {
   # Run the command to decrypt the TDF3 file
   run $OTDFCTL_CMD decrypt --tdf-type tdf3 opentdf-example.tdf
-
-  # Assert that the command was successful
-  assert_success
+  if [ "$status" -ne 0 ]; then
+    echo "Error: 'otdfctl decrypt tdf3' failed with status $status." >&2
+    echo "Output: $output" >&2
+    return 1
+  fi
 
   # Assert that the decrypted output is as expected
   assert_output "my first encrypted tdf"
@@ -429,9 +445,11 @@ setup() {
 @test "Decrypt nanoTDF file and verify the output" {
   # Run the command to decrypt the nanoTDF file
   run $OTDFCTL_CMD decrypt --tdf-type nano opentdf-example.nano.tdf
-
-  # Assert that the command was successful
-  assert_success
+  if [ "$status" -ne 0 ]; then
+    echo "Error: 'otdfctl decrypt nano' failed with status $status." >&2
+    echo "Output: $output" >&2
+    return 1
+  fi
 
   # Assert that the decrypted output is as expected
   assert_output "my first encrypted tdf"
@@ -440,25 +458,27 @@ setup() {
 @test "Encrypt TDF3 file with attributes and verify the output" {
   # Run the command to create a TDF3 file with attributes
   run bash -c 'echo "my first encrypted tdf" | $OTDFCTL_CMD encrypt -o opentdf-example.tdf --tdf-type tdf3 --attr https://demo.com/attr/role/value/guest'
-
-  # Assert that the command was successful
-  assert_success
+  if [ "$status" -ne 0 ]; then
+    echo "Error: 'otdfctl encrypt tdf3 with attributes' failed with status $status." >&2
+    echo "Output: $output" >&2
+    return 1
+  fi
 
   # Assert that the TDF3 file is created
-  [ -f opentdf-example.tdf ]
-  assert_success
+  assert_file_exist opentdf-example.tdf
 }
 
 @test "Encrypt nanoTDF file with attributes and verify the output" {
   # Run the command to create a nanoTDF file with attributes
   run bash -c 'echo "my first encrypted tdf" | $OTDFCTL_CMD encrypt -o opentdf-example.nano.tdf --tdf-type nano --attr https://demo.com/attr/role/value/guest'
-
-  # Assert that the command was successful
-  assert_success
+  if [ "$status" -ne 0 ]; then
+    echo "Error: 'otdfctl encrypt nano with attributes' failed with status $status." >&2
+    echo "Output: $output" >&2
+    return 1
+  fi
 
   # Assert that the nanoTDF file is created
-  [ -f opentdf-example.nano.tdf ]
-  assert_success
+  assert_file_exist opentdf-example.nano.tdf
 }
 
 @test "Decrypt TDF3 file with attributes and expect failure" {
@@ -470,7 +490,7 @@ setup() {
 
   # Assert that the output contains the expected error message
   assert_output --partial 'ERROR    Failed to decrypt file:'
-  assert_output --partial 'kao unwrap failed for split {https://platform.opentdf.local:9443/kas }: could not find policy in rewrap response'
+  assert_output --partial 'kao unwrap failed for split {https://platform.opentdf.local:9443/kas }: permission_denied: request error'
 }
 
 @test "Decrypt nanoTDF file with attributes and expect failure" {
@@ -501,10 +521,12 @@ setup() {
   subject_condition_set_id=$(cat /tmp/subject_condition_set_id.txt)
 
   # Run the command to create the subject mapping
-  run $OTDFCTL_CMD policy subject-mappings create --action-standard DECRYPT --attribute-value-id $guest_value_id --subject-condition-set-id $subject_condition_set_id --json
-
-  # Assert that the command was successful
-  assert_success
+  run $OTDFCTL_CMD policy subject-mappings create --action read --attribute-value-id $guest_value_id --subject-condition-set-id $subject_condition_set_id --json
+  if [ "$status" -ne 0 ]; then
+    echo "Error: 'otdfctl policy subject-mappings create' failed with status $status." >&2
+    echo "Output: $output" >&2
+    return 1
+  fi
 
   # Assert that the output contains the subject mapping details
   assert_output --partial '"id": "'
@@ -533,9 +555,11 @@ setup() {
 @test "Decrypt TDF3 file with new subject mapping and verify the output" {
   # Run the command to decrypt the TDF3 file
   run $OTDFCTL_CMD decrypt --tdf-type tdf3 opentdf-example.tdf
-
-  # Assert that the command was successful
-  assert_success
+  if [ "$status" -ne 0 ]; then
+    echo "Error: 'otdfctl decrypt tdf3' failed with status $status." >&2
+    echo "Output: $output" >&2
+    return 1
+  fi
 
   # Assert that the decrypted output is as expected
   assert_output "my first encrypted tdf"
@@ -544,9 +568,11 @@ setup() {
 @test "Decrypt nanoTDF file with new subject mapping and verify the output" {
   # Run the command to decrypt the nanoTDF file
   run $OTDFCTL_CMD decrypt --tdf-type nano opentdf-example.nano.tdf
-
-  # Assert that the command was successful
-  assert_success
+  if [ "$status" -ne 0 ]; then
+    echo "Error: 'otdfctl decrypt nano' failed with status $status." >&2
+    echo "Output: $output" >&2
+    return 1
+  fi
 
   # Assert that the decrypted output is as expected
   assert_output "my first encrypted tdf"
@@ -555,35 +581,60 @@ setup() {
 @test "Create and Decrypt with External KAS" {
   # Check we can reach kas.opentdf.local
   run curl -f -sS https://kas.opentdf.local:9443/kas/v2/kas_public_key
-  assert_success
+  if [ "$status" -ne 0 ]; then
+    echo "Error: 'curl kas public key' failed with status $status." >&2
+    echo "Output: $output" >&2
+    return 1
+  fi
 
   run jq --raw-output '.kid' <<<"$output"
-  assert_success
+  if [ "$status" -ne 0 ]; then
+    echo "Error: 'jq .kid' failed with status $status." >&2
+    echo "Output: $output" >&2
+    return 1
+  fi
   assert_output "r1"
 
   # Run the command to create a TDF3 file with attributes
-  run bash -c 'echo "my first encrypted tdf" | $OTDFCTL_CMD encrypt -o opentdf-grant-example.tdf --tdf-type tdf3 --attr https://demo.com/attr/role/value/developer'
-
-  # Assert that the command was successful
-  assert_success
+  run bash -c 'echo "my first encrypted tdf" | $OTDFCTL_CMD encrypt -o opentdf-key-mapping-example.tdf --tdf-type tdf3 --attr https://demo.com/attr/role/value/developer'
+  if [ "$status" -ne 0 ]; then
+    echo "Error: 'otdfctl encrypt for external KAS' failed with status $status." >&2
+    echo "Output: $output" >&2
+    return 1
+  fi
 
   # Assert that the TDF3 file is created
-  [ -f opentdf-grant-example.tdf ]
-  assert_success
+  assert_file_exist opentdf-key-mapping-example.tdf
 
-  run unzip -o opentdf-grant-example.tdf
-  assert_success
+  run unzip -o opentdf-key-mapping-example.tdf
+  if [ "$status" -ne 0 ]; then
+    echo "Error: 'unzip tdf' failed with status $status." >&2
+    echo "Output: $output" >&2
+    return 1
+  fi
 
   run jq '.encryptionInformation.keyAccess | length' 0.manifest.json
-  assert_success
+  if [ "$status" -ne 0 ]; then
+    echo "Error: 'jq keyAccess length' failed with status $status." >&2
+    echo "Output: $output" >&2
+    return 1
+  fi
   assert_output "1"
 
   run jq --raw-output '.encryptionInformation.keyAccess[0].url' 0.manifest.json
-  assert_success
+  if [ "$status" -ne 0 ]; then
+    echo "Error: 'jq keyAccess url' failed with status $status." >&2
+    echo "Output: $output" >&2
+    return 1
+  fi
   assert_output "https://kas.opentdf.local:9443/kas" "Expected KAS URL to be https://kas.opentdf.local:9443/kas, but got $output"
 
   # Decrypt TDF with external kas
-  run $OTDFCTL_CMD decrypt --tdf-type tdf3 opentdf-grant-example.tdf
-  assert_success
+  run $OTDFCTL_CMD decrypt --tdf-type tdf3 opentdf-key-mapping-example.tdf
+  if [ "$status" -ne 0 ]; then
+    echo "Error: 'otdfctl decrypt external KAS TDF' failed with status $status." >&2
+    echo "Output: $output" >&2
+    return 1
+  fi
   assert_output "my first encrypted tdf"
 }

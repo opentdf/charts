@@ -1,6 +1,6 @@
 # platform
 
-![Version: 0.8.4](https://img.shields.io/badge/Version-0.8.4-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.4.32](https://img.shields.io/badge/AppVersion-v0.4.32-informational?style=flat-square)
+![Version: 0.8.5](https://img.shields.io/badge/Version-0.8.5-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.7.0](https://img.shields.io/badge/AppVersion-v0.7.0-informational?style=flat-square)
 
 A Helm Chart for OpenTDF Platform
 
@@ -124,13 +124,24 @@ Download the [keycloak_data.yaml](https://raw.githubusercontent.com/opentdf/plat
 | autoscaling.maxReplicas | int | `100` | Maximum number of pods to run |
 | autoscaling.minReplicas | int | `1` | Minimum number of pods to run |
 | autoscaling.targetCPUUtilizationPercentage | int | `80` | Target CPU utilization percentage |
+| cache | object | `{"ristretto":{"max_cost":"1gb"}}` | Platform Cache Manager Settings |
+| cache.ristretto.max_cost | string | `"1gb"` | Maximum cost (i.e. 1mb, 1gb) for the cache (default: 1gb) |
 | configTemplate | string | `"platform.configurationEmpty.tpl"` |  |
+| db.connect_timeout_seconds | int | `15` | Connection timeout duration (seconds). |
 | db.database | string | `"opentdf"` | The database name |
 | db.host | string | `"platform-db"` | The database host |
 | db.password.secret.key | string | `"password"` | The key in the secret containing the database user password |
 | db.password.secret.name | string | `"opentdf-db-credentials"` | The kubernetes secret containing the database user password |
+| db.pool.health_check_period_seconds | int | `60` | Interval seconds per health check. |
+| db.pool.max_connection_count | int | `4` | Maximum number of connections per pool. |
+| db.pool.max_connection_idle_seconds | int | `1800` | Maximum seconds allowed for idle connection. |
+| db.pool.max_connection_lifetime_seconds | int | `3600` | Maximum seconds per connection lifetime. |
+| db.pool.min_connection_count | int | `0` | Minimum number of connections per pool. |
+| db.pool.min_idle_connections_count | int | `0` | Minimum number of idle connections per pool. |
 | db.port | int | `5432` | The database port |
 | db.required | bool | `true` | If database connection info is required for the service (default: true) |
+| db.runMigration | bool | `true` | Whether to run the database migration or not. |
+| db.schema | string | `"opentdf"` | The schema for the database. |
 | db.sslmode | string | `"prefer"` | The database ssl mode ( disable, prefer, require, verify-ca, verify-full ) |
 | db.user | string | `"opentdf"` | The database user |
 | envFrom | list | `[]` | Environment variables from a configmap or secret |
@@ -192,7 +203,7 @@ Download the [keycloak_data.yaml](https://raw.githubusercontent.com/opentdf/plat
 | resources | object | `{}` | Resources to allocate to the container |
 | sdk_config.client_id | string | `""` | Oauth2 Client Id |
 | sdk_config.client_secret | string | `""` | Oauth2 Client Secret |
-| sdk_config.connections | object | `{"core":{"endpoint":"","insecure":false,"plaintext":false},"entityresolution":{"endpoint":"","insecure":false,"plaintext":false}}` | Connection info to support different modes of operation.  More connections can be added by adding a new section underneath connections. |
+| sdk_config.connections | object | `{"core":{"endpoint":"","insecure":false,"plaintext":false},"entityresolution":{"endpoint":"","insecure":false,"plaintext":false}}` | Connection info to support different modes of operation. More connections can be added by adding a new section underneath connections. |
 | sdk_config.connections.core | object | `{"endpoint":"","insecure":false,"plaintext":false}` | Defines connection info to an external Core Platform Service (e.g. This would be used if running a standalone KAS) |
 | sdk_config.connections.core.endpoint | string | `""` | The core platform endpoint |
 | sdk_config.connections.core.insecure | bool | `false` | Whether to verify the certificate of the core platform endpoint |
@@ -245,10 +256,27 @@ Download the [keycloak_data.yaml](https://raw.githubusercontent.com/opentdf/plat
 | services.entityresolution.subgroups | bool | `false` | Subgroups |
 | services.entityresolution.url | string | `nil` | Identity Provider Entity Resolver |
 | services.extraServices | object | `{}` | Additional services |
-| services.kas.config | object | `{"keyring":[{"alg":"ec:secp256r1","kid":"e1"},{"alg":"rsa:2048","kid":"r1"}]}` | KAS service Configuration as yaml |
+| services.kas.config | object | `{"keyring":[{"alg":"ec:secp256r1","kid":"e1"},{"alg":"rsa:2048","kid":"r1"}],"preview_features":{"ec_tdf_enabled":false,"key_management":false},"root_key":null}` | KAS service Configuration as yaml |
 | services.kas.config.keyring | list | `[{"alg":"ec:secp256r1","kid":"e1"},{"alg":"rsa:2048","kid":"r1"}]` | Default keys for clients to use |
-| services.kas.privateKeysSecret | string | `"kas-private-keys"` | KAS secret containing keys kas-private.pem , kas-cert.pem , kas-ec-private.pem , kas-ec-cert.pem |
+| services.kas.config.preview_features | object | `{"ec_tdf_enabled":false,"key_management":false}` | Preview feature enablement |
+| services.kas.config.preview_features.ec_tdf_enabled | bool | `false` | Whether tdf based ecc support is enabled. |
+| services.kas.config.preview_features.key_management | bool | `false` | Whether new key management features are enabled. |
+| services.kas.privateKeysSecret | string | `"kas-private-keys"` | KAS secret containing keys @deprecated Use `private_keys_secret` instead. This value will be removed in a future release. |
+| services.kas.private_keys_secret | string | `""` | KAS secret containing keys kas-private.pem , kas-cert.pem , kas-ec-private.pem , kas-ec-cert.pem |
+| services.kas.root_key_secret | object | `{"key":"root_key","name":"kas-root-key"}` | Key needed when key_management feature is enabled (openssl rand 32 -hex) openssl rand 32 -hex | kubectl create secret generic kas-root-key --from-file=root_key=/dev/stdin |
 | tolerations | list | `[]` | Tolerations to apply to the pod (https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) |
+| trace.enabled | bool | `false` | Enable distributed tracing |
+| trace.provider.file.compress | string | `nil` | Enable compression of trace files |
+| trace.provider.file.maxAge | string | `nil` | Maximum age of files in days |
+| trace.provider.file.maxBackups | string | `nil` | Maximum number of backup files |
+| trace.provider.file.maxSize | string | `nil` | Maximum file size in MB |
+| trace.provider.file.path | string | `nil` | Path to trace file output |
+| trace.provider.file.prettyPrint | string | `nil` | Enable pretty-printed JSON |
+| trace.provider.name | string | `nil` | Tracing provider (file or otlp) |
+| trace.provider.otlp.endpoint | string | `nil` | Endpoint URL for the collector |
+| trace.provider.otlp.headers | object | `{}` | Headers to include in OTLP requests |
+| trace.provider.otlp.insecure | bool | `false` | Whether to use an insecure connection |
+| trace.provider.otlp.protocol | string | `nil` | Protocol to use (grpc or http/grpc) |
 | volumeMountTemplate | string | `"platform.volumeMountsEmpty.tpl"` | Add ability for downstream chart to merge additional volumeMounts |
 | volumeMounts | list | `[]` | Additional volumeMounts on the output Deployment definition. |
 | volumeTemplate | string | `"platform.volumesEmpty.tpl"` | Add ability for downstream chart to merge additional volumes |
