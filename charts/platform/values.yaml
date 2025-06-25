@@ -260,9 +260,9 @@ server:
     # -- Enables grpc reflection (https://github.com/grpc/grpc/blob/master/doc/server-reflection.md)
     reflectionEnabled: true
     # -- This is the maximum size of a message that can be received by the server, ex. 4194304 (4MB), if unset use application's default (4MB).
-    maxCallRecvMsgSize:
+    maxRecvMsgSize:
     # -- This is the maximum size of a message that can be sent by the server, ex. 4194304 (4MB), if unset use application's default (4MB).
-    maxCallSendMsgSize:
+    maxSendMsgSize:
   # -- Disable Kubernetes Health Checks. (Useful for debugging)
   disableHealthChecks: false
   tls:

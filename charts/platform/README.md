@@ -236,8 +236,8 @@ Download the [keycloak_data.yaml](https://raw.githubusercontent.com/opentdf/plat
 | server.cryptoProvider.standard.keys | list | `[{"alg":"rsa:2048","cert":"/etc/platform/kas/kas-cert.pem","kid":"r1","private":"/etc/platform/kas/kas-private.pem"},{"alg":"ec:secp256r1","cert":"/etc/platform/kas/kas-ec-cert.pem","kid":"e1","private":"/etc/platform/kas/kas-ec-private.pem"}]` | List of key pairs to load into the platform. (Currently only leveraged by KAS) |
 | server.disableHealthChecks | bool | `false` | Disable Kubernetes Health Checks. (Useful for debugging) |
 | server.enable_pprof | bool | `false` | Enable go pprof |
-| server.grpc.maxCallRecvMsgSize | string | `nil` | This is the maximum size of a message that can be received by the server, ex. 4194304 (4MB), if unset use application's default (4MB). |
-| server.grpc.maxCallSendMsgSize | string | `nil` | This is the maximum size of a message that can be sent by the server, ex. 4194304 (4MB), if unset use application's default (4MB). |
+| server.grpc.maxRecvMsgSize | string | `nil` | This is the maximum size of a message that can be received by the server, ex. 4194304 (4MB), if unset use application's default (4MB). |
+| server.grpc.maxSendMsgSize | string | `nil` | This is the maximum size of a message that can be sent by the server, ex. 4194304 (4MB), if unset use application's default (4MB). |
 | server.grpc.reflectionEnabled | bool | `true` | Enables grpc reflection (https://github.com/grpc/grpc/blob/master/doc/server-reflection.md) |
 | server.port | int | `9000` | The server port |
 | server.tls.additionalTrustedCerts | list | `[]` | Additional trusted certificates. These can be loaded following [projected volume](https://kubernetes.io/docs/concepts/storage/projected-volumes/) |
