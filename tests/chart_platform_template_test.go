@@ -980,7 +980,7 @@ func (s *PlatformChartTemplateSuite) Test_Kas_PrivateKeySecret_Coalesce_Fallback
 	s.Require().True(volumeFound, "Volume 'kas-private-keys' not found")
 }
 
-func (s *PlatformChartIntegrationSuite) Test_GRPC_Option_Override() {
+func (s *PlatformChartTemplateSuite) Test_GRPC_Option_Override() {
 	releaseName := "basic"
 
 	namespaceName := "platform-" + strings.ToLower(random.UniqueId())
