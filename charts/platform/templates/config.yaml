@@ -57,10 +57,10 @@ data:
       grpc:
         reflectionEnabled: {{ .Values.server.grpc.reflectionEnabled | quote }} # Default is false
         {{- if .Values.server.grpc.maxRecvMsgSize }}
-        maxRecvMsgSize: {{ .Values.server.grpc.maxRecvMsgSize | quote }} # Default is 4MB
+        maxRecvMsgSize: {{ .Values.server.grpc.maxRecvMsgSize }}
         {{- end }}
         {{- if .Values.server.grpc.maxSendMsgSize }}
-        maxSendMsgSize: {{ .Values.server.grpc.maxSendMsgSize | quote }} # Default is 4MB
+        maxSendMsgSize: {{ .Values.server.grpc.maxSendMsgSize }}
         {{- end }}
       tls:
         enabled: {{ .Values.server.tls.enabled | quote }}

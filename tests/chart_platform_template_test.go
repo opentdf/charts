@@ -1,6 +1,7 @@
 package test
 
 import (
+	"fmt"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -977,4 +978,30 @@ func (s *PlatformChartTemplateSuite) Test_Kas_PrivateKeySecret_Coalesce_Fallback
 		}
 	}
 	s.Require().True(volumeFound, "Volume 'kas-private-keys' not found")
+}
+
+func (s *PlatformChartIntegrationSuite) Test_GRPC_Option_Override() {
+	releaseName := "basic"
+
+	namespaceName := "platform-" + strings.ToLower(random.UniqueId())
+
+	options := &helm.Options{
+		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
+		SetStrValues: map[string]string{
+			"configFileKey":              "my-config",
+			"server.grpc.maxRecvMsgSize": fmt.Sprintf("%d", 10*1024*1024), // 10 MB
+		},
+	}
+
+	output := helm.RenderTemplate(s.T(), options, s.chartPath, releaseName, []string{"charts/platform/templates/config.yaml"})
+
+	var config corev1.ConfigMap
+	helm.UnmarshalK8SYaml(s.T(), output, &config)
+
+	data, ok := config.Data["my-config.yaml"]
+	s.Require().True(ok, "config map has my-config.yaml")
+
+	s.Require().Contains(data, "maxRecvMsgSize", "maxRecvMsgSize should be set in the config file")
+	s.Require().Contains(data, fmt.Sprintf("%d", 10*1024*1024), "maxRecvMsgSize should be set to 10 MB in the config file")
+	s.Require().NotContains(data, "maxSendMsgSize", "maxSendMsgSize should not be set in the config file, as it is not overridden")
 }
