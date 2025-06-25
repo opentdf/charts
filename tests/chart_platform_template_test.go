@@ -988,8 +988,8 @@ func (s *PlatformChartTemplateSuite) Test_GRPC_Option_Override_maxRecvMsgSize() 
 	options := &helm.Options{
 		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
 		SetStrValues: map[string]string{
-			"configFileKey":              "my-config",
-			"server.grpc.maxRecvMsgSize": fmt.Sprintf("%d", 10*1024*1024), // 10 MB
+			"configFileKey":                  "my-config",
+			"server.grpc.maxCallRecvMsgSize": fmt.Sprintf("%d", 10*1024*1024), // 10 MB
 		},
 	}
 
@@ -1001,9 +1001,9 @@ func (s *PlatformChartTemplateSuite) Test_GRPC_Option_Override_maxRecvMsgSize() 
 	data, ok := config.Data["my-config.yaml"]
 	s.Require().True(ok, "config map has my-config.yaml")
 
-	s.Require().Contains(data, "maxRecvMsgSize", "maxRecvMsgSize should be set in the config file")
-	s.Require().Contains(data, fmt.Sprintf("%d", 10*1024*1024), "maxRecvMsgSize should be set to 10 MB in the config file")
-	s.Require().NotContains(data, "maxSendMsgSize", "maxSendMsgSize should not be set in the config file, as it is not overridden")
+	s.Require().Contains(data, "maxCallRecvMsgSize", "maxCallRecvMsgSize should be set in the config file")
+	s.Require().Contains(data, fmt.Sprintf("%d", 10*1024*1024), "maxCallRecvMsgSize should be set to 10 MB in the config file")
+	s.Require().NotContains(data, "maxCallSendMsgSize", "maxCallSendMsgSize should not be set in the config file, as it is not overridden")
 }
 
 func (s *PlatformChartTemplateSuite) Test_GRPC_Option_Override_maxSendMsgSize() {
@@ -1014,8 +1014,8 @@ func (s *PlatformChartTemplateSuite) Test_GRPC_Option_Override_maxSendMsgSize() 
 	options := &helm.Options{
 		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
 		SetStrValues: map[string]string{
-			"configFileKey":              "my-config",
-			"server.grpc.maxSendMsgSize": fmt.Sprintf("%d", 10*1024*1024), // 10 MB
+			"configFileKey":                  "my-config",
+			"server.grpc.maxCallSendMsgSize": fmt.Sprintf("%d", 10*1024*1024), // 10 MB
 		},
 	}
 
@@ -1027,7 +1027,7 @@ func (s *PlatformChartTemplateSuite) Test_GRPC_Option_Override_maxSendMsgSize() 
 	data, ok := config.Data["my-config.yaml"]
 	s.Require().True(ok, "config map has my-config.yaml")
 
-	s.Require().Contains(data, "maxSendMsgSize", "maxSendMsgSize should be set in the config file")
+	s.Require().Contains(data, "maxCallSendMsgSize", "maxCallSendMsgSize should be set in the config file")
 	s.Require().Contains(data, fmt.Sprintf("%d", 10*1024*1024), "maxSendMsgSize should be set to 10 MB in the config file")
-	s.Require().NotContains(data, "maxRecvMsgSize", "maxRecvMsgSize should not be set in the config file, as it is not overridden")
+	s.Require().NotContains(data, "maxCallRecvMsgSize", "maxCallRecvMsgSize should not be set in the config file, as it is not overridden")
 }
