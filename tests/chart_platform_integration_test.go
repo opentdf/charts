@@ -313,3 +313,29 @@ func (suite *PlatformChartIntegrationSuite) TestBasicDeployment() {
 		suite.T().Log(string(output))
 	}
 }
+
+func (s *PlatformChartIntegrationSuite) Test_GRPC_Option_Override() {
+	releaseName := "basic"
+
+	namespaceName := "platform-" + strings.ToLower(random.UniqueId())
+
+	options := &helm.Options{
+		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
+		SetStrValues: map[string]string{
+			"configFileKey":              "my-config",
+			"server.grpc.maxRecvMsgSize": "10485760", // 10 MB
+		},
+	}
+
+	output := helm.RenderTemplate(s.T(), options, s.chartPath, releaseName, []string{"charts/platform/templates/config.yaml"})
+
+	var config corev1.ConfigMap
+	helm.UnmarshalK8SYaml(s.T(), output, &config)
+
+	data, ok := config.Data["my-config.yaml"]
+	s.Require().True(ok, "config map has my-config.yaml")
+
+	s.Require().Contains(data, "maxRecvMsgSize", "maxRecvMsgSize should be set in the config file")
+	s.Require().Contains(data, "10485760", "maxRecvMsgSize should be set to 10 MB in the config file")
+	s.Require().NotContains(data, "maxSendMsgSize", "maxSendMsgSize should not be set in the config file, as it is not overridden")
+}
