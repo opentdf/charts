@@ -993,7 +993,7 @@ func (s *PlatformChartTemplateSuite) Test_GRPC_Option_Override() {
 		},
 	}
 
-	output := helm.RenderTemplate(s.T(), options, s.chartPath, releaseName, []string{"charts/platform/templates/config.yaml"})
+	output := helm.RenderTemplate(s.T(), options, s.chartPath, releaseName, []string{"templates/config.yaml"})
 
 	var config corev1.ConfigMap
 	helm.UnmarshalK8SYaml(s.T(), output, &config)
@@ -1017,7 +1017,7 @@ func (s *PlatformChartTemplateSuite) Test_GRPC_Option_Override() {
 		},
 	}
 
-	output = helm.RenderTemplate(s.T(), options, s.chartPath, releaseName, []string{"charts/platform/templates/config.yaml"})
+	output = helm.RenderTemplate(s.T(), options, s.chartPath, releaseName, []string{"templates/config.yaml"})
 
 	var config2 corev1.ConfigMap
 	helm.UnmarshalK8SYaml(s.T(), output, &config2)
