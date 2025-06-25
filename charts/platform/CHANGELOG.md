@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.9.0](https://github.com/opentdf/charts/compare/platform-0.8.5...platform-0.9.0) (2025-06-24)
+
+
+### Features
+
+* updated platform configuration options ([#127](https://github.com/opentdf/charts/issues/127)) ([03809ae](https://github.com/opentdf/charts/commit/03809ae2a7e4ae04477ec9690c12539bca9e9942))
+
 ## [0.8.5](https://github.com/opentdf/charts/compare/platform-0.8.4...platform-0.8.5) (2025-04-14)
 
 
