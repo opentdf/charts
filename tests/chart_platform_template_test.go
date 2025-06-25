@@ -980,7 +980,7 @@ func (s *PlatformChartTemplateSuite) Test_Kas_PrivateKeySecret_Coalesce_Fallback
 	s.Require().True(volumeFound, "Volume 'kas-private-keys' not found")
 }
 
-func (s *PlatformChartTemplateSuite) Test_GRPC_Option_Override() {
+func (s *PlatformChartTemplateSuite) Test_GRPC_Option_Override_maxRecvMsgSize() {
 	releaseName := "basic"
 
 	namespaceName := "platform-" + strings.ToLower(random.UniqueId())
@@ -1004,12 +1004,14 @@ func (s *PlatformChartTemplateSuite) Test_GRPC_Option_Override() {
 	s.Require().Contains(data, "maxRecvMsgSize", "maxRecvMsgSize should be set in the config file")
 	s.Require().Contains(data, fmt.Sprintf("%d", 10*1024*1024), "maxRecvMsgSize should be set to 10 MB in the config file")
 	s.Require().NotContains(data, "maxSendMsgSize", "maxSendMsgSize should not be set in the config file, as it is not overridden")
+}
 
-	// test the opposite
+func (s *PlatformChartTemplateSuite) Test_GRPC_Option_Override_maxSendMsgSize() {
+	releaseName := "basic"
 
-	namespaceName = "platform-" + strings.ToLower(random.UniqueId())
+	namespaceName := "platform-" + strings.ToLower(random.UniqueId())
 
-	options = &helm.Options{
+	options := &helm.Options{
 		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
 		SetStrValues: map[string]string{
 			"configFileKey":              "my-config",
@@ -1017,12 +1019,12 @@ func (s *PlatformChartTemplateSuite) Test_GRPC_Option_Override() {
 		},
 	}
 
-	output = helm.RenderTemplate(s.T(), options, s.chartPath, releaseName, []string{"templates/config.yaml"})
+	output := helm.RenderTemplate(s.T(), options, s.chartPath, releaseName, []string{"templates/config.yaml"})
 
-	var config2 corev1.ConfigMap
-	helm.UnmarshalK8SYaml(s.T(), output, &config2)
+	var config corev1.ConfigMap
+	helm.UnmarshalK8SYaml(s.T(), output, &config)
 
-	data, ok = config.Data["my-config.yaml"]
+	data, ok := config.Data["my-config.yaml"]
 	s.Require().True(ok, "config map has my-config.yaml")
 
 	s.Require().Contains(data, "maxSendMsgSize", "maxSendMsgSize should be set in the config file")
