@@ -56,6 +56,12 @@ data:
         allowcredentials: {{ .Values.server.cors.allowcredentials }}
       grpc:
         reflectionEnabled: {{ .Values.server.grpc.reflectionEnabled | quote }} # Default is false
+        {{- if .Values.server.grpc.maxCallRecvMsgSize }}
+        maxCallRecvMsgSize: {{ .Values.server.grpc.maxCallRecvMsgSize }}
+        {{- end }}
+        {{- if .Values.server.grpc.maxCallSendMsgSize }}
+        maxCallSendMsgSize: {{ .Values.server.grpc.maxCallSendMsgSize }}
+        {{- end }}
       tls:
         enabled: {{ .Values.server.tls.enabled | quote }}
         cert: /etc/platform/certs/tls.crt

@@ -1,6 +1,7 @@
 package test
 
 import (
+	"fmt"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -977,4 +978,56 @@ func (s *PlatformChartTemplateSuite) Test_Kas_PrivateKeySecret_Coalesce_Fallback
 		}
 	}
 	s.Require().True(volumeFound, "Volume 'kas-private-keys' not found")
+}
+
+func (s *PlatformChartTemplateSuite) Test_GRPC_Option_Override_maxRecvMsgSize() {
+	releaseName := "basic"
+
+	namespaceName := "platform-" + strings.ToLower(random.UniqueId())
+
+	options := &helm.Options{
+		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
+		SetStrValues: map[string]string{
+			"configFileKey":                  "my-config",
+			"server.grpc.maxCallRecvMsgSize": fmt.Sprintf("%d", 10*1024*1024), // 10 MB
+		},
+	}
+
+	output := helm.RenderTemplate(s.T(), options, s.chartPath, releaseName, []string{"templates/config.yaml"})
+
+	var config corev1.ConfigMap
+	helm.UnmarshalK8SYaml(s.T(), output, &config)
+
+	data, ok := config.Data["my-config.yaml"]
+	s.Require().True(ok, "config map has my-config.yaml")
+
+	s.Require().Contains(data, "maxCallRecvMsgSize", "maxCallRecvMsgSize should be set in the config file")
+	s.Require().Contains(data, fmt.Sprintf("%d", 10*1024*1024), "maxCallRecvMsgSize should be set to 10 MB in the config file")
+	s.Require().NotContains(data, "maxCallSendMsgSize", "maxCallSendMsgSize should not be set in the config file, as it is not overridden")
+}
+
+func (s *PlatformChartTemplateSuite) Test_GRPC_Option_Override_maxSendMsgSize() {
+	releaseName := "basic"
+
+	namespaceName := "platform-" + strings.ToLower(random.UniqueId())
+
+	options := &helm.Options{
+		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
+		SetStrValues: map[string]string{
+			"configFileKey":                  "my-config",
+			"server.grpc.maxCallSendMsgSize": fmt.Sprintf("%d", 10*1024*1024), // 10 MB
+		},
+	}
+
+	output := helm.RenderTemplate(s.T(), options, s.chartPath, releaseName, []string{"templates/config.yaml"})
+
+	var config corev1.ConfigMap
+	helm.UnmarshalK8SYaml(s.T(), output, &config)
+
+	data, ok := config.Data["my-config.yaml"]
+	s.Require().True(ok, "config map has my-config.yaml")
+
+	s.Require().Contains(data, "maxCallSendMsgSize", "maxCallSendMsgSize should be set in the config file")
+	s.Require().Contains(data, fmt.Sprintf("%d", 10*1024*1024), "maxSendMsgSize should be set to 10 MB in the config file")
+	s.Require().NotContains(data, "maxCallRecvMsgSize", "maxCallRecvMsgSize should not be set in the config file, as it is not overridden")
 }
