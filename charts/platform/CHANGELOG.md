@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.0](https://github.com/opentdf/charts/compare/platform-0.9.0...platform-0.10.0) (2025-06-25)
+
+
+### Features
+
+* **platform:** Expose grpc server options in platform chart ([#130](https://github.com/opentdf/charts/issues/130)) ([d2ee0c5](https://github.com/opentdf/charts/commit/d2ee0c5a9596720387c36cf8dd12640bea9857a7))
+
 ## [0.9.0](https://github.com/opentdf/charts/compare/platform-0.8.5...platform-0.9.0) (2025-06-24)
 
 
