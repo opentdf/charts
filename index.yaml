@@ -85,12 +85,6 @@ entries:
     urls:
     - https://github.com/opentdf/charts/releases/download/platform-0.8.4/platform-0.8.4.tgz
     version: 0.8.4
-
-
-
-
-
-
   - apiVersion: v2
     appVersion: nightly
     created: "2024-10-17T21:08:27.425558582Z"
