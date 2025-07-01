@@ -1044,6 +1044,9 @@ func (s *PlatformChartTemplateSuite) Test_HTTP_Server_Option_Override() {
 			"server.http.readTimeout":  "21s",
 			"server.http.writeTimeout": "23s",
 		},
+		SetValues: map[string]string{
+			"server.http.maxHeaderBytes": "2048",
+		},
 	}
 
 	output := helm.RenderTemplate(s.T(), options, s.chartPath, releaseName, []string{"templates/config.yaml"})
@@ -1056,5 +1059,7 @@ func (s *PlatformChartTemplateSuite) Test_HTTP_Server_Option_Override() {
 
 	s.Require().Contains(data, "readTimeout: 21s", "readTimeout should be set in the config file")
 	s.Require().Contains(data, "writeTimeout: 23s", "writeTimeout should be set in the config file")
-	s.Require().Contains(data, "idleTimeout: null", "idleTimeout should be set in the config file")
+	s.Require().Contains(data, "maxHeaderBytes: 2048", "maxHeaderBytes should be set in the config file")
+	s.Require().Contains(data, "idleTimeout: null", "idleTimeout should be null in the config file")
+	s.Require().Contains(data, "readHeaderTimeout: null", "readHeaderTimeout should be null in the config file")
 }
