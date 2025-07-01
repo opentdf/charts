@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.10.1](https://github.com/opentdf/charts/compare/platform-0.10.0...platform-0.10.1) (2025-07-01)
+
+
+### Bug Fixes
+
+* Expose http server options ([#133](https://github.com/opentdf/charts/issues/133)) ([433a57b](https://github.com/opentdf/charts/commit/433a57b4c95d6171f38d054d2e831ef43735a989))
+
 ## [0.10.0](https://github.com/opentdf/charts/compare/platform-0.9.0...platform-0.10.0) (2025-06-25)
 
 
