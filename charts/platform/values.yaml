@@ -263,6 +263,17 @@ server:
     maxCallRecvMsgSize:
     # -- This is the maximum size of a message that can be sent by the server, ex. 4194304 (4MB), if unset use application's default (4MB).
     maxCallSendMsgSize:
+  http:
+    # -- The maximum duration for reading the entire request including the body, ex. 30s, a negative value indicates no timeout, if unset or zero use application's default (5s).
+    readTimeout:
+    # -- The maximum duration before timing out writes of the response, ex. 30s, a negative value indicates no timeout, if unset or zero use application's default (10s).
+    writeTimeout:
+    # -- The maximum amount of time to wait for the next request when keep-alives are enabled, ex. 30s, a negative value indicates no timeout, if unset or zero readTimeout is used.
+    idleTimeout:
+    # -- The amount of time allowed to read request headers, ex. 30s, a negative value indicates no timeout, if unset or zero readTimeout is used.
+    readHeaderTimeout:
+    # -- The maximum number of bytes the server will read parsing the request header's keys and values, including the request line, if unset or zero use application's default (1MB).
+    maxHeaderBytes:
   # -- Disable Kubernetes Health Checks. (Useful for debugging)
   disableHealthChecks: false
   tls:

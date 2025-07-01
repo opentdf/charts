@@ -62,6 +62,8 @@ data:
         {{- if .Values.server.grpc.maxCallSendMsgSize }}
         maxCallSendMsgSize: {{ .Values.server.grpc.maxCallSendMsgSize }}
         {{- end }}
+      http:
+        {{- .Values.server.http | toYaml | nindent 8 }}
       tls:
         enabled: {{ .Values.server.tls.enabled | quote }}
         cert: /etc/platform/certs/tls.crt
