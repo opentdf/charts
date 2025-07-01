@@ -1031,3 +1031,30 @@ func (s *PlatformChartTemplateSuite) Test_GRPC_Option_Override_maxSendMsgSize() 
 	s.Require().Contains(data, fmt.Sprintf("%d", 10*1024*1024), "maxSendMsgSize should be set to 10 MB in the config file")
 	s.Require().NotContains(data, "maxCallRecvMsgSize", "maxCallRecvMsgSize should not be set in the config file, as it is not overridden")
 }
+
+func (s *PlatformChartTemplateSuite) Test_HTTP_Server_Option_Override() {
+	releaseName := "basic"
+
+	namespaceName := "platform-" + strings.ToLower(random.UniqueId())
+
+	options := &helm.Options{
+		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
+		SetStrValues: map[string]string{
+			"configFileKey":            "my-config",
+			"server.http.readTimeout":  "21s",
+			"server.http.writeTimeout": "23s",
+		},
+	}
+
+	output := helm.RenderTemplate(s.T(), options, s.chartPath, releaseName, []string{"templates/config.yaml"})
+
+	var config corev1.ConfigMap
+	helm.UnmarshalK8SYaml(s.T(), output, &config)
+
+	data, ok := config.Data["my-config.yaml"]
+	s.Require().True(ok, "config map has my-config.yaml")
+
+	s.Require().Contains(data, "readTimeout: 21s", "readTimeout should be set in the config file")
+	s.Require().Contains(data, "writeTimeout: 23s", "writeTimeout should be set in the config file")
+	s.Require().Contains(data, "idleTimeout: null", "idleTimeout should be set in the config file")
+}

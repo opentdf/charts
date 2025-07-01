@@ -1,6 +1,6 @@
 # platform
 
-![Version: 0.9.0](https://img.shields.io/badge/Version-0.9.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.7.0](https://img.shields.io/badge/AppVersion-v0.7.0-informational?style=flat-square)
+![Version: 0.10.0](https://img.shields.io/badge/Version-0.10.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.7.0](https://img.shields.io/badge/AppVersion-v0.7.0-informational?style=flat-square)
 
 A Helm Chart for OpenTDF Platform
 
@@ -239,6 +239,11 @@ Download the [keycloak_data.yaml](https://raw.githubusercontent.com/opentdf/plat
 | server.grpc.maxCallRecvMsgSize | string | `nil` | This is the maximum size of a message that can be received by the server, ex. 4194304 (4MB), if unset use application's default (4MB). |
 | server.grpc.maxCallSendMsgSize | string | `nil` | This is the maximum size of a message that can be sent by the server, ex. 4194304 (4MB), if unset use application's default (4MB). |
 | server.grpc.reflectionEnabled | bool | `true` | Enables grpc reflection (https://github.com/grpc/grpc/blob/master/doc/server-reflection.md) |
+| server.http.idleTimeout | string | `nil` | The maximum time to wait for reading the request header, ex. 30s, a negative value indicates no timeout, if unset or zero readTimeout is used. |
+| server.http.maxHeaderBytes | string | `nil` | The maximum number of bytes the server will read parsing the request header's keys and values, including the request line, if unset of zero use application's default (1MB). |
+| server.http.readHeaderTimeout | string | `nil` | The amount of time allowed to read request headers, ex. 30s, a negative value indicates no timeout, if unset or zero readTimeout is used. |
+| server.http.readTimeout | string | `nil` | The maximum duration for reading the entire request including the body, ex. 30s, a negative value indicates no timeout, if unset or zer0 use application's default (5s). |
+| server.http.writeTimeout | string | `nil` | The maximum duration before timing out writes of the response, ex. 30s, a negative value indicates no timeout, if unset or zero use application's default (10s). |
 | server.port | int | `9000` | The server port |
 | server.tls.additionalTrustedCerts | list | `[]` | Additional trusted certificates. These can be loaded following [projected volume](https://kubernetes.io/docs/concepts/storage/projected-volumes/) |
 | server.tls.enabled | bool | `false` | Enables tls for platform server |
