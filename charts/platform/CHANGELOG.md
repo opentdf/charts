@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.11.0](https://github.com/opentdf/charts/compare/platform-0.10.1...platform-0.11.0) (2025-07-02)
+
+
+### Features
+
+* **platform:** Adds server.public_hostname ([#136](https://github.com/opentdf/charts/issues/136)) ([a778c2c](https://github.com/opentdf/charts/commit/a778c2c906600504a33b751d0628db6807902d4e))
+
 ## [0.10.1](https://github.com/opentdf/charts/compare/platform-0.10.0...platform-0.10.1) (2025-07-01)
 
 
