@@ -226,7 +226,7 @@ db:
 server:
   # -- The server port
   port: 9000
-  # -- The client facing name for the KAS.
+  # -- The client facing name for the policy services, including KAS.
   # This is baked into Key Access Objects, and required for key management with the policy service.
   public_hostname: ""
   # -- Enable go pprof
