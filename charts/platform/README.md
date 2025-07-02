@@ -245,7 +245,7 @@ Download the [keycloak_data.yaml](https://raw.githubusercontent.com/opentdf/plat
 | server.http.readTimeout | string | `nil` | The maximum duration for reading the entire request including the body, ex. 30s, a negative value indicates no timeout, if unset or zero use application's default (5s). |
 | server.http.writeTimeout | string | `nil` | The maximum duration before timing out writes of the response, ex. 30s, a negative value indicates no timeout, if unset or zero use application's default (10s). |
 | server.port | int | `9000` | The server port |
-| server.public_hostname | string | `""` | The client facing name for the KAS. This is baked into Key Access Objects, and required for key management with the policy service. |
+| server.public_hostname | string | `""` | The client facing name for the policy services, including KAS. This is baked into Key Access Objects, and required for key management with the policy service. |
 | server.tls.additionalTrustedCerts | list | `[]` | Additional trusted certificates. These can be loaded following [projected volume](https://kubernetes.io/docs/concepts/storage/projected-volumes/) |
 | server.tls.enabled | bool | `false` | Enables tls for platform server |
 | server.tls.secret | string | `nil` | The server tls certificate. If not set, a self-signed certificate is generated |
