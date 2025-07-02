@@ -1063,3 +1063,45 @@ func (s *PlatformChartTemplateSuite) Test_HTTP_Server_Option_Override() {
 	s.Require().Contains(data, "idleTimeout: null", "idleTimeout should be null in the config file")
 	s.Require().Contains(data, "readHeaderTimeout: null", "readHeaderTimeout should be null in the config file")
 }
+
+func (s *PlatformChartTemplateSuite) Test_HTTP_Server_Option_PublicHostname() {
+	releaseName := "basic"
+
+	namespaceName := "platform-" + strings.ToLower(random.UniqueId())
+
+	options := &helm.Options{
+		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
+		SetStrValues: map[string]string{
+			"server.public_hostname": "test.invalid",
+		},
+	}
+
+	output := helm.RenderTemplate(s.T(), options, s.chartPath, releaseName, []string{"templates/config.yaml"})
+
+	var config corev1.ConfigMap
+	helm.UnmarshalK8SYaml(s.T(), output, &config)
+
+	data, ok := config.Data["opentdf.yaml"]
+	s.Require().True(ok, "config map has opentdf.yaml")
+
+	s.Contains(data, "public_hostname: \"test.invalid\"", "public_hostname should be set in the config file")
+}
+func (s *PlatformChartTemplateSuite) Test_HTTP_Server_Option_NoPublicHostname() {
+	releaseName := "basic"
+
+	namespaceName := "platform-" + strings.ToLower(random.UniqueId())
+
+	options := &helm.Options{
+		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
+	}
+
+	output := helm.RenderTemplate(s.T(), options, s.chartPath, releaseName, []string{"templates/config.yaml"})
+
+	var config corev1.ConfigMap
+	helm.UnmarshalK8SYaml(s.T(), output, &config)
+
+	data, ok := config.Data["opentdf.yaml"]
+	s.Require().True(ok, "config map has opentdf.yaml")
+
+	s.NotContains(data, "public_hostname: test.invalid", "public_hostname should not be set in the config file")
+}

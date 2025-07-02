@@ -41,6 +41,9 @@ data:
       {{- .Values.trace | toYaml | nindent 6 }}
     server:
       port: {{ .Values.server.port | quote }}
+      {{- if .Values.server.public_hostname }}
+      public_hostname: {{ .Values.server.public_hostname | quote }}
+      {{- end }}
       enable_pprof: {{ .Values.server.enable_pprof }}
       cors:
         enabled: {{ .Values.server.cors.enabled }}
