@@ -22,7 +22,6 @@ entries:
     urls:
     - https://github.com/opentdf/charts/releases/download/platform-0.11.0/platform-0.11.0.tgz
     version: 0.11.0
-
   - apiVersion: v2
     appVersion: v0.7.0
     created: "2025-07-01T22:36:16.842720164Z"
