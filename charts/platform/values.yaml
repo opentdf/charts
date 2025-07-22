@@ -31,6 +31,9 @@ serviceAccount:
   # If not set and create is true, a name is generated using the fullname template
   name: ""
 
+# -- Extra annotations to add to the deployment
+deploymentAnnotations: {}
+
 # -- Extra annotations to add to the pod
 podAnnotations: {}
 # -- Extra labels to add to the pod
