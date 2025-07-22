@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.12.0](https://github.com/opentdf/charts/compare/platform-0.11.0...platform-0.12.0) (2025-07-22)
+
+
+### Features
+
+* **deployments:** SRE-5532 Adding deployment annotations ([#139](https://github.com/opentdf/charts/issues/139)) ([1adffeb](https://github.com/opentdf/charts/commit/1adffebfa85f1f8915af443ac249d7948823839a))
+
 ## [0.11.0](https://github.com/opentdf/charts/compare/platform-0.10.1...platform-0.11.0) (2025-07-02)
 
 
