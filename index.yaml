@@ -29,7 +29,7 @@ entries:
     - condition: playground
       name: postgresql
       repository: oci://registry-1.docker.io/bitnamicharts
-      version: 15.5.21
+      version: 16.2.5
     - condition: playground
       name: keycloak
       repository: oci://registry-1.docker.io/bitnamicharts
