@@ -39,6 +39,10 @@ spec:
       hostAliases:
         {{- toYaml .Values.hostAliases | nindent 8 }}
       {{- end -}}
+      {{- if .Values.initContainers }}
+      initContainers:
+        {{- toYaml .Values.initContainers | nindent 8 }}
+      {{- end }}
       {{  include "platform.util.merge.list" (list $data "volumes" .Values.volumeTemplate "platform.volumes.tpl" ) | nindent 6 }}
       containers:
         - name: {{ .Chart.Name }}

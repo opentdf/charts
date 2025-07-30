@@ -1105,3 +1105,66 @@ func (s *PlatformChartTemplateSuite) Test_HTTP_Server_Option_NoPublicHostname() 
 
 	s.NotContains(data, "public_hostname: test.invalid", "public_hostname should not be set in the config file")
 }
+
+func (s *PlatformChartTemplateSuite) Test_InitContainers_Not_Present_When_Empty() {
+	releaseName := "basic"
+
+	namespaceName := "opentdf-" + strings.ToLower(random.UniqueId())
+
+	options := &helm.Options{
+		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
+		SetValues: map[string]string{
+			"image.tag": "latest",
+		},
+	}
+
+	output := helm.RenderTemplate(s.T(), options, s.chartPath, releaseName, []string{"templates/deployment.yaml"})
+	var deployment appv1.Deployment
+	helm.UnmarshalK8SYaml(s.T(), output, &deployment)
+
+	s.Require().Nil(deployment.Spec.Template.Spec.InitContainers, "InitContainers should not be present when not configured")
+}
+
+func (s *PlatformChartTemplateSuite) Test_InitContainers_Present_When_Configured() {
+	releaseName := "basic"
+
+	namespaceName := "opentdf-" + strings.ToLower(random.UniqueId())
+
+	options := &helm.Options{
+		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
+		SetValues: map[string]string{
+			"image.tag":                        "latest",
+			"initContainers[0].name":           "database-migration",
+			"initContainers[0].image":          "registry.opentdf.io/platform:latest",
+			"initContainers[0].command[0]":     "/bin/sh",
+			"initContainers[0].args[0]":        "-c",
+			"initContainers[0].args[1]":        "platform migrate up",
+			"initContainers[1].name":           "setup-data",
+			"initContainers[1].image":          "busybox:latest",
+			"initContainers[1].command[0]":     "/bin/sh",
+			"initContainers[1].args[0]":        "-c",
+			"initContainers[1].args[1]":        "echo 'Setting up initial data...'",
+		},
+	}
+
+	output := helm.RenderTemplate(s.T(), options, s.chartPath, releaseName, []string{"templates/deployment.yaml"})
+	var deployment appv1.Deployment
+	helm.UnmarshalK8SYaml(s.T(), output, &deployment)
+
+	s.Require().NotNil(deployment.Spec.Template.Spec.InitContainers, "InitContainers should be present when configured")
+	s.Require().Len(deployment.Spec.Template.Spec.InitContainers, 2, "Should have 2 init containers")
+
+	// Verify first init container
+	firstContainer := deployment.Spec.Template.Spec.InitContainers[0]
+	s.Require().Equal("database-migration", firstContainer.Name)
+	s.Require().Equal("registry.opentdf.io/platform:latest", firstContainer.Image)
+	s.Require().Equal([]string{"/bin/sh"}, firstContainer.Command)
+	s.Require().Equal([]string{"-c", "platform migrate up"}, firstContainer.Args)
+
+	// Verify second init container
+	secondContainer := deployment.Spec.Template.Spec.InitContainers[1]
+	s.Require().Equal("setup-data", secondContainer.Name)
+	s.Require().Equal("busybox:latest", secondContainer.Image)
+	s.Require().Equal([]string{"/bin/sh"}, secondContainer.Command)
+	s.Require().Equal([]string{"-c", "echo 'Setting up initial data...'"}, secondContainer.Args)
+}

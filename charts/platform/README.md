@@ -1,6 +1,6 @@
 # platform
 
-![Version: 0.10.1](https://img.shields.io/badge/Version-0.10.1-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.7.0](https://img.shields.io/badge/AppVersion-v0.7.0-informational?style=flat-square)
+![Version: 0.12.0](https://img.shields.io/badge/Version-0.12.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.7.0](https://img.shields.io/badge/AppVersion-v0.7.0-informational?style=flat-square)
 
 A Helm Chart for OpenTDF Platform
 
@@ -144,6 +144,7 @@ Download the [keycloak_data.yaml](https://raw.githubusercontent.com/opentdf/plat
 | db.schema | string | `"opentdf"` | The schema for the database. |
 | db.sslmode | string | `"prefer"` | The database ssl mode ( disable, prefer, require, verify-ca, verify-full ) |
 | db.user | string | `"opentdf"` | The database user |
+| deploymentAnnotations | object | `{}` | Extra annotations to add to the deployment |
 | envFrom | list | `[]` | Environment variables from a configmap or secret |
 | extraEnv | list | `[]` | Extra environment variables to add to the container |
 | fullnameOverride | string | `""` | Overrides the generated fullname |
@@ -157,6 +158,7 @@ Download the [keycloak_data.yaml](https://raw.githubusercontent.com/opentdf/plat
 | ingress.enabled | bool | `false` | Enable Ingress |
 | ingress.hosts | list | `[{"host":"chart-example.local","paths":[{"path":"/","pathType":"ImplementationSpecific"}]}]` | List of hosts for the ingress |
 | ingress.tls | list | `[]` | List of tls hosts |
+| initContainers | list | `[]` | Init containers to run before the main container |
 | keycloak.auth.adminUser | string | `"admin"` |  |
 | keycloak.externalDatabase.database | string | `"opentdf"` |  |
 | keycloak.externalDatabase.existingSecret | string | `"opentdf-db-credentials"` |  |
