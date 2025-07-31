@@ -150,6 +150,28 @@ volumeMounts: []
 #   mountPath: "/etc/foo"
 #   readOnly: true
 
+# -- Init containers to run before the main container
+initContainers: []
+# Example init container configurations:
+# - name: database-migration
+#   image: registry.opentdf.io/platform:latest
+#   command: ["/bin/sh"]
+#   args: ["-c", "platform migrate up"]
+#   env:
+#   - name: OPENTDF_DB_PASSWORD
+#     valueFrom:
+#       secretKeyRef:
+#         name: opentdf-db-credentials
+#         key: password
+#   volumeMounts:
+#   - name: config
+#     mountPath: /etc/platform/config
+#     readOnly: true
+# - name: setup-data
+#   image: busybox:latest
+#   command: ["/bin/sh"]
+#   args: ["-c", "echo 'Setting up initial data...' && sleep 5"]
+
 # -- Target specific nodes in the cluster
 nodeSelector: {}
 
