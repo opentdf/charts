@@ -302,8 +302,8 @@ github.com/texttheater/golang-levenshtein v1.0.1 h1:+cRNoVrfiwufQPhoMzB6N0Yf/Mqa
 github.com/texttheater/golang-levenshtein v1.0.1/go.mod h1:PYAKrbF5sAiq9wd+H82hs7gNaen0CplQ9uvm6+enD/8=
 github.com/traefik/paerser v0.2.2 h1:cpzW/ZrQrBh3mdwD/jnp6aXASiUFKOVr6ldP+keJTcQ=
 github.com/traefik/paerser v0.2.2/go.mod h1:7BBDd4FANoVgaTZG+yh26jI6CA2nds7D/4VTEdIsh24=
-github.com/traefik/traefik/v3 v3.4.1 h1:QBO/C9ILViPVBhsmY8nEnoobTULxg6oW1jUTX8FFh8w=
-github.com/traefik/traefik/v3 v3.4.1/go.mod h1:8FHoFbX5P+zMQ3UUjjfrDH87BDSbHllcUQyiI2wCP3o=
+github.com/traefik/traefik/v3 v3.4.5 h1:vamkf2bL9ZUlir8h0vpfYZXGFcrnuiMCcAGMZhiLWJ8=
+github.com/traefik/traefik/v3 v3.4.5/go.mod h1:rwq0+07S6ugXdFuB250anSgLQFOVDFvqurNR1BVDocw=
 github.com/unrolled/render v1.0.2 h1:dGS3EmChQP3yOi1YeFNO/Dx+MbWZhdvhQJTXochM5bs=
 github.com/unrolled/render v1.0.2/go.mod h1:gN9T0NhL4Bfbwu8ann7Ry/TGHYfosul+J0obPf6NBdM=
 github.com/urfave/cli v1.22.2/go.mod h1:Gos4lmkARVdJ6EkW0WaNv/tZAAMe9V7XWyB60NtXRu0=
