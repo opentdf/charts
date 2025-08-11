@@ -11,21 +11,17 @@ jobs:
       id-token: write
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/create-github-app-token@5d869da34e18e7287c1daad50e0b8ea0f506ce69
-        id: app-token
-        with:
-          app-id: ${{ secrets.APP_ID }}
-          private-key: ${{ secrets.AUTOMATION_KEY }}
-
       - name: Checkout
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
         with:
-          fetch-depth: 0
+          persist-credentials: false
 
-      - name: Configure Git
-        run: |
-          git config user.name "opentdf-automation[bot]"
-          git config user.email "416599+opentdf-automation[bot]@users.noreply.github.com"
+      - name: "Authenticate to Google Cloud"
+        id: gcp-auth
+        uses: google-github-actions/auth@71f986410dfbc7added4569d411d040a91dc6935 # v2.1.8
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY }}
+          token_format: 'access_token'
 
       - id: 'download-helm'
         shell: bash
@@ -33,6 +29,10 @@ jobs:
         env:
           HELM_VERSION: 'v3.14.4' # v3.14.4 = April 10 2024
           HELM_SHA256SUM: 'a5844ef2c38ef6ddf3b5a8f7d91e7e0e8ebc39a38bb3fc8013d629c1ef29c259'
+          REGISTRY: us-docker.pkg.dev/prj-opentdf-4fc4
+          REPOSITORY: opentdf
+          REGISTRY_USERNAME: oauth2accesstoken
+          REGISTRY_PASSWORD: ${{ steps.gcp-auth.outputs.access_token }}
         run: |
           curl -sSLO "https://get.helm.sh/helm-${HELM_VERSION}-linux-amd64.tar.gz"
           echo "${HELM_SHA256SUM}  helm-${HELM_VERSION}-linux-amd64.tar.gz" | sha256sum -c --quiet --strict
@@ -40,67 +40,50 @@ jobs:
           tar xf "helm-${HELM_VERSION}-linux-amd64.tar.gz" -C helm
           mkdir -p "$HOME/.local/bin"
           mv ./helm/linux-amd64/helm "$HOME/.local/bin"
-
           helm version
+          echo "${REGISTRY_PASSWORD}" | helm registry login -u "${REGISTRY_USERNAME}" --password-stdin "${REGISTRY}"
+
+      - id: 'install-cosign'
+        shell: bash
+        working-directory: '${{ runner.temp }}'
+        env:
+          COSIGN_VERSION: 'v2.5.3'
+          COSIGN_SHA256SUM: '783b5d6c74105401c63946c68d9b2a4e1aab3c8abce043e06b8510b02b623ec9'
+        run: |
+          curl -sSLO "https://github.com/sigstore/cosign/releases/download/${COSIGN_VERSION}/cosign-linux-amd64"
+          echo "${COSIGN_SHA256SUM} cosign-linux-amd64" | sha256sum -c --quiet --strict
+          mkdir -p "$HOME/.local/bin"
+          mv ./cosign-linux-amd64 "$HOME/.local/bin/cosign"
+          chmod +x "$HOME/.local/bin/cosign"
+          cosign version
 
       - name: Run chart-releaser
-        uses: helm/chart-releaser-action@d1e09fd16821c091b45aa754f65bae4dd675d425
-        env:
-          CR_TOKEN: "${{ steps.app-token.outputs.token }}"
-        with:
-          skip_upload: true
-          skip_existing: true
+        id: chart-releaser
+        run: |
+          helm package ./charts/platform --destination ./publish
 
       - name: Upload Chart to Release
         env:
-          GH_TOKEN: ${{ steps.app-token.outputs.token }}
-        run: gh release upload ${{github.event.release.tag_name}} ./.cr-release-packages/*.tgz
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG_NAME: ${{ github.event.release.tag_name }}
+        run: gh release upload "${TAG_NAME}" ./publish/*.tgz
 
-      - name: Generate Index
-        run: cr index -o ${{github.repository_owner}} -r ${{ github.event.repository.name }} -t ${{steps.app-token.outputs.token}} -i ./index.yaml 
-        
-      - name: Upload Index
-        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea
-        with:
-          github-token: ${{ steps.app-token.outputs.token }}
-          script: |
-            const fs = require('fs');
-            
-            try {
-              // Read the index.yaml file
-              const content = fs.readFileSync('index.yaml', 'utf8');
-              
-              // Get the current file (if it exists) to get its SHA
-              let fileSha;
-              try {
-                const { data: file } = await github.rest.repos.getContent({
-                  owner: context.repo.owner,
-                  repo: context.repo.repo,
-                  path: 'index.yaml',
-                  ref: 'main'
-                });
-                fileSha = file.sha;
-              } catch (e) {
-                // File doesn't exist yet, that's ok
-                console.log('No existing index.yaml found');
-              }
-              
-              // Create or update the file
-              await github.rest.repos.createOrUpdateFileContents({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                path: 'index.yaml',
-                message: 'Update index.yaml',
-                content: Buffer.from(content).toString('base64'),
-                sha: fileSha,
-                branch: 'main'
-              });
-              
-              console.log('Successfully updated index.yaml');
-              
-            } catch (error) {
-              console.log('Error:', error);
-              core.setFailed(error.message);
-            }
 
-        
+      - name: Upload chart to GAR and Sign
+        shell: bash
+        env:
+          REGISTRY: us-docker.pkg.dev/prj-opentdf-4fc4
+          REPOSITORY: opentdf
+          CHART_NAME: platform
+          REGISTRY_USERNAME: oauth2accesstoken
+          REGISTRY_PASSWORD: ${{ steps.gcp-auth.outputs.access_token }}
+          CHART_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          set +x
+          for pkg in ./publish/platform*.tgz
+          do
+            output=$(helm push "${pkg}" oci://"${REGISTRY}"/"${REPOSITORY}" 2>&1 | grep Digest)
+            helm_sha=$(echo "${output}" | grep Digest | awk '{ print $2 }')
+            cosign sign --yes --registry-username "${REGISTRY_USERNAME}" --registry-password "${REGISTRY_PASSWORD}" "${REGISTRY}"/"${REPOSITORY}"/"${CHART_NAME}":"${CHART_TAG}"@"${helm_sha}"
+            break # We only expect 1 chart, but in case there's some weirdness, we break here after uploading the first chart
+          done
