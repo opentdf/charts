@@ -22,6 +22,8 @@ jobs:
         with:
           workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY }}
           token_format: 'access_token'
+          service_account: "github-actions-sa@prj-opentdf-4fc4.iam.gserviceaccount.com"
+          create_credentials_file: "false"
 
       - id: 'download-helm'
         shell: bash
