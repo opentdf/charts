@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.13.0](https://github.com/opentdf/charts/compare/platform-0.12.0...platform-0.13.0) (2025-08-11)
+
+
+### Features
+
+* Add init containers support to platform deployment ([#142](https://github.com/opentdf/charts/issues/142)) ([c7072f6](https://github.com/opentdf/charts/commit/c7072f626a5ffaba90c286fe2c1ea3f4b7b947bd))
+
 ## [0.12.0](https://github.com/opentdf/charts/compare/platform-0.11.0...platform-0.12.0) (2025-07-22)
 
 
