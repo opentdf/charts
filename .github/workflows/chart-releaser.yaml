@@ -20,10 +20,7 @@ jobs:
         id: gcp-auth
         uses: google-github-actions/auth@71f986410dfbc7added4569d411d040a91dc6935 # v2.1.8
         with:
-          workload_identity_provider: "projects/1053957112592/locations/global/workloadIdentityPools/github-actions-oidc-pool/providers/github-actions-oidc-provider"
-          service_account: "github-actions-sa@prj-infra-automation-ktbz.iam.gserviceaccount.com"
-          create_credentials_file: "false"
-          token_format: 'access_token'
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY }}
 
       - id: 'download-helm'
         shell: bash
