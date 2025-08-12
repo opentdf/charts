@@ -459,7 +459,7 @@ services:
       # -- Used by key management, if present.
       registered_kas_uri:
       # -- Preview feature enablement
-      preview_features:
+      preview:
         # -- Whether tdf based ecc support is enabled.
         ec_tdf_enabled: false
         # -- Whether new key management features are enabled.
