@@ -266,7 +266,8 @@ Download the [keycloak_data.yaml](https://raw.githubusercontent.com/opentdf/plat
 | services.entityresolution.subgroups | bool | `false` | Subgroups |
 | services.entityresolution.url | string | `nil` | Identity Provider Entity Resolver |
 | services.extraServices | object | `{}` | Additional services |
-| services.kas.config | object | `{"keyring":[{"alg":"ec:secp256r1","kid":"e1"},{"alg":"rsa:2048","kid":"r1"}],"preview_features":{"ec_tdf_enabled":false,"key_management":false},"root_key":null}` | KAS service Configuration as yaml |
+| services.kas.config | object | `{"keyring":[{"alg":"ec:secp256r1","kid":"e1"},{"alg":"rsa:2048","kid":"r1"}],"preview_features":{"ec_tdf_enabled":false,"key_management":false},"root_key":null,registered_kas_uri:""}` | KAS service Configuration as yaml |
+| services.kas.config.registered_kas_uri | string | "" | The URI that **this** KAS is registered within the database as. Used by KAS when key_management is enabled to make requests on behalf of the KAS to platform |
 | services.kas.config.keyring | list | `[{"alg":"ec:secp256r1","kid":"e1"},{"alg":"rsa:2048","kid":"r1"}]` | Default keys for clients to use |
 | services.kas.config.preview_features | object | `{"ec_tdf_enabled":false,"key_management":false}` | Preview feature enablement |
 | services.kas.config.preview_features.ec_tdf_enabled | bool | `false` | Whether tdf based ecc support is enabled. |

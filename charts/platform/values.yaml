@@ -454,6 +454,8 @@ services:
   kas:
     # -- KAS service Configuration as yaml
     config:
+      # -- URI this KAS is registered with the platform database as
+      registered_kas_uri: ""
       # -- Preview feature enablement
       preview_features:
         # -- Whether tdf based ecc support is enabled.
