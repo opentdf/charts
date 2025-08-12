@@ -166,6 +166,8 @@ func (suite *PlatformChartIntegrationSuite) TestBasicDeployment() {
 			"server.tls.additionalTrustedCerts[0].secret.optional":      "false",
 			"server.tls.additionalTrustedCerts[0].secret.items[0].key":  "tls.crt",
 			"server.tls.additionalTrustedCerts[0].secret.items[0].path": "traefik.crt",
+			"services.kas.config.registered_kas_uri":                    "https://kas.opentdf.local:9443/realms/opentdf/protocol/openid-connect/token",
+			"services.kas.config.preview_features.key_management":       "true",
 		},
 	}
 
@@ -182,6 +184,14 @@ func (suite *PlatformChartIntegrationSuite) TestBasicDeployment() {
 		fmt.Sprintf("--from-literal=kas-ec-cert.pem=%s", string(pubECKey)),
 		fmt.Sprintf("--from-literal=kas-private.pem=%s", string(privRSAKey)),
 		fmt.Sprintf("--from-literal=kas-cert.pem=%s", string(pubRSAKey)),
+	)
+
+	k8s.RunKubectl(suite.T(), kubectlOptions, "create", "secret", "generic", "root_key_secret",
+		fmt.Sprintf("--from-literal=%s", string(privECKey)),
+	)
+	rootKey := random.UniqueId()
+	k8s.RunKubectl(suite.T(), kubectlOptions, "create", "secret", "generic", "root-key-secret",
+		fmt.Sprintf("--from-literal=root-key=%s", rootKey),
 	)
 
 	kasSecret := k8s.GetSecret(suite.T(), kubectlOptions, "kas-private-keys")
