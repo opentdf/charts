@@ -253,6 +253,7 @@ server:
   port: 9000
   # -- The client facing name for the policy services, including KAS.
   # This is baked into Key Access Objects, and required for key management with the policy service.
+  # @deprecated Use `services.kas.config.registered_kas_uri` instead.
   public_hostname: ""
   # -- Enable go pprof
   enable_pprof: false
@@ -454,7 +455,8 @@ services:
   kas:
     # -- KAS service Configuration as yaml
     config:
-      # -- URI this KAS is registered with the platform database as
+      # -- The URI this KAS is registered with in the platform database.
+      # -- Used by key management, if present.
       registered_kas_uri: ""
       # -- Preview feature enablement
       preview_features:

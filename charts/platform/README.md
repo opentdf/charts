@@ -247,7 +247,7 @@ Download the [keycloak_data.yaml](https://raw.githubusercontent.com/opentdf/plat
 | server.http.readTimeout | string | `nil` | The maximum duration for reading the entire request including the body, ex. 30s, a negative value indicates no timeout, if unset or zero use application's default (5s). |
 | server.http.writeTimeout | string | `nil` | The maximum duration before timing out writes of the response, ex. 30s, a negative value indicates no timeout, if unset or zero use application's default (10s). |
 | server.port | int | `9000` | The server port |
-| server.public_hostname | string | `""` | The client facing name for the policy services, including KAS. This is baked into Key Access Objects, and required for key management with the policy service. |
+| server.public_hostname | string | `""` | @deprecated Use `services.kas.config.registered_kas_uri` instead. The client facing name for the policy services, including KAS. This is baked into Key Access Objects, and required for key management with the policy service. |
 | server.tls.additionalTrustedCerts | list | `[]` | Additional trusted certificates. These can be loaded following [projected volume](https://kubernetes.io/docs/concepts/storage/projected-volumes/) |
 | server.tls.enabled | bool | `false` | Enables tls for platform server |
 | server.tls.secret | string | `nil` | The server tls certificate. If not set, a self-signed certificate is generated |
@@ -267,7 +267,7 @@ Download the [keycloak_data.yaml](https://raw.githubusercontent.com/opentdf/plat
 | services.entityresolution.url | string | `nil` | Identity Provider Entity Resolver |
 | services.extraServices | object | `{}` | Additional services |
 | services.kas.config | object | `{"keyring":[{"alg":"ec:secp256r1","kid":"e1"},{"alg":"rsa:2048","kid":"r1"}],"preview_features":{"ec_tdf_enabled":false,"key_management":false},"root_key":null,registered_kas_uri:""}` | KAS service Configuration as yaml |
-| services.kas.config.registered_kas_uri | string | "" | The URI this KAS is registered with in the platform database. Required when `services.kas.config.preview_features.key_management` is enabled. |
+| services.kas.config.registered_kas_uri | string | "" | The URI this KAS is registered with in the platform database. Used when `services.kas.config.preview_features.key_management` is enabled, if present. If not present, fallsback to using `public_hostname` and inferring the URI. |
 | services.kas.config.keyring | list | `[{"alg":"ec:secp256r1","kid":"e1"},{"alg":"rsa:2048","kid":"r1"}]` | Default keys for clients to use |
 | services.kas.config.preview_features | object | `{"ec_tdf_enabled":false,"key_management":false}` | Preview feature enablement |
 | services.kas.config.preview_features.ec_tdf_enabled | bool | `false` | Whether tdf based ecc support is enabled. |
