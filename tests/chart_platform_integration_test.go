@@ -12,9 +12,6 @@ import (
 	"testing"
 	"time"
 
-	"encoding/hex"
-
-	"github.com/google/uuid"
 	"github.com/gruntwork-io/terratest/modules/helm"
 	"github.com/gruntwork-io/terratest/modules/k8s"
 	"github.com/gruntwork-io/terratest/modules/random"
@@ -136,6 +133,8 @@ func (suite *PlatformChartIntegrationSuite) TestBasicDeployment() {
 			"services.entityresolution.realm":                           "opentdf",
 			"services.kas.config.registered_kas_uri":                    "https://kas.opentdf.local:9443/realms/opentdf/protocol/openid-connect/token",
 			"services.kas.config.preview_features.key_management":       "true",
+			"services.kas.root_key_secret.name":                         "my-root-key-secret",
+			"services.kas.root_key_secret.key":                          "my-root-key",
 		},
 	}
 
@@ -171,6 +170,8 @@ func (suite *PlatformChartIntegrationSuite) TestBasicDeployment() {
 			"server.tls.additionalTrustedCerts[0].secret.items[0].path": "traefik.crt",
 			"services.kas.config.registered_kas_uri":                    "https://kas.opentdf.local:9443/realms/opentdf/protocol/openid-connect/token",
 			"services.kas.config.preview_features.key_management":       "true",
+			"services.kas.root_key_secret.name":                         "my-root-key-secret",
+			"services.kas.root_key_secret.key":                          "my-root-key",
 		},
 	}
 
@@ -189,9 +190,8 @@ func (suite *PlatformChartIntegrationSuite) TestBasicDeployment() {
 		fmt.Sprintf("--from-literal=kas-cert.pem=%s", string(pubRSAKey)),
 	)
 
-	rootKey := uuid.NewString()
-	k8s.RunKubectl(suite.T(), kubectlOptions, "create", "secret", "generic", "root_key_secret",
-		fmt.Sprintf("--from-literal=root-key=%s", hex.EncodeToString([]byte(rootKey))),
+	k8s.RunKubectl(suite.T(), kubectlOptions, "create", "secret", "generic", "my-root-key-secret",
+		fmt.Sprintf("--from-literal=%s=%s", "my-root-key", "value"),
 	)
 
 	kasSecret := k8s.GetSecret(suite.T(), kubectlOptions, "kas-private-keys")
