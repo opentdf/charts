@@ -12,6 +12,9 @@ import (
 	"testing"
 	"time"
 
+	"encoding/hex"
+
+	"github.com/google/uuid"
 	"github.com/gruntwork-io/terratest/modules/helm"
 	"github.com/gruntwork-io/terratest/modules/k8s"
 	"github.com/gruntwork-io/terratest/modules/random"
@@ -186,12 +189,9 @@ func (suite *PlatformChartIntegrationSuite) TestBasicDeployment() {
 		fmt.Sprintf("--from-literal=kas-cert.pem=%s", string(pubRSAKey)),
 	)
 
+	rootKey := uuid.NewString()
 	k8s.RunKubectl(suite.T(), kubectlOptions, "create", "secret", "generic", "root_key_secret",
-		fmt.Sprintf("--from-literal=%s", string(privECKey)),
-	)
-	rootKey := random.UniqueId()
-	k8s.RunKubectl(suite.T(), kubectlOptions, "create", "secret", "generic", "root-key-secret",
-		fmt.Sprintf("--from-literal=root-key=%s", rootKey),
+		fmt.Sprintf("--from-literal=root-key=%s", hex.EncodeToString([]byte(rootKey))),
 	)
 
 	kasSecret := k8s.GetSecret(suite.T(), kubectlOptions, "kas-private-keys")
