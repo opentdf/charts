@@ -131,10 +131,6 @@ func (suite *PlatformChartIntegrationSuite) TestBasicDeployment() {
 			"services.entityresolution.clientid":                        "tdf-entity-resolution",
 			"services.entityresolution.clientsecret":                    "secret",
 			"services.entityresolution.realm":                           "opentdf",
-			"services.kas.config.registered_kas_uri":                    "https://kas.opentdf.local:9443/realms/opentdf/protocol/openid-connect/token",
-			"services.kas.config.preview.key_management":                "true",
-			"services.kas.root_key_secret.name":                         "my-root-key-secret",
-			"services.kas.root_key_secret.key":                          "my-root-key",
 		},
 	}
 
@@ -168,10 +164,6 @@ func (suite *PlatformChartIntegrationSuite) TestBasicDeployment() {
 			"server.tls.additionalTrustedCerts[0].secret.optional":      "false",
 			"server.tls.additionalTrustedCerts[0].secret.items[0].key":  "tls.crt",
 			"server.tls.additionalTrustedCerts[0].secret.items[0].path": "traefik.crt",
-			"services.kas.config.registered_kas_uri":                    "https://kas.opentdf.local:9443/realms/opentdf/protocol/openid-connect/token",
-			"services.kas.config.preview.key_management":                "true",
-			"services.kas.root_key_secret.name":                         "my-root-key-secret",
-			"services.kas.root_key_secret.key":                          "my-root-key",
 		},
 	}
 
@@ -188,10 +180,6 @@ func (suite *PlatformChartIntegrationSuite) TestBasicDeployment() {
 		fmt.Sprintf("--from-literal=kas-ec-cert.pem=%s", string(pubECKey)),
 		fmt.Sprintf("--from-literal=kas-private.pem=%s", string(privRSAKey)),
 		fmt.Sprintf("--from-literal=kas-cert.pem=%s", string(pubRSAKey)),
-	)
-
-	k8s.RunKubectl(suite.T(), kubectlOptions, "create", "secret", "generic", "my-root-key-secret",
-		fmt.Sprintf("--from-literal=%s=%s", "my-root-key", "value"),
 	)
 
 	kasSecret := k8s.GetSecret(suite.T(), kubectlOptions, "kas-private-keys")
@@ -303,11 +291,6 @@ func (suite *PlatformChartIntegrationSuite) TestBasicDeployment() {
 
 	// // suite.Require().Len(pods, 3)
 	for _, pod := range pods {
-		if strings.Contains(pod.Name, "opentdf-platform") || strings.Contains(pod.Name, "kas") {
-			podLogs := k8s.GetPodLogs(suite.T(), kubectlOptions, &pod, "platform")
-			suite.T().Logf("Pod %s Logs: %s", pod.Name, podLogs)
-		}
-
 		suite.T().Logf("Pod %s Status: %s Message: %s Reason: %s", pod.Name, pod.Status.Phase, pod.Status.Message, pod.Status.Reason)
 		k8s.WaitUntilPodAvailable(suite.T(), kubectlOptions, pod.Name, 6, 10*time.Second)
 		suite.Require().Equal(pod.Status.Phase, corev1.PodRunning, fmt.Sprintf("Pod %s is not running", pod.Name))
