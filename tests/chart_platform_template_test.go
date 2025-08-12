@@ -1106,6 +1106,49 @@ func (s *PlatformChartTemplateSuite) Test_HTTP_Server_Option_NoPublicHostname() 
 	s.NotContains(data, "public_hostname: test.invalid", "public_hostname should not be set in the config file")
 }
 
+func (s *PlatformChartTemplateSuite) Test_Registered_KAS_URI_Present() {
+	releaseName := "basic"
+
+	namespaceName := "platform-" + strings.ToLower(random.UniqueId())
+
+	options := &helm.Options{
+		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
+		SetValues: map[string]string{
+			"services.kas.config.registered_kas_uri": "https://kas.example.com:8080",
+		},
+	}
+
+	output := helm.RenderTemplate(s.T(), options, s.chartPath, releaseName, []string{"templates/config.yaml"})
+
+	var config corev1.ConfigMap
+	helm.UnmarshalK8SYaml(s.T(), output, &config)
+
+	data, ok := config.Data["opentdf.yaml"]
+	s.Require().True(ok, "config map has opentdf.yaml")
+
+	s.Contains(data, "registered_kas_uri: https://kas.example.com:8080", "registered_kas_uri should be set in the config file")
+}
+
+func (s *PlatformChartTemplateSuite) Test_Registered_KAS_URI_Not_Present() {
+	releaseName := "basic"
+
+	namespaceName := "platform-" + strings.ToLower(random.UniqueId())
+
+	options := &helm.Options{
+		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
+	}
+
+	output := helm.RenderTemplate(s.T(), options, s.chartPath, releaseName, []string{"templates/config.yaml"})
+
+	var config corev1.ConfigMap
+	helm.UnmarshalK8SYaml(s.T(), output, &config)
+
+	data, ok := config.Data["opentdf.yaml"]
+	s.Require().True(ok, "config map has opentdf.yaml")
+
+	s.NotContains(data, "registered_kas_uri: https://kas.example.com:8080", "registered_kas_uri should not be set in the config file")
+}
+
 func (s *PlatformChartTemplateSuite) Test_InitContainers_Not_Present_When_Empty() {
 	releaseName := "basic"
 
@@ -1133,17 +1176,17 @@ func (s *PlatformChartTemplateSuite) Test_InitContainers_Present_When_Configured
 	options := &helm.Options{
 		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
 		SetValues: map[string]string{
-			"image.tag":                        "latest",
-			"initContainers[0].name":           "database-migration",
-			"initContainers[0].image":          "registry.opentdf.io/platform:latest",
-			"initContainers[0].command[0]":     "/bin/sh",
-			"initContainers[0].args[0]":        "-c",
-			"initContainers[0].args[1]":        "platform migrate up",
-			"initContainers[1].name":           "setup-data",
-			"initContainers[1].image":          "busybox:latest",
-			"initContainers[1].command[0]":     "/bin/sh",
-			"initContainers[1].args[0]":        "-c",
-			"initContainers[1].args[1]":        "echo 'Setting up initial data...'",
+			"image.tag":                    "latest",
+			"initContainers[0].name":       "database-migration",
+			"initContainers[0].image":      "registry.opentdf.io/platform:latest",
+			"initContainers[0].command[0]": "/bin/sh",
+			"initContainers[0].args[0]":    "-c",
+			"initContainers[0].args[1]":    "platform migrate up",
+			"initContainers[1].name":       "setup-data",
+			"initContainers[1].image":      "busybox:latest",
+			"initContainers[1].command[0]": "/bin/sh",
+			"initContainers[1].args[0]":    "-c",
+			"initContainers[1].args[1]":    "echo 'Setting up initial data...'",
 		},
 	}
 

@@ -457,7 +457,7 @@ services:
     config:
       # -- The URI this KAS is registered with in the platform database.
       # -- Used by key management, if present.
-      registered_kas_uri: ""
+      registered_kas_uri:
       # -- Preview feature enablement
       preview_features:
         # -- Whether tdf based ecc support is enabled.
