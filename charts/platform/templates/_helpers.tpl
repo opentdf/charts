@@ -91,8 +91,8 @@ Create the name of the service account to use
 {{- end -}}
 
 {{- define "platform.kas.validate" -}}
-{{- if and .Values.services.kas.config.preview_features.key_management (not (and .Values.services.kas.root_key_secret.name .Values.services.kas.root_key_secret.key)) }}
-{{- fail "When services.kas.config.preview_features.key_management is true, you must set both services.kas.root_key_secret.name and services.kas.root_key_secret.key" }}
+{{- if and .Values.services.kas.config.preview.key_management (not (and .Values.services.kas.root_key_secret.name .Values.services.kas.root_key_secret.key)) }}
+{{- fail "When services.kas.config.preview.key_management is true, you must set both services.kas.root_key_secret.name and services.kas.root_key_secret.key" }}
 {{- end -}}
 {{- end -}}
 
