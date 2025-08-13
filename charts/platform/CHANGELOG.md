@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.13.0](https://github.com/opentdf/charts/compare/platform-0.12.0...platform-0.13.0) (2025-08-13)
+
+
+### Features
+
+* Add init containers support to platform deployment ([#142](https://github.com/opentdf/charts/issues/142)) ([c7072f6](https://github.com/opentdf/charts/commit/c7072f626a5ffaba90c286fe2c1ea3f4b7b947bd))
+* **kas:** Add registered_kas_uri to values ([#148](https://github.com/opentdf/charts/issues/148)) ([0f637f3](https://github.com/opentdf/charts/commit/0f637f3c9553f5c51dcc2c314f9fc9f60a8a0756))
+
 ## [0.14.0](https://github.com/opentdf/charts/compare/platform-0.13.0...platform-0.14.0) (2025-08-13)
 
 
