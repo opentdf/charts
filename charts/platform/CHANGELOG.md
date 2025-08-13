@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.14.0](https://github.com/opentdf/charts/compare/platform-0.13.0...platform-0.14.0) (2025-08-13)
+
+
+### Features
+
+* **kas:** Add registered_kas_uri to values ([#148](https://github.com/opentdf/charts/issues/148)) ([0f637f3](https://github.com/opentdf/charts/commit/0f637f3c9553f5c51dcc2c314f9fc9f60a8a0756))
+
 ## [0.13.0](https://github.com/opentdf/charts/compare/platform-0.12.0...platform-0.13.0) (2025-08-11)
 
 
