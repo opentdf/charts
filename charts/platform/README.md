@@ -271,7 +271,7 @@ Download the [keycloak_data.yaml](https://raw.githubusercontent.com/opentdf/plat
 | services.kas.config.preview | object | `{"ec_tdf_enabled":false,"key_management":false}` | Preview feature enablement |
 | services.kas.config.preview.ec_tdf_enabled | bool | `false` | Whether tdf based ecc support is enabled. |
 | services.kas.config.preview.key_management | bool | `false` | Whether new key management features are enabled. |
-| services.kas.config.registered_kas_uri | string | `nil` | Used by key management, if present. |
+| services.kas.config.registered_kas_uri | string | `nil` | The URI this KAS is registered with in the platform database. Used by key management, if present. |
 | services.kas.privateKeysSecret | string | `"kas-private-keys"` | KAS secret containing keys @deprecated Use `private_keys_secret` instead. This value will be removed in a future release. |
 | services.kas.private_keys_secret | string | `""` | KAS secret containing keys kas-private.pem , kas-cert.pem , kas-ec-private.pem , kas-ec-cert.pem |
 | services.kas.root_key_secret | object | `{"key":"root_key","name":"kas-root-key"}` | Key needed when key_management feature is enabled (openssl rand 32 -hex) openssl rand 32 -hex | kubectl create secret generic kas-root-key --from-file=root_key=/dev/stdin |

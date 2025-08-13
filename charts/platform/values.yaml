@@ -455,8 +455,7 @@ services:
   kas:
     # -- KAS service Configuration as yaml
     config:
-      # -- The URI this KAS is registered with in the platform database.
-      # -- Used by key management, if present.
+      # -- The URI this KAS is registered with in the platform database. Used by key management, if present.
       registered_kas_uri:
       # -- Preview feature enablement
       preview:
