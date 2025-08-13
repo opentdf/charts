@@ -32,4 +32,4 @@ For chart specific documentation, please refer to the README.md files in the res
 
 #### Contributing
 
-After updating the charts, run `helm-docs` to update the [README.md](chartsplatforn/README.md).
+After updating the charts, run `helm-docs` to update the [README.md](charts/platforn/README.md).
