@@ -29,3 +29,7 @@ For chart specific documentation, please refer to the README.md files in the res
 ### Charts
 
 - [Platform](charts/platform/README.md)
+
+#### Contributing
+
+After updating the charts, run `helm-docs` to update the [README.md](charts/platform/README.md).
