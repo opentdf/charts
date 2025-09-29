@@ -111,15 +111,14 @@ func (suite *PlatformChartIntegrationSuite) TestBasicDeployment() {
 
 	k8s.CreateNamespace(suite.T(), kubectlOptions, namespaceName)
 
+	suite.T().Log("Deploying dependencies (keycloak & postgres)")
+	// Deploy keycloak
+	k8s.RunKubectl(suite.T(), kubectlOptions, "apply", "-f", "./deps.yaml", "-n", namespaceName)
+
 	options := &helm.Options{
 		KubectlOptions: kubectlOptions,
 		ValuesFiles:    []string{"../charts/platform/values.yaml"},
 		SetValues: map[string]string{
-			"playground": "true",
-			// Keycloak
-			"keycloak.ingress.enabled": "false",
-			// Keycloak Config Cli
-			"keycloak.keycloakConfigCli.backoffLimit": "10",
 			// Platform
 			"logger.level":       "debug",
 			"server.auth.issuer": fmt.Sprintf("%s/realms/opentdf", keycloakEndpoint),
@@ -132,16 +131,6 @@ func (suite *PlatformChartIntegrationSuite) TestBasicDeployment() {
 			"services.entityresolution.clientsecret":                    "secret",
 			"services.entityresolution.realm":                           "opentdf",
 		},
-	}
-
-	// These are needed because of a java bug running on M4 Macs
-	if os.Getenv("M4_DEVICE") != "" {
-		options.SetValues["keycloak.extraEnvVars[1].name"] = "JAVA_OPTS"
-		options.SetValues["keycloak.extraEnvVars[1].value"] = "-XX:UseSVE=0"
-		options.SetValues["keycloak.keycloakConfigCli.command[0]"] = "java"
-		options.SetValues["keycloak.keycloakConfigCli.command[1]"] = "-XX:UseSVE=0"
-		options.SetValues["keycloak.keycloakConfigCli.command[2]"] = "-jar"
-		options.SetValues["keycloak.keycloakConfigCli.command[3]"] = "./keycloak-config-cli.jar"
 	}
 
 	suite.T().Logf(
@@ -240,10 +229,14 @@ func (suite *PlatformChartIntegrationSuite) TestBasicDeployment() {
 		}
 		helm.Delete(suite.T(), options, releaseName, true)
 		helm.Delete(suite.T(), kasOptions, kasReleaseName, true)
+		k8s.RunKubectl(suite.T(), kubectlOptions, "delete", "-f", "./deps.yaml", "-n", namespaceName)
 		k8s.DeleteNamespace(suite.T(), kubectlOptions, namespaceName)
 	}()
 
 	k8s.WaitUntilServiceAvailable(suite.T(), kubectlOptions, kcServiceName, 10, 10*time.Second)
+	suite.T().Logf("Keycloak service is available")
+	k8s.WaitUntilPodAvailable(suite.T(), kubectlOptions, "keycloak-0", 20, 10*time.Second)
+	suite.T().Logf("Keycloak pod is available")
 
 	// Provision Keycloak
 	kcSecret := k8s.GetSecret(suite.T(), kubectlOptions, "platform-keycloak")
@@ -260,7 +253,7 @@ func (suite *PlatformChartIntegrationSuite) TestBasicDeployment() {
 
 	suite.Require().NoError(err, string(dockerRunOutput))
 	if err == nil {
-		suite.T().Log(string(dockerRunOutput))
+		suite.T().Logf("Docker output: %s", string(dockerRunOutput))
 	}
 
 	suite.T().Logf("Keycloak provisioned successfully")
