@@ -25,13 +25,3 @@ appVersion: "v0.8.1"
 
 maintainers:
   - name: Opentdf
-
-dependencies:
-  - name: postgresql
-    version: 16.2.5
-    repository: oci://registry-1.docker.io/bitnamicharts
-    condition: playground
-  - name: keycloak
-    version: 22.1.1
-    repository: oci://registry-1.docker.io/bitnamicharts
-    condition: playground

@@ -10,15 +10,7 @@
 
 ## Requirements
 
-In order to run the platform you need a supported identity provider and postgres database. We have included the following charts as dependencies:
-
-- [Keycloak](https://www.keycloak.org/guides)
-  - [Helm Chart](https://artifacthub.io/packages/helm/bitnami/keycloak)
-
-- [Postgres](https://www.postgresql.org/)
-  - [Helm Chart](https://artifacthub.io/packages/helm/bitnami/postgresql)
-
-If you want to deploy keycloak and postgresql as part of the platform deployment make sure to follow [Playground Configuration](#playground-configuration-optional) section.
+In order to run the platform you need a supported identity provider and postgres database. 
 
 ## Pre-Requisites
 
@@ -63,25 +55,6 @@ ingress:
           path: ""
           pathType: ImplementationSpecific
 ```
-
-### Playground Configuration (Optional)
-
-If you want to test the platform quickly without having to worry about setting up a database and identity provider, you can use the following configuration:
-
-> [!WARNING]
-> :warning: ** Keycloak might need to be configured differently depending on your environment setup. Use the linked charts to dig into other configuration options. 
-
-```yaml
-playground: true # Enable playground mode
-
-# Configure keycloak ingress for access to keycloak
-keycloak:
-  ingress:
-    annotations: {}
-      # route.openshift.io/termination: edge
-    hostname: # Your keycloak hostname (e.g. keycloak.example.com)
-```
-
 
 ## Post Install
 
