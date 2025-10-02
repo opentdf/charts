@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.14.0](https://github.com/opentdf/charts/compare/platform-0.13.0...platform-0.14.0) (2025-10-01)
+
+
+### Features
+
+* **main:** SRE-5656 Remove bitnami references ([#155](https://github.com/opentdf/charts/issues/155)) ([9493990](https://github.com/opentdf/charts/commit/94939904cb60dbbab8abc0f6fe6b379d899b9107))
+
 ## [0.13.0](https://github.com/opentdf/charts/compare/platform-0.12.0...platform-0.13.0) (2025-08-13)
 
 
