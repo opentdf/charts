@@ -453,17 +453,15 @@ services:
     subgroups: false
 
   kas:
-    # -- KAS service Configuration as yaml
-    config:
-      # -- The URI this KAS is registered with in the platform database.
-      # -- Used by key management, if present.
-      registered_kas_uri:
-      # -- Preview feature enablement
-      preview:
-        # -- Whether tdf based ecc support is enabled.
-        ec_tdf_enabled: false
-        # -- Whether new key management features are enabled.
-        key_management: false
+    # -- The URI this KAS is registered with in the platform database.
+    # -- Used by key management, if present.
+    registered_kas_uri:
+    # -- Preview feature enablement
+    preview:
+      # -- Whether tdf based ecc support is enabled.
+      ec_tdf_enabled: false
+      # -- Whether new key management features are enabled.
+      key_management: false
 
       root_key:
       # -- Default keys for clients to use
