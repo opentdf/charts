@@ -15,7 +15,7 @@ services:
   {{- end }}
   {{- if or (contains "all" .Values.mode ) (contains "kas" .Values.mode) }}
   kas:
-  {{- .Values.services.kas.config | toYaml | nindent 8 }}
+  {{- .Values.services.kas | toYaml | nindent 8 }}
   {{- end }}
   {{- if or (contains "all" .Values.mode) (contains "core" .Values.mode) }}
   authorization:
