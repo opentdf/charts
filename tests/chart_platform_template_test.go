@@ -744,7 +744,7 @@ func (s *PlatformChartTemplateSuite) Test_KeyManagement_Enabled_Without_RootKeyS
 	options := &helm.Options{
 		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
 		SetValues: map[string]string{
-			"services.kas.config.preview.key_management": "true",
+			"services.kas.preview.key_management": "true",
 			"services.kas.root_key_secret.name":          "",
 			"services.kas.root_key_secret.key":           "",
 		},
@@ -752,7 +752,7 @@ func (s *PlatformChartTemplateSuite) Test_KeyManagement_Enabled_Without_RootKeyS
 
 	_, err := helm.RenderTemplateE(s.T(), options, s.chartPath, releaseName, []string{})
 	s.Require().Error(err)
-	s.Require().ErrorContains(err, "When services.kas.config.preview.key_management is true, you must set both services.kas.root_key_secret.name and services.kas.root_key_secret.key")
+	s.Require().ErrorContains(err, "When services.kas.preview.key_management is true, you must set both services.kas.root_key_secret.name and services.kas.root_key_secret.key")
 }
 
 func (s *PlatformChartTemplateSuite) Test_KeyManagement_Enabled_With_RootKeySecret_Expect_EnvVar_Set() {
@@ -763,7 +763,7 @@ func (s *PlatformChartTemplateSuite) Test_KeyManagement_Enabled_With_RootKeySecr
 	options := &helm.Options{
 		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
 		SetValues: map[string]string{
-			"services.kas.config.preview.key_management": "true",
+			"services.kas.preview.key_management": "true",
 			"services.kas.root_key_secret.name":          "my-root-key-secret",
 			"services.kas.root_key_secret.key":           "my-root-key",
 		},
@@ -978,7 +978,7 @@ func (s *PlatformChartTemplateSuite) Test_Registered_KAS_URI_Present() {
 	options := &helm.Options{
 		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
 		SetValues: map[string]string{
-			"services.kas.config.registered_kas_uri": "https://kas.example.com:8080",
+			"services.kas.registered_kas_uri": "https://kas.example.com:8080",
 		},
 	}
 
