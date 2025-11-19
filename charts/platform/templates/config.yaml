@@ -37,9 +37,10 @@ data:
       client_secret: {{ .Values.sdk_config.client_secret | quote }}
       {{- end }}
       {{- end }}
-    trace:
-      {{- .Values.trace | toYaml | nindent 6 }}
+
     server:
+      trace:
+        {{- .Values.trace | toYaml | nindent 6 }}
       port: {{ .Values.server.port | quote }}
       {{- if .Values.server.public_hostname }}
       public_hostname: {{ .Values.server.public_hostname | quote }}
