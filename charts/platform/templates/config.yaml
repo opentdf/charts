@@ -40,7 +40,7 @@ data:
 
     server:
       trace:
-        {{- .Values.trace | toYaml | nindent 6 }}
+        {{- .Values.trace | toYaml | nindent 8 }}
       port: {{ .Values.server.port | quote }}
       {{- if .Values.server.public_hostname }}
       public_hostname: {{ .Values.server.public_hostname | quote }}
