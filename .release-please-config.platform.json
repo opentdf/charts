@@ -4,7 +4,6 @@
             "release-type": "helm",
             "package-name": "platform",
             "changelog-path": "CHANGELOG.md",
-            "bump-minor-pre-major": true,
             "separate-pull-requests": true,
             "include-component-in-tag": true,
             "include-v-in-tag": false

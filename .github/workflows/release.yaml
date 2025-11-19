@@ -12,12 +12,26 @@ jobs:
     env:
       MAIN_CONFIG: ".release-please-config.main.json"
     steps:
+      - name: "Validate ref"
+        if: ${{ !github.ref_name == 'main' && !startsWith(github.ref_name, 'release/') }}
+        env:
+          REF_NAME: ${{ github.ref_name }}
+        run: |
+          echo "Error: invalid github ref ['$REF_NAME'] for release-please action, must be 'main' or 'release/**'" | tee -a "$GITHUB_STEP_SUMMARY"
+          exit 1
+
+      - name: "Checkout"
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          persist-credentials: false
+
       - name: Generate a token
         id: generate_token
         uses: actions/create-github-app-token@f2acddfb5195534d487896a656232b016a682f3c # v1.9.0
         with:
           app-id: "${{ secrets.APP_ID }}"
           private-key: "${{ secrets.AUTOMATION_KEY }}"
+          
        # Extract the package name from the triggered branch name.
         # This assumes branch format 'release/<package>-X.Y'
         # <package> is e.g. 'platform'
