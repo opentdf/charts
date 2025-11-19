@@ -20,7 +20,7 @@ jobs:
           private-key: "${{ secrets.AUTOMATION_KEY }}"
        # Extract the package name from the triggered branch name.
         # This assumes branch format 'release/<package>-X.Y'
-        # <package> is e.g. 'charts/opentdf'
+        # <package> is e.g. 'platform'
       - name: "Output package config file name"
         id: package-config
         env:
