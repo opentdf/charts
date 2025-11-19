@@ -9,6 +9,8 @@ on:
 jobs:
   release-please:
     runs-on: ubuntu-latest
+    env:
+      MAIN_CONFIG: ".release-please-config.main.json"
     steps:
       - name: Generate a token
         id: generate_token
@@ -16,8 +18,49 @@ jobs:
         with:
           app-id: "${{ secrets.APP_ID }}"
           private-key: "${{ secrets.AUTOMATION_KEY }}"
+       # Extract the package name from the triggered branch name.
+        # This assumes branch format 'release/<package>-X.Y'
+        # <package> is e.g. 'charts/opentdf'
+      - name: "Output package config file name"
+        id: package-config
+        env:
+          BRANCH_NAME: ${{ github.ref_name }}
+          MAIN_CONFIG: ${{ env.MAIN_CONFIG }}
+        run: |
+          # Check if branch is main first
+          if [[ "$BRANCH_NAME" == "main" ]]; then
+            config_file="$MAIN_CONFIG"
+          else
+            # Remove 'release/' prefix
+            WITHOUT_PREFIX=${BRANCH_NAME#release/}
+            
+            # Remove everything from '-' to the end
+            PACKAGE_NAME=${WITHOUT_PREFIX%-*}
+            
+            # Check if PACKAGE_NAME is empty or equals to WITHOUT_PREFIX (meaning no "-" was found)
+            if [[ -z "$PACKAGE_NAME" || "$PACKAGE_NAME" == "$WITHOUT_PREFIX" ]]; then
+              echo "Error: Unable to extract package name from branch [$BRANCH_NAME]. Expected format 'release/<package>-X.Y'"
+              exit 1
+            else
+              # Replace any slashes in package name with underscores
+              SANITIZED_PACKAGE=${PACKAGE_NAME//\//_}
+              
+              # Replace 'main' in the config filename with the sanitized package name
+              config_file=${MAIN_CONFIG/main/$SANITIZED_PACKAGE}
+            fi
+          fi
+
+          # Check if package config file exists
+          if [ ! -f "$config_file" ]; then
+            echo "Error: $config_file does not exist." | tee -a "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
+
+          echo "config_file=$config_file" >> "$GITHUB_OUTPUT"
+
       - uses: google-github-actions/release-please-action@v4
         with:
           token: "${{ steps.generate_token.outputs.token }}"
-          config-file: .release-please-config.json
+          config-file: ${{ github.ref_name == 'main' && env.MAIN_CONFIG || startsWith(github.ref_name, 'release/') && steps.package-config.outputs.config_file }}
           manifest-file: .release-please-manifest.json
+          target-branch: ${{ github.ref_name }}
