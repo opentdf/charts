@@ -1,0 +1,17 @@
+{
+    "packages": {
+        "charts/platform": {
+            "release-type": "helm",
+            "package-name": "platform",
+            "changelog-path": "CHANGELOG.md",
+            "bump-minor-pre-major": true,
+            "separate-pull-requests": true,
+            "include-component-in-tag": true,
+            "include-v-in-tag": false
+        }
+    },
+    "release-search-depth": 100,
+    "commit-search-depth": 100,
+    "versioning": "always-bump-minor",
+    "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json"
+}
