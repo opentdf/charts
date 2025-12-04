@@ -1,6 +1,6 @@
 # platform
 
-![Version: 0.13.0](https://img.shields.io/badge/Version-0.13.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.8.1](https://img.shields.io/badge/AppVersion-v0.8.1-informational?style=flat-square)
+![Version: 0.14.0](https://img.shields.io/badge/Version-0.14.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.8.1](https://img.shields.io/badge/AppVersion-v0.8.1-informational?style=flat-square)
 
 A Helm Chart for OpenTDF Platform
 
@@ -165,6 +165,9 @@ Download the [keycloak_data.yaml](https://raw.githubusercontent.com/opentdf/plat
 | server.auth.policy.username_claim | string | `nil` |  |
 | server.auth.public_client_id | string | `"opentdf-public"` | The oidc client id, leveraged by otdfctl |
 | server.auth.skew | string | `"1m"` | The amount of drift allowed between the server and the client for the Access Token |
+| server.cors.additionalexposedheaders | list | `[]` | Additional exposed headers to append to the default list (additive) |
+| server.cors.additionalheaders | list | `[]` | Additional allowed headers to append to the default list (additive) |
+| server.cors.additionalmethods | list | `[]` | Additional HTTP methods to append to the default list (additive) |
 | server.cors.allowcredentials | bool | `true` | Allow credentials |
 | server.cors.allowedheaders | list | `["Accept","Authorization","Content-Type","X-CSRF-Token","X-Request-ID"]` | The allowed request headers |
 | server.cors.allowedmethods | list | `["GET","POST","PUT","DELETE","OPTIONS"]` | The allowed request methods |

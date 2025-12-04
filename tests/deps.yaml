@@ -285,4 +285,3 @@ spec:
         - name: keycloak-realm
           configMap:
             name: keycloak-realm
-

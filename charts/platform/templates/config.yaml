@@ -55,6 +55,18 @@ data:
           {{- toYaml .Values.server.cors.allowedheaders | nindent 10 }}
         exposedheaders:
           {{- toYaml .Values.server.cors.exposedheaders | nindent 10 }}
+        {{- if .Values.server.cors.additionalheaders }}
+        additionalheaders:
+          {{- toYaml .Values.server.cors.additionalheaders | nindent 10 }}
+        {{- end }}
+        {{- if .Values.server.cors.additionalmethods }}
+        additionalmethods:
+          {{- toYaml .Values.server.cors.additionalmethods | nindent 10 }}
+        {{- end }}
+        {{- if .Values.server.cors.additionalexposedheaders }}
+        additionalexposedheaders:
+          {{- toYaml .Values.server.cors.additionalexposedheaders | nindent 10 }}
+        {{- end }}
         maxage: {{ .Values.server.cors.maxage }}
         allowcredentials: {{ .Values.server.cors.allowcredentials }}
       grpc:

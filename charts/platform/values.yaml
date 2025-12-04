@@ -281,6 +281,12 @@ server:
     # -- List of response headers that browsers are allowed to access
     exposedheaders:
       - Link
+    # -- Additional allowed headers to append to the default list (additive)
+    additionalheaders: []
+    # -- Additional HTTP methods to append to the default list (additive)
+    additionalmethods: []
+    # -- Additional exposed headers to append to the default list (additive)
+    additionalexposedheaders: []
     # -- The max age
     maxage: 3600
     # -- Allow credentials

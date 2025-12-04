@@ -1075,3 +1075,132 @@ func (s *PlatformChartTemplateSuite) Test_InitContainers_Present_When_Configured
 	s.Require().Equal([]string{"/bin/sh"}, secondContainer.Command)
 	s.Require().Equal([]string{"-c", "echo 'Setting up initial data...'"}, secondContainer.Args)
 }
+
+func (s *PlatformChartTemplateSuite) Test_CORS_AdditionalHeaders_Rendered() {
+	releaseName := "cors-additional-headers"
+
+	namespaceName := "platform-" + strings.ToLower(random.UniqueId())
+
+	options := &helm.Options{
+		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
+		SetValues: map[string]string{
+			"server.cors.additionalheaders[0]": "X-Custom-Header",
+			"server.cors.additionalheaders[1]": "X-Another-Header",
+		},
+	}
+
+	output := helm.RenderTemplate(s.T(), options, s.chartPath, releaseName, []string{"templates/config.yaml"})
+
+	var config corev1.ConfigMap
+	helm.UnmarshalK8SYaml(s.T(), output, &config)
+
+	data, ok := config.Data["opentdf.yaml"]
+	s.Require().True(ok, "config map has opentdf.yaml")
+
+	s.Contains(data, "additionalheaders:", "additionalheaders should be present in config")
+	s.Contains(data, "X-Custom-Header", "X-Custom-Header should be in additionalheaders")
+	s.Contains(data, "X-Another-Header", "X-Another-Header should be in additionalheaders")
+}
+
+func (s *PlatformChartTemplateSuite) Test_CORS_AdditionalMethods_Rendered() {
+	releaseName := "cors-additional-methods"
+
+	namespaceName := "platform-" + strings.ToLower(random.UniqueId())
+
+	options := &helm.Options{
+		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
+		SetValues: map[string]string{
+			"server.cors.additionalmethods[0]": "PATCH",
+			"server.cors.additionalmethods[1]": "CUSTOM",
+		},
+	}
+
+	output := helm.RenderTemplate(s.T(), options, s.chartPath, releaseName, []string{"templates/config.yaml"})
+
+	var config corev1.ConfigMap
+	helm.UnmarshalK8SYaml(s.T(), output, &config)
+
+	data, ok := config.Data["opentdf.yaml"]
+	s.Require().True(ok, "config map has opentdf.yaml")
+
+	s.Contains(data, "additionalmethods:", "additionalmethods should be present in config")
+	s.Contains(data, "PATCH", "PATCH should be in additionalmethods")
+	s.Contains(data, "CUSTOM", "CUSTOM should be in additionalmethods")
+}
+
+func (s *PlatformChartTemplateSuite) Test_CORS_AdditionalExposedHeaders_Rendered() {
+	releaseName := "cors-additional-exposed"
+
+	namespaceName := "platform-" + strings.ToLower(random.UniqueId())
+
+	options := &helm.Options{
+		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
+		SetValues: map[string]string{
+			"server.cors.additionalexposedheaders[0]": "X-Request-ID",
+			"server.cors.additionalexposedheaders[1]": "X-Trace-ID",
+		},
+	}
+
+	output := helm.RenderTemplate(s.T(), options, s.chartPath, releaseName, []string{"templates/config.yaml"})
+
+	var config corev1.ConfigMap
+	helm.UnmarshalK8SYaml(s.T(), output, &config)
+
+	data, ok := config.Data["opentdf.yaml"]
+	s.Require().True(ok, "config map has opentdf.yaml")
+
+	s.Contains(data, "additionalexposedheaders:", "additionalexposedheaders should be present in config")
+	s.Contains(data, "X-Request-ID", "X-Request-ID should be in additionalexposedheaders")
+	s.Contains(data, "X-Trace-ID", "X-Trace-ID should be in additionalexposedheaders")
+}
+
+func (s *PlatformChartTemplateSuite) Test_CORS_AdditionalFields_Not_Rendered_When_Empty() {
+	releaseName := "cors-empty-additional"
+
+	namespaceName := "platform-" + strings.ToLower(random.UniqueId())
+
+	options := &helm.Options{
+		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
+	}
+
+	output := helm.RenderTemplate(s.T(), options, s.chartPath, releaseName, []string{"templates/config.yaml"})
+
+	var config corev1.ConfigMap
+	helm.UnmarshalK8SYaml(s.T(), output, &config)
+
+	data, ok := config.Data["opentdf.yaml"]
+	s.Require().True(ok, "config map has opentdf.yaml")
+
+	s.NotContains(data, "additionalheaders:", "additionalheaders should not be present when empty")
+	s.NotContains(data, "additionalmethods:", "additionalmethods should not be present when empty")
+	s.NotContains(data, "additionalexposedheaders:", "additionalexposedheaders should not be present when empty")
+}
+
+func (s *PlatformChartTemplateSuite) Test_CORS_AllowedAndAdditionalHeaders_Both_Rendered() {
+	releaseName := "cors-both-headers"
+
+	namespaceName := "platform-" + strings.ToLower(random.UniqueId())
+
+	options := &helm.Options{
+		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
+		SetValues: map[string]string{
+			"server.cors.allowedheaders[0]":    "Authorization",
+			"server.cors.allowedheaders[1]":    "Content-Type",
+			"server.cors.additionalheaders[0]": "X-Custom-Header",
+		},
+	}
+
+	output := helm.RenderTemplate(s.T(), options, s.chartPath, releaseName, []string{"templates/config.yaml"})
+
+	var config corev1.ConfigMap
+	helm.UnmarshalK8SYaml(s.T(), output, &config)
+
+	data, ok := config.Data["opentdf.yaml"]
+	s.Require().True(ok, "config map has opentdf.yaml")
+
+	s.Contains(data, "allowedheaders:", "allowedheaders should be present in config")
+	s.Contains(data, "Authorization", "Authorization should be in allowedheaders")
+	s.Contains(data, "Content-Type", "Content-Type should be in allowedheaders")
+	s.Contains(data, "additionalheaders:", "additionalheaders should be present in config")
+	s.Contains(data, "X-Custom-Header", "X-Custom-Header should be in additionalheaders")
+}
