@@ -71,7 +71,7 @@ setup() {
   fi
 
   # Assert that the output contains the newly created namespace
-  echo "$output" | jq -e '.[] | select(.id == "'$created_id'")' >/dev/null
+  echo "$output" | jq -e '.namespaces[] | select(.id == "'$created_id'")' >/dev/null
   assert [ "$?" -eq 0 ]
 }
 
