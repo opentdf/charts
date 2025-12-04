@@ -1,6 +1,7 @@
 package test
 
 import (
+	"encoding/json"
 	"fmt"
 	"path/filepath"
 	"strings"
@@ -9,6 +10,7 @@ import (
 	"github.com/gruntwork-io/terratest/modules/helm"
 	"github.com/gruntwork-io/terratest/modules/k8s"
 	"github.com/gruntwork-io/terratest/modules/random"
+	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
 	yaml3 "gopkg.in/yaml.v3"
 	appv1 "k8s.io/api/apps/v1"
@@ -379,6 +381,41 @@ func (s *PlatformChartTemplateSuite) Test_Custom_Volume_Templates_Merged() {
 		}
 	}
 	s.Require().True(volumeMountFound)
+}
+
+func (s *PlatformChartTemplateSuite) Test_Config_Map_Tracing() {
+	releaseName := "basic"
+
+	namespaceName := "opentdf-" + strings.ToLower(random.UniqueId())
+
+	traceOptions := map[string]interface{}{
+		"enabled": true,
+		"provider": map[string]interface{}{
+			"name": "otlp",
+		},
+	}
+	jsonBytes, err := json.MarshalIndent(traceOptions, "", "  ")
+	require.NoError(s.T(), err)
+	jsonValuesMap := make(map[string]string)
+	jsonValuesMap["trace"] = string(jsonBytes)
+
+	options := &helm.Options{
+		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
+		SetJsonValues:  jsonValuesMap,
+	}
+
+	output := helm.RenderTemplate(s.T(), options, s.chartPath, releaseName, []string{"templates/config.yaml"})
+	var cm corev1.ConfigMap
+	helm.UnmarshalK8SYaml(s.T(), output, &cm)
+
+	var config map[string]interface{}
+	s.Require().NoError(yaml3.Unmarshal([]byte(cm.Data["opentdf.yaml"]), &config))
+
+	serverConfig, ok := config["server"].(map[string]interface{})
+	s.Require().True(ok)
+	traceConfig, ok := serverConfig["trace"].(map[string]interface{})
+	s.Require().True(ok)
+	s.Require().True(traceConfig["enabled"].(bool))
 }
 
 func (s *PlatformChartTemplateSuite) Test_Custom_Config_Template_Services_Merged() {
