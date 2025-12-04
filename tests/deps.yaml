@@ -213,7 +213,7 @@ spec:
     spec:
       containers:
         - name: keycloak
-          image: quay.io/keycloak/keycloak:23.0
+          image: quay.io/keycloak/keycloak:25.0
           imagePullPolicy: IfNotPresent
           args:
             - start-dev
@@ -285,4 +285,3 @@ spec:
         - name: keycloak-realm
           configMap:
             name: keycloak-realm
-
