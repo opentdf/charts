@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.15.0](https://github.com/opentdf/charts/compare/platform-0.14.0...platform-0.15.0) (2026-02-27)
+
+
+### Bug Fixes
+
+* add new cors configuration options ([#162](https://github.com/opentdf/charts/issues/162)) ([2f70b28](https://github.com/opentdf/charts/commit/2f70b28a0393704a36641c9325d4fed1b486e9ea))
+* **main:** Move trace configuration under server section, issue [#159](https://github.com/opentdf/charts/issues/159) ([#160](https://github.com/opentdf/charts/issues/160)) ([1e9880d](https://github.com/opentdf/charts/commit/1e9880ddff3bace9c31144cb7534c7833eec4101))
+
 ## [0.14.0](https://github.com/opentdf/charts/compare/platform-0.13.0...platform-0.14.0) (2025-10-01)
 
 
