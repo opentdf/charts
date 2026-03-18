@@ -15,12 +15,12 @@ volumes:
   - name: kas-private-keys
     secret:
       secretName: {{ coalesce .Values.services.kas.private_keys_secret .Values.services.kas.privateKeysSecret }}
-    {{- if .Values.server.tls.enabled }}
   {{- end }}
+  {{- if .Values.server.tls.enabled }}
   - name: tls
     secret:
       secretName: {{ .Values.server.tls.secret | default (printf "%s-tls" (include "chart.fullname" .)) }}
-    {{- end }}
+  {{- end }}
     {{- if or (and .Values.playground .Values.keycloak.ingress.enabled .Values.keycloak.ingress.tls) .Values.server.tls.additionalTrustedCerts }}
   - name: trusted-certs
     projected:
