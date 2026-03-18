@@ -254,15 +254,18 @@ func (s *PlatformChartTemplateSuite) Test_TLS_Enabled_Mode_Core_Expect_TLS_Volum
 	for _, volume := range deployment.Spec.Template.Spec.Volumes {
 		if volume.Name == "tls" {
 			tlsVolumeFound = true
+			break
 		}
 	}
 	s.Require().True(tlsVolumeFound)
 
 	tlsVolumeMountFound := false
+containerLoop:
 	for _, container := range deployment.Spec.Template.Spec.Containers {
 		for _, volumeMount := range container.VolumeMounts {
 			if volumeMount.Name == "tls" {
 				tlsVolumeMountFound = true
+				break containerLoop
 			}
 		}
 	}
@@ -333,12 +336,16 @@ func (s *PlatformChartTemplateSuite) Test_TLS_Enabled_Mode_Core_And_Kas_Expect_T
 		if volume.Secret != nil && volume.Secret.SecretName == "kas-private-keys" {
 			kasVolumeFound = true
 		}
+		if tlsVolumeFound && kasVolumeFound {
+			break
+		}
 	}
 	s.Require().True(tlsVolumeFound)
 	s.Require().True(kasVolumeFound)
 
 	tlsVolumeMountFound := false
 	kasVolumeMountFound := false
+containerLoop:
 	for _, container := range deployment.Spec.Template.Spec.Containers {
 		for _, volumeMount := range container.VolumeMounts {
 			if volumeMount.Name == "tls" {
@@ -346,6 +353,9 @@ func (s *PlatformChartTemplateSuite) Test_TLS_Enabled_Mode_Core_And_Kas_Expect_T
 			}
 			if volumeMount.Name == "kas-private-keys" {
 				kasVolumeMountFound = true
+			}
+			if tlsVolumeMountFound && kasVolumeMountFound {
+				break containerLoop
 			}
 		}
 	}
