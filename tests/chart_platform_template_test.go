@@ -232,6 +232,127 @@ func (s *PlatformChartTemplateSuite) Test_Mode_All_Kas_Volumes_Mounted() {
 	s.Require().True(volumeMountFound)
 }
 
+func (s *PlatformChartTemplateSuite) Test_TLS_Enabled_Mode_Core_Expect_TLS_Volume_And_Mount() {
+	releaseName := "basic"
+
+	namespaceName := "opentdf-" + strings.ToLower(random.UniqueId())
+
+	options := &helm.Options{
+		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
+		SetValues: map[string]string{
+			"image.tag":          "latest",
+			"mode":               "core",
+			"server.tls.enabled": "true",
+		},
+	}
+
+	output := helm.RenderTemplate(s.T(), options, s.chartPath, releaseName, []string{"templates/deployment.yaml"})
+	var deployment appv1.Deployment
+	helm.UnmarshalK8SYaml(s.T(), output, &deployment)
+
+	tlsVolumeFound := false
+	for _, volume := range deployment.Spec.Template.Spec.Volumes {
+		if volume.Name == "tls" {
+			tlsVolumeFound = true
+		}
+	}
+	s.Require().True(tlsVolumeFound)
+
+	tlsVolumeMountFound := false
+	for _, container := range deployment.Spec.Template.Spec.Containers {
+		for _, volumeMount := range container.VolumeMounts {
+			if volumeMount.Name == "tls" {
+				tlsVolumeMountFound = true
+			}
+		}
+	}
+	s.Require().True(tlsVolumeMountFound)
+}
+
+func (s *PlatformChartTemplateSuite) Test_TLS_Disabled_Mode_Core_Expect_No_TLS_Volume_Or_Mount() {
+	releaseName := "basic"
+
+	namespaceName := "opentdf-" + strings.ToLower(random.UniqueId())
+
+	options := &helm.Options{
+		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
+		SetValues: map[string]string{
+			"image.tag":          "latest",
+			"mode":               "core",
+			"server.tls.enabled": "false",
+		},
+	}
+
+	output := helm.RenderTemplate(s.T(), options, s.chartPath, releaseName, []string{"templates/deployment.yaml"})
+	var deployment appv1.Deployment
+	helm.UnmarshalK8SYaml(s.T(), output, &deployment)
+
+	tlsVolumeFound := false
+	for _, volume := range deployment.Spec.Template.Spec.Volumes {
+		if volume.Name == "tls" {
+			tlsVolumeFound = true
+		}
+	}
+	s.Require().False(tlsVolumeFound)
+
+	tlsVolumeMountFound := false
+	for _, container := range deployment.Spec.Template.Spec.Containers {
+		for _, volumeMount := range container.VolumeMounts {
+			if volumeMount.Name == "tls" {
+				tlsVolumeMountFound = true
+			}
+		}
+	}
+	s.Require().False(tlsVolumeMountFound)
+}
+
+func (s *PlatformChartTemplateSuite) Test_TLS_Enabled_Mode_Core_And_Kas_Expect_TLS_And_Kas_Volumes_Mounted() {
+	releaseName := "basic"
+
+	namespaceName := "opentdf-" + strings.ToLower(random.UniqueId())
+
+	options := &helm.Options{
+		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
+		SetValues: map[string]string{
+			"image.tag":          "latest",
+			"mode":               "core\\,kas",
+			"server.tls.enabled": "true",
+		},
+	}
+
+	output := helm.RenderTemplate(s.T(), options, s.chartPath, releaseName, []string{"templates/deployment.yaml"})
+	var deployment appv1.Deployment
+	helm.UnmarshalK8SYaml(s.T(), output, &deployment)
+
+	tlsVolumeFound := false
+	kasVolumeFound := false
+	for _, volume := range deployment.Spec.Template.Spec.Volumes {
+		if volume.Name == "tls" {
+			tlsVolumeFound = true
+		}
+		if volume.Secret != nil && volume.Secret.SecretName == "kas-private-keys" {
+			kasVolumeFound = true
+		}
+	}
+	s.Require().True(tlsVolumeFound)
+	s.Require().True(kasVolumeFound)
+
+	tlsVolumeMountFound := false
+	kasVolumeMountFound := false
+	for _, container := range deployment.Spec.Template.Spec.Containers {
+		for _, volumeMount := range container.VolumeMounts {
+			if volumeMount.Name == "tls" {
+				tlsVolumeMountFound = true
+			}
+			if volumeMount.Name == "kas-private-keys" {
+				kasVolumeMountFound = true
+			}
+		}
+	}
+	s.Require().True(tlsVolumeMountFound)
+	s.Require().True(kasVolumeMountFound)
+}
+
 func (s *PlatformChartTemplateSuite) Test_Mode_Kas_Expect_Volumes_Mounted() {
 	releaseName := "basic"
 
