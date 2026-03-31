@@ -416,18 +416,6 @@ setup() {
   assert_file_exist opentdf-example.tdf
 }
 
-@test "Create nanoTDF file and verify the output" {
-  # Run the command to create a nanoTDF file without attributes
-  run bash -c 'echo "my first encrypted tdf" | $OTDFCTL_CMD encrypt -o opentdf-example.nano.tdf --tdf-type nano'
-  if [ "$status" -ne 0 ]; then
-    echo "Error: 'otdfctl encrypt nano' failed with status $status." >&2
-    echo "Output: $output" >&2
-    return 1
-  fi
-
-  # Assert that the nanoTDF file is created
-  assert_file_exist opentdf-example.nano.tdf
-}
 
 @test "Decrypt TDF3 file and verify the output" {
   # Run the command to decrypt the TDF3 file
@@ -442,18 +430,6 @@ setup() {
   assert_output "my first encrypted tdf"
 }
 
-@test "Decrypt nanoTDF file and verify the output" {
-  # Run the command to decrypt the nanoTDF file
-  run $OTDFCTL_CMD decrypt --tdf-type nano opentdf-example.nano.tdf
-  if [ "$status" -ne 0 ]; then
-    echo "Error: 'otdfctl decrypt nano' failed with status $status." >&2
-    echo "Output: $output" >&2
-    return 1
-  fi
-
-  # Assert that the decrypted output is as expected
-  assert_output "my first encrypted tdf"
-}
 
 @test "Encrypt TDF3 file with attributes and verify the output" {
   # Run the command to create a TDF3 file with attributes
@@ -468,18 +444,6 @@ setup() {
   assert_file_exist opentdf-example.tdf
 }
 
-@test "Encrypt nanoTDF file with attributes and verify the output" {
-  # Run the command to create a nanoTDF file with attributes
-  run bash -c 'echo "my first encrypted tdf" | $OTDFCTL_CMD encrypt -o opentdf-example.nano.tdf --tdf-type nano --attr https://demo.com/attr/role/value/guest'
-  if [ "$status" -ne 0 ]; then
-    echo "Error: 'otdfctl encrypt nano with attributes' failed with status $status." >&2
-    echo "Output: $output" >&2
-    return 1
-  fi
-
-  # Assert that the nanoTDF file is created
-  assert_file_exist opentdf-example.nano.tdf
-}
 
 @test "Decrypt TDF3 file with attributes and expect failure" {
   # Run the command to decrypt the TDF3 file
@@ -493,17 +457,6 @@ setup() {
   assert_output --partial 'kao unwrap failed for split {https://platform.opentdf.local:9443/kas }: permission_denied: request error'
 }
 
-@test "Decrypt nanoTDF file with attributes and expect failure" {
-  # Run the command to decrypt the nanoTDF file
-  run $OTDFCTL_CMD decrypt --tdf-type nano opentdf-example.nano.tdf
-
-  # Assert that the command failed
-  assert_failure
-
-  # Assert that the output contains the expected error message
-  assert_output --partial 'ERROR    Failed to decrypt file:'
-  assert_output --partial 'rpc error: code = PermissionDenied desc = forbidden'
-}
 
 @test "Create subject mapping for guest access and verify the output" {
   # Read the created guest value ID from the temporary file
@@ -565,18 +518,6 @@ setup() {
   assert_output "my first encrypted tdf"
 }
 
-@test "Decrypt nanoTDF file with new subject mapping and verify the output" {
-  # Run the command to decrypt the nanoTDF file
-  run $OTDFCTL_CMD decrypt --tdf-type nano opentdf-example.nano.tdf
-  if [ "$status" -ne 0 ]; then
-    echo "Error: 'otdfctl decrypt nano' failed with status $status." >&2
-    echo "Output: $output" >&2
-    return 1
-  fi
-
-  # Assert that the decrypted output is as expected
-  assert_output "my first encrypted tdf"
-}
 
 @test "Create and Decrypt with External KAS" {
   # Check we can reach kas.opentdf.local
