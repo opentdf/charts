@@ -961,8 +961,8 @@ func (s *PlatformChartTemplateSuite) Test_HTTP_Server_Option_Override() {
 	s.Require().Contains(data, "readTimeout: 21s", "readTimeout should be set in the config file")
 	s.Require().Contains(data, "writeTimeout: 23s", "writeTimeout should be set in the config file")
 	s.Require().Contains(data, "maxHeaderBytes: 2048", "maxHeaderBytes should be set in the config file")
-	s.Require().Contains(data, "idleTimeout: null", "idleTimeout should be null in the config file")
-	s.Require().Contains(data, "readHeaderTimeout: null", "readHeaderTimeout should be null in the config file")
+	s.NotContains(data, "idleTimeout", "server.http.idleTimeout should not be present")
+	s.NotContains(data, "readHeaderTimeout", "server.http.readHeaderTimeout should not be present")
 }
 
 func (s *PlatformChartTemplateSuite) Test_HTTP_Server_Option_PublicHostname() {
