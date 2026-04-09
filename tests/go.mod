@@ -5,7 +5,7 @@ go 1.25.0
 require (
 	github.com/gruntwork-io/terratest v0.48.2
 	github.com/stretchr/testify v1.11.1
-	github.com/traefik/traefik/v3 v3.6.8
+	github.com/traefik/traefik/v3 v3.6.12
 	gopkg.in/yaml.v3 v3.0.1
 	k8s.io/api v0.34.3
 	k8s.io/apimachinery v0.34.3
@@ -17,9 +17,9 @@ require (
 	github.com/BurntSushi/toml v1.6.0 // indirect
 	github.com/aws/aws-sdk-go-v2 v1.41.5 // indirect
 	github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.7.8 // indirect
-	github.com/aws/aws-sdk-go-v2/config v1.32.6 // indirect
-	github.com/aws/aws-sdk-go-v2/credentials v1.19.6 // indirect
-	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.18.16 // indirect
+	github.com/aws/aws-sdk-go-v2/config v1.32.8 // indirect
+	github.com/aws/aws-sdk-go-v2/credentials v1.19.8 // indirect
+	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.18.17 // indirect
 	github.com/aws/aws-sdk-go-v2/feature/s3/manager v1.17.41 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/configsources v1.4.21 // indirect
 	github.com/aws/aws-sdk-go-v2/internal/endpoints/v2 v2.7.21 // indirect
@@ -41,16 +41,16 @@ require (
 	github.com/aws/aws-sdk-go-v2/service/kms v1.37.6 // indirect
 	github.com/aws/aws-sdk-go-v2/service/lambda v1.88.5 // indirect
 	github.com/aws/aws-sdk-go-v2/service/rds v1.91.0 // indirect
-	github.com/aws/aws-sdk-go-v2/service/route53 v1.62.0 // indirect
+	github.com/aws/aws-sdk-go-v2/service/route53 v1.62.1 // indirect
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.97.3 // indirect
 	github.com/aws/aws-sdk-go-v2/service/secretsmanager v1.34.6 // indirect
-	github.com/aws/aws-sdk-go-v2/service/signin v1.0.4 // indirect
+	github.com/aws/aws-sdk-go-v2/service/signin v1.0.5 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sns v1.33.6 // indirect
 	github.com/aws/aws-sdk-go-v2/service/sqs v1.37.1 // indirect
 	github.com/aws/aws-sdk-go-v2/service/ssm v1.56.13 // indirect
-	github.com/aws/aws-sdk-go-v2/service/sso v1.30.8 // indirect
-	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.35.12 // indirect
-	github.com/aws/aws-sdk-go-v2/service/sts v1.41.5 // indirect
+	github.com/aws/aws-sdk-go-v2/service/sso v1.30.9 // indirect
+	github.com/aws/aws-sdk-go-v2/service/ssooidc v1.35.14 // indirect
+	github.com/aws/aws-sdk-go-v2/service/sts v1.41.6 // indirect
 	github.com/aws/smithy-go v1.24.2 // indirect
 	github.com/boombuler/barcode v1.0.1-0.20190219062509-6c824513bacc // indirect
 	github.com/cenkalti/backoff/v4 v4.3.0 // indirect
@@ -61,7 +61,7 @@ require (
 	github.com/emicklei/go-restful/v3 v3.13.0 // indirect
 	github.com/fxamacker/cbor/v2 v2.9.0 // indirect
 	github.com/ghodss/yaml v1.0.0 // indirect
-	github.com/go-acme/lego/v4 v4.31.0 // indirect
+	github.com/go-acme/lego/v4 v4.33.0 // indirect
 	github.com/go-errors/errors v1.0.2-0.20180813162953-d98b870cc4e0 // indirect
 	github.com/go-jose/go-jose/v4 v4.1.4 // indirect
 	github.com/go-kit/log v0.2.1 // indirect
@@ -105,7 +105,7 @@ require (
 	github.com/mattn/go-colorable v0.1.14 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/mattn/go-zglob v0.0.2-0.20190814121620-e3c945676326 // indirect
-	github.com/miekg/dns v1.1.69 // indirect
+	github.com/miekg/dns v1.1.72 // indirect
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/mitchellh/go-ps v1.0.0 // indirect
 	github.com/mitchellh/hashstructure v1.1.0 // indirect
@@ -129,10 +129,10 @@ require (
 	github.com/x448/float16 v0.8.4 // indirect
 	go.opentelemetry.io/auto/sdk v1.2.1 // indirect
 	go.opentelemetry.io/otel v1.43.0 // indirect
-	go.opentelemetry.io/otel/exporters/otlp/otlplog/otlploggrpc v0.14.0 // indirect
+	go.opentelemetry.io/otel/exporters/otlp/otlplog/otlploggrpc v0.17.0 // indirect
 	go.opentelemetry.io/otel/exporters/otlp/otlplog/otlploghttp v0.19.0 // indirect
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace v1.43.0 // indirect
-	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc v1.38.0 // indirect
+	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc v1.41.0 // indirect
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracehttp v1.43.0 // indirect
 	go.opentelemetry.io/otel/log v0.19.0 // indirect
 	go.opentelemetry.io/otel/metric v1.43.0 // indirect
