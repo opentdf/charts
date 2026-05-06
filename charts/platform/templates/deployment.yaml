@@ -91,7 +91,7 @@ spec:
                 key: {{ .Values.sdk_config.existingSecret.key }}
           {{- end }}
           {{- if and (or (contains "all" .Values.mode) (contains "kas" .Values.mode)) .Values.services.kas.config.preview.key_management }}
-          - name: {{include "platform.envVarPrefix" .}}_KAS_ROOT_KEY
+          - name: {{include "platform.envVarPrefix" .}}_SERVICES_KAS_ROOT_KEY
             valueFrom:
               secretKeyRef:
                 name: {{ .Values.services.kas.root_key_secret.name }}
