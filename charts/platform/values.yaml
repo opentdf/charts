@@ -478,8 +478,8 @@ services:
           alg: ec:secp256r1
         - kid: r1
           alg: rsa:2048
-    # -- Key needed when key_management feature is enabled (openssl rand 32 -hex)
-    # openssl rand 32 -hex | kubectl create secret generic kas-root-key --from-file=root_key=/dev/stdin
+    # -- Key needed when key_management feature is enabled. Injected as `{PREFIX}_SERVICES_KAS_ROOT_KEY` env var (openssl rand 32 -hex)
+    # openssl rand 32 -hex \| kubectl create secret generic kas-root-key --from-file=root_key=/dev/stdin
     root_key_secret:
       name: kas-root-key
       key: root_key

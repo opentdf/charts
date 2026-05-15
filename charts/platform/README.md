@@ -214,7 +214,7 @@ Download the [keycloak_data.yaml](https://raw.githubusercontent.com/opentdf/plat
 | services.kas.config.registered_kas_uri | string | `nil` | Used by key management, if present. |
 | services.kas.privateKeysSecret | string | `"kas-private-keys"` | KAS secret containing keys @deprecated Use `private_keys_secret` instead. This value will be removed in a future release. |
 | services.kas.private_keys_secret | string | `""` | KAS secret containing keys kas-private.pem , kas-cert.pem , kas-ec-private.pem , kas-ec-cert.pem |
-| services.kas.root_key_secret | object | `{"key":"root_key","name":"kas-root-key"}` | Key needed when key_management feature is enabled (openssl rand 32 -hex) openssl rand 32 -hex | kubectl create secret generic kas-root-key --from-file=root_key=/dev/stdin |
+| services.kas.root_key_secret | object | `{"key":"root_key","name":"kas-root-key"}` | Key needed when key_management feature is enabled. Injected as `{PREFIX}_SERVICES_KAS_ROOT_KEY` env var (openssl rand 32 -hex) openssl rand 32 -hex \| kubectl create secret generic kas-root-key --from-file=root_key=/dev/stdin |
 | tolerations | list | `[]` | Tolerations to apply to the pod (https://kubernetes.io/docs/concepts/scheduling-eviction/taint-and-toleration/) |
 | trace.enabled | bool | `false` | Enable distributed tracing |
 | trace.provider.file.compress | string | `nil` | Enable compression of trace files |

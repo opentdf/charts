@@ -944,7 +944,7 @@ func (s *PlatformChartTemplateSuite) Test_KeyManagement_Enabled_With_RootKeySecr
 	envVarFound := false
 	for _, container := range deployment.Spec.Template.Spec.Containers {
 		for _, envVar := range container.Env {
-			if envVar.Name == "OPENTDF_KAS_ROOT_KEY" {
+			if envVar.Name == "OPENTDF_SERVICES_KAS_ROOT_KEY" {
 				s.Require().Equal("my-root-key-secret", envVar.ValueFrom.SecretKeyRef.Name)
 				s.Require().Equal("my-root-key", envVar.ValueFrom.SecretKeyRef.Key)
 				envVarFound = true
