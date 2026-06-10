@@ -85,8 +85,10 @@ data:
         cert: /etc/platform/certs/tls.crt
         key: /etc/platform/certs/tls.key
       auth:
-        enabled: {{ .Values.server.auth.enabled | default true }}
+        enabled: {{ if kindIs "bool" .Values.server.auth.enabled }}{{ .Values.server.auth.enabled }}{{ else }}true{{ end }}
         {{- omit .Values.server.auth "enabled" | toYaml | nindent 8 }}
+      {{- if .Values.server.cryptoProvider.standard.keys }}
       cryptoProvider:
         {{- .Values.server.cryptoProvider | toYaml | nindent 8 }}
+      {{- end }}
     {{-  include "platform.util.merge.dict" (list $data .Values.configTemplate "platform.configuration.tpl" ) | nindent 4}}

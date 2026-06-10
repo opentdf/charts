@@ -10,16 +10,20 @@ services:
 {{- define "platform.configuration.tpl" }}
 services:
   {{- if or (contains "all" .Values.mode ) (contains "core" .Values.mode ) }}
-  entityresolution: 
+  {{- if .Values.services.entityresolution.url }}
+  entityresolution:
   {{ .Values.services.entityresolution | toYaml | nindent 8 }}
+  {{- end }}
   {{- end }}
   {{- if or (contains "all" .Values.mode ) (contains "kas" .Values.mode) }}
   kas:
   {{- .Values.services.kas.config | toYaml | nindent 8 }}
   {{- end }}
   {{- if or (contains "all" .Values.mode) (contains "core" .Values.mode) }}
+  {{- with .Values.services.authorization }}
   authorization:
-  {{ .Values.services.authorization | toYaml | nindent 8 }}
+  {{ . | toYaml | nindent 8 }}
+  {{- end }}
   {{- end }}
   {{- with .Values.services.extraServices }}
   {{- . | toYaml | nindent 2}}
