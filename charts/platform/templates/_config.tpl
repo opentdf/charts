@@ -10,9 +10,11 @@ services:
 {{- define "platform.configuration.tpl" }}
 services:
   {{- if or (contains "all" .Values.mode ) (contains "core" .Values.mode ) }}
-  {{- if .Values.services.entityresolution.url }}
+  {{- with (.Values.services).entityresolution }}
+  {{- if .url }}
   entityresolution:
-  {{ .Values.services.entityresolution | toYaml | nindent 8 }}
+  {{ . | toYaml | nindent 8 }}
+  {{- end }}
   {{- end }}
   {{- end }}
   {{- if or (contains "all" .Values.mode ) (contains "kas" .Values.mode) }}

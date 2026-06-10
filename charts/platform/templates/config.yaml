@@ -87,8 +87,10 @@ data:
       auth:
         enabled: {{ if kindIs "bool" .Values.server.auth.enabled }}{{ .Values.server.auth.enabled }}{{ else }}true{{ end }}
         {{- omit .Values.server.auth "enabled" | toYaml | nindent 8 }}
-      {{- if .Values.server.cryptoProvider.standard.keys }}
+      {{- with ((.Values.server).cryptoProvider).standard }}
+      {{- if .keys }}
       cryptoProvider:
-        {{- .Values.server.cryptoProvider | toYaml | nindent 8 }}
+        {{- $.Values.server.cryptoProvider | toYaml | nindent 8 }}
+      {{- end }}
       {{- end }}
     {{-  include "platform.util.merge.dict" (list $data .Values.configTemplate "platform.configuration.tpl" ) | nindent 4}}
