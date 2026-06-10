@@ -93,4 +93,7 @@ data:
         {{- $.Values.server.cryptoProvider | toYaml | nindent 8 }}
       {{- end }}
       {{- end }}
-    {{-  include "platform.util.merge.dict" (list $data .Values.configTemplate "platform.configuration.tpl" ) | nindent 4}}
+    {{- $mergedServices := include "platform.util.merge.dict" (list $data .Values.configTemplate "platform.configuration.tpl") | trim }}
+    {{- if and (ne $mergedServices "{}") (ne $mergedServices "") }}
+    {{- $mergedServices | nindent 4 }}
+    {{- end }}
