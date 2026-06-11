@@ -1398,7 +1398,8 @@ func (s *PlatformChartTemplateSuite) Test_EntityResolution_Empty_URL_Not_In_Serv
 	err := yaml3.Unmarshal([]byte(data), &parsedConfig)
 	require.NoError(s.T(), err, "config should be valid YAML")
 
-	services, _ := parsedConfig["services"].(map[string]interface{})
+	services, ok := parsedConfig["services"].(map[string]interface{})
+	s.Require().True(ok, "config should contain services as a map")
 	_, hasER := services["entityresolution"]
 	s.False(hasER, "entityresolution must not appear in services when url is not set")
 }
@@ -1457,7 +1458,8 @@ func (s *PlatformChartTemplateSuite) Test_Authorization_Empty_Not_In_Services() 
 	err := yaml3.Unmarshal([]byte(data), &parsedConfig)
 	require.NoError(s.T(), err, "config should be valid YAML")
 
-	services, _ := parsedConfig["services"].(map[string]interface{})
+	services, ok := parsedConfig["services"].(map[string]interface{})
+	s.Require().True(ok, "config should contain services as a map")
 	_, hasAuth := services["authorization"]
 	s.False(hasAuth, "authorization must not appear in services when empty")
 }
