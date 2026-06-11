@@ -49,3 +49,30 @@ jobs:
       - name: Run chart-testing (lint)
         if: steps.list-changed.outputs.changed == 'true'
         run: ls -la && ct lint --check-version-increment=false --target-branch ${{ github.event.repository.default_branch }} --lint-conf ./.lintconf.yaml
+
+      - name: Install helm-docs
+        if: steps.list-changed.outputs.changed == 'true'
+        env:
+          # Keep in sync with .pre-commit-config.yaml
+          HELM_DOCS_VERSION: '1.13.1'
+          HELM_DOCS_SHA256: 'df8d803506933ceb92bc2996d8a432059a35fc19a308ac37a141971ffdf7aa33'
+        run: |
+          curl -sSLO "https://github.com/norwoodj/helm-docs/releases/download/v${HELM_DOCS_VERSION}/helm-docs_${HELM_DOCS_VERSION}_Linux_x86_64.tar.gz"
+          echo "${HELM_DOCS_SHA256}  helm-docs_${HELM_DOCS_VERSION}_Linux_x86_64.tar.gz" | sha256sum -c --quiet --strict
+          tar -xzf "helm-docs_${HELM_DOCS_VERSION}_Linux_x86_64.tar.gz" -C /tmp helm-docs
+          rm "helm-docs_${HELM_DOCS_VERSION}_Linux_x86_64.tar.gz"
+
+      - name: Run helm-docs
+        if: steps.list-changed.outputs.changed == 'true'
+        # --chart-search-root=charts matches .pre-commit-config.yaml so local and CI behaviour are identical
+        run: /tmp/helm-docs --chart-search-root=charts
+
+      - name: Fail if docs are not up-to-date
+        if: steps.list-changed.outputs.changed == 'true'
+        run: |
+          if ! git diff --quiet -- 'charts/*/README.md'; then
+            echo "::error::Helm docs are not up-to-date. Run 'helm-docs' locally and commit the changes."
+            git diff --stat -- 'charts/*/README.md'
+            git diff -- 'charts/*/README.md'
+            exit 1
+          fi
