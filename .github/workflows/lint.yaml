@@ -49,3 +49,26 @@ jobs:
       - name: Run chart-testing (lint)
         if: steps.list-changed.outputs.changed == 'true'
         run: ls -la && ct lint --check-version-increment=false --target-branch ${{ github.event.repository.default_branch }} --lint-conf ./.lintconf.yaml
+
+      - name: Install helm-docs
+        if: steps.list-changed.outputs.changed == 'true'
+        env:
+          HELM_DOCS_VERSION: '1.14.2'
+        run: |
+          curl -sSLO "https://github.com/norwoodj/helm-docs/releases/download/v${HELM_DOCS_VERSION}/helm-docs_${HELM_DOCS_VERSION}_Linux_x86_64.tar.gz"
+          tar -xzf "helm-docs_${HELM_DOCS_VERSION}_Linux_x86_64.tar.gz" -C /tmp helm-docs
+          rm "helm-docs_${HELM_DOCS_VERSION}_Linux_x86_64.tar.gz"
+
+      - name: Run helm-docs
+        if: steps.list-changed.outputs.changed == 'true'
+        run: /tmp/helm-docs
+
+      - name: Fail if docs are not up-to-date
+        if: steps.list-changed.outputs.changed == 'true'
+        run: |
+          if ! git diff --quiet; then
+            echo "::error::Helm docs are not up-to-date. Run 'helm-docs' locally and commit the changes."
+            git diff --stat
+            git diff
+            exit 1
+          fi
