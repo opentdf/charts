@@ -4,6 +4,7 @@ on:
   pull_request:
     branches:
       - "main"
+      - "fix/platform-skip-empty-service-blocks" # TEMP: revert before merging stack to main (PR #194)
 
 jobs:
   analyze:
