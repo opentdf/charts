@@ -22,9 +22,9 @@ services:
   {{- .Values.services.kas.config | toYaml | nindent 8 }}
   {{- end }}
   {{- if or (contains "all" .Values.mode) (contains "core" .Values.mode) }}
-  {{- with .Values.services.authorization }}
+  {{- if .Values.services.authorization }}
   authorization:
-  {{ . | toYaml | nindent 8 }}
+  {{- .Values.services.authorization | toYaml | nindent 8 }}
   {{- end }}
   {{- end }}
   {{- with .Values.services.extraServices }}

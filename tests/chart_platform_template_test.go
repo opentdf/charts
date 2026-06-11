@@ -1372,3 +1372,189 @@ func (s *PlatformChartTemplateSuite) Test_CORS_AllowedAndAdditionalHeaders_Both_
 	s.Contains(data, "additionalheaders:", "additionalheaders should be present in config")
 	s.Contains(data, "X-Custom-Header", "X-Custom-Header should be in additionalheaders")
 }
+
+// ---- Tests for conditional rendering of empty service blocks ----
+
+func (s *PlatformChartTemplateSuite) Test_EntityResolution_Empty_URL_Not_In_Services() {
+	// entityresolution must not appear in the config when url is not set.
+	releaseName := "basic"
+	namespaceName := "opentdf-" + strings.ToLower(random.UniqueId())
+
+	options := &helm.Options{
+		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
+		// mode defaults to "all" which includes entityresolution scope;
+		// url is not set so entityresolution should be suppressed
+	}
+
+	output := helm.RenderTemplate(s.T(), options, s.chartPath, releaseName, []string{"templates/config.yaml"})
+
+	var config corev1.ConfigMap
+	helm.UnmarshalK8SYaml(s.T(), output, &config)
+
+	data, ok := config.Data["opentdf.yaml"]
+	require.True(s.T(), ok, "config map should have opentdf.yaml")
+
+	var parsedConfig map[string]interface{}
+	err := yaml3.Unmarshal([]byte(data), &parsedConfig)
+	require.NoError(s.T(), err, "config should be valid YAML")
+
+	services, _ := parsedConfig["services"].(map[string]interface{})
+	_, hasER := services["entityresolution"]
+	s.False(hasER, "entityresolution must not appear in services when url is not set")
+}
+
+func (s *PlatformChartTemplateSuite) Test_EntityResolution_With_URL_In_Services() {
+	// entityresolution must appear in the config when url is set.
+	releaseName := "basic"
+	namespaceName := "opentdf-" + strings.ToLower(random.UniqueId())
+
+	options := &helm.Options{
+		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
+		// url set via SetStrValues to avoid helm --set parsing the colon in the URL
+		SetStrValues: map[string]string{
+			"services.entityresolution.url": "https://idp.example.com",
+		},
+	}
+
+	output := helm.RenderTemplate(s.T(), options, s.chartPath, releaseName, []string{"templates/config.yaml"})
+
+	var config corev1.ConfigMap
+	helm.UnmarshalK8SYaml(s.T(), output, &config)
+
+	data, ok := config.Data["opentdf.yaml"]
+	require.True(s.T(), ok, "config map should have platform.yaml")
+
+	var parsedConfig map[string]interface{}
+	err := yaml3.Unmarshal([]byte(data), &parsedConfig)
+	require.NoError(s.T(), err, "config should be valid YAML")
+
+	services, ok := parsedConfig["services"].(map[string]interface{})
+	require.True(s.T(), ok, "config should contain services as a map")
+	er, hasER := services["entityresolution"].(map[string]interface{})
+	s.True(hasER, "entityresolution should appear in services when url is set")
+	s.Equal("https://idp.example.com", er["url"], "entityresolution.url should be set correctly")
+}
+
+func (s *PlatformChartTemplateSuite) Test_Authorization_Empty_Not_In_Services() {
+	// The default authorization: {} must not produce a services.authorization block.
+	releaseName := "basic"
+	namespaceName := "opentdf-" + strings.ToLower(random.UniqueId())
+
+	options := &helm.Options{
+		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
+		// default mode "all" includes core; authorization defaults to {} so should be suppressed
+	}
+
+	output := helm.RenderTemplate(s.T(), options, s.chartPath, releaseName, []string{"templates/config.yaml"})
+
+	var config corev1.ConfigMap
+	helm.UnmarshalK8SYaml(s.T(), output, &config)
+
+	data, ok := config.Data["opentdf.yaml"]
+	require.True(s.T(), ok, "config map should have opentdf.yaml")
+
+	var parsedConfig map[string]interface{}
+	err := yaml3.Unmarshal([]byte(data), &parsedConfig)
+	require.NoError(s.T(), err, "config should be valid YAML")
+
+	services, _ := parsedConfig["services"].(map[string]interface{})
+	_, hasAuth := services["authorization"]
+	s.False(hasAuth, "authorization must not appear in services when empty")
+}
+
+func (s *PlatformChartTemplateSuite) Test_Auth_Enabled_False_Renders_Correctly() {
+	// Setting server.auth.enabled: false must render as false in the config,
+	// not coerced to true by Helm's `false | default true` bug.
+	releaseName := "basic"
+	namespaceName := "opentdf-" + strings.ToLower(random.UniqueId())
+
+	options := &helm.Options{
+		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
+		SetValues: map[string]string{
+			"server.auth.enabled": "false",
+		},
+	}
+
+	output := helm.RenderTemplate(s.T(), options, s.chartPath, releaseName, []string{"templates/config.yaml"})
+
+	var config corev1.ConfigMap
+	helm.UnmarshalK8SYaml(s.T(), output, &config)
+
+	data, ok := config.Data["opentdf.yaml"]
+	require.True(s.T(), ok, "config map should have platform.yaml")
+
+	var parsedConfig map[string]interface{}
+	err := yaml3.Unmarshal([]byte(data), &parsedConfig)
+	require.NoError(s.T(), err, "config should be valid YAML")
+
+	server, ok := parsedConfig["server"].(map[string]interface{})
+	require.True(s.T(), ok, "config should contain server as a map")
+	auth, ok := server["auth"].(map[string]interface{})
+	require.True(s.T(), ok, "server should contain auth as a map")
+	s.Equal(false, auth["enabled"], "server.auth.enabled must render as false when set to false in values")
+}
+
+func (s *PlatformChartTemplateSuite) Test_CryptoProvider_Empty_Keys_Not_Rendered() {
+	// When server.cryptoProvider.standard.keys is empty, cryptoProvider must
+	// not appear in the config to avoid startup panics on missing key files.
+	releaseName := "basic"
+	namespaceName := "opentdf-" + strings.ToLower(random.UniqueId())
+
+	options := &helm.Options{
+		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
+		SetValues: map[string]string{
+			"server.cryptoProvider.standard.keys": "null",
+		},
+	}
+
+	output := helm.RenderTemplate(s.T(), options, s.chartPath, releaseName, []string{"templates/config.yaml"})
+
+	var config corev1.ConfigMap
+	helm.UnmarshalK8SYaml(s.T(), output, &config)
+
+	data, ok := config.Data["opentdf.yaml"]
+	require.True(s.T(), ok, "config map should have platform.yaml")
+
+	var parsedConfig map[string]interface{}
+	err := yaml3.Unmarshal([]byte(data), &parsedConfig)
+	require.NoError(s.T(), err, "config should be valid YAML")
+
+	server, ok := parsedConfig["server"].(map[string]interface{})
+	require.True(s.T(), ok, "config should contain server as a map")
+	_, hasCrypto := server["cryptoProvider"]
+	s.False(hasCrypto, "cryptoProvider must not appear in config when keys are empty")
+}
+
+func (s *PlatformChartTemplateSuite) Test_CryptoProvider_With_Keys_Rendered() {
+	// When keys are provided, cryptoProvider must appear in the config.
+	releaseName := "basic"
+	namespaceName := "opentdf-" + strings.ToLower(random.UniqueId())
+
+	options := &helm.Options{
+		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
+		SetValues: map[string]string{
+			"mode":                                             "all",
+			"server.cryptoProvider.standard.keys[0].kid":     "r1",
+			"server.cryptoProvider.standard.keys[0].alg":     "rsa:2048",
+			"server.cryptoProvider.standard.keys[0].private": "/etc/platform/kas/kas-private.pem",
+			"server.cryptoProvider.standard.keys[0].cert":    "/etc/platform/kas/kas-cert.pem",
+		},
+	}
+
+	output := helm.RenderTemplate(s.T(), options, s.chartPath, releaseName, []string{"templates/config.yaml"})
+
+	var config corev1.ConfigMap
+	helm.UnmarshalK8SYaml(s.T(), output, &config)
+
+	data, ok := config.Data["opentdf.yaml"]
+	require.True(s.T(), ok, "config map should have platform.yaml")
+
+	var parsedConfig map[string]interface{}
+	err := yaml3.Unmarshal([]byte(data), &parsedConfig)
+	require.NoError(s.T(), err, "config should be valid YAML")
+
+	server, ok := parsedConfig["server"].(map[string]interface{})
+	require.True(s.T(), ok, "config should contain server as a map")
+	_, hasCrypto := server["cryptoProvider"]
+	s.True(hasCrypto, "cryptoProvider must appear in config when keys are set")
+}
