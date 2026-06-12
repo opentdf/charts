@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.15.0](https://github.com/opentdf/charts/compare/platform-0.14.0...platform-0.15.0) (2026-06-11)
+
+
+### Bug Fixes
+
+* add new cors configuration options ([#162](https://github.com/opentdf/charts/issues/162)) ([2f70b28](https://github.com/opentdf/charts/commit/2f70b28a0393704a36641c9325d4fed1b486e9ea))
+* **main:** Move trace configuration under server section, issue [#159](https://github.com/opentdf/charts/issues/159) ([#160](https://github.com/opentdf/charts/issues/160)) ([1e9880d](https://github.com/opentdf/charts/commit/1e9880ddff3bace9c31144cb7534c7833eec4101))
+* **platform:** DSPX-2933 align KAS root key env var with Viper config path ([#191](https://github.com/opentdf/charts/issues/191)) ([d1cb792](https://github.com/opentdf/charts/commit/d1cb7927d9bb909aca71b8203f4d6ccd42f770f3))
+* **platform:** gate tls volume on tls.enabled instead of kas/all mode ([#171](https://github.com/opentdf/charts/issues/171)) ([19323aa](https://github.com/opentdf/charts/commit/19323aa0a62c6f3369077bbda781e8ab55fbc90e))
+* **platform:** suppress empty service blocks and fix auth.enabled bool rendering ([#193](https://github.com/opentdf/charts/issues/193)) ([27d6171](https://github.com/opentdf/charts/commit/27d6171f5b762dd18d4c7802af312b377d494c0d))
+
 ## [0.14.0](https://github.com/opentdf/charts/compare/platform-0.13.0...platform-0.14.0) (2025-10-01)
 
 
