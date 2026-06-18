@@ -5,7 +5,7 @@ go 1.25.0
 require (
 	github.com/gruntwork-io/terratest v0.48.2
 	github.com/stretchr/testify v1.11.1
-	github.com/traefik/traefik/v3 v3.6.19
+	github.com/traefik/traefik/v3 v3.6.21
 	gopkg.in/yaml.v3 v3.0.1
 	k8s.io/api v0.34.3
 	k8s.io/apimachinery v0.34.3
