@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.16.0](https://github.com/opentdf/charts/compare/platform-0.15.0...platform-0.16.0) (2026-08-03)
+
+
+### Bug Fixes
+
+* **platform:** DSPX-4207 align server.cors defaults with OpenTDF platform config ([#199](https://github.com/opentdf/charts/issues/199)) ([4fbf4d4](https://github.com/opentdf/charts/commit/4fbf4d49d047f080aca5bedbf122f02041db2d46))
+
 ## [0.15.0](https://github.com/opentdf/charts/compare/platform-0.14.0...platform-0.15.0) (2026-06-11)
 
 
