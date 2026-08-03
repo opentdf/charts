@@ -1,0 +1,70 @@
+name: Release Docs Sync
+
+# release-please bumps chart versions in Chart.yaml but does not run helm-docs,
+# so the version badge in each chart README goes stale on the release PR and the
+# "Helm Lint -> Fail if docs are not up-to-date" gate fails on every release.
+#
+# This workflow watches release-please PRs, regenerates the helm-docs README, and
+# commits the result back to the release branch so the lint gate stays green
+# without anyone hand-editing the auto-generated release PR.
+
+on:
+  pull_request:
+    branches:
+      - main
+    types:
+      - opened
+      - reopened
+      - synchronize
+
+# The default token is only used for read; pushes use the app token below.
+permissions:
+  contents: read
+
+jobs:
+  helm-docs:
+    # Only touch release-please's own PR branches.
+    if: startsWith(github.event.pull_request.head.ref, 'release-please--')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate a token
+        id: generate_token
+        uses: actions/create-github-app-token@f2acddfb5195534d487896a656232b016a682f3c # v1.9.0
+        with:
+          app-id: "${{ secrets.APP_ID }}"
+          private-key: "${{ secrets.AUTOMATION_KEY }}"
+
+      - name: Checkout release branch
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          token: "${{ steps.generate_token.outputs.token }}"
+          ref: "${{ github.event.pull_request.head.ref }}"
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Install helm-docs
+        env:
+          # Keep in sync with .github/workflows/lint.yaml and .pre-commit-config.yaml
+          HELM_DOCS_VERSION: '1.13.1'
+          HELM_DOCS_SHA256: 'df8d803506933ceb92bc2996d8a432059a35fc19a308ac37a141971ffdf7aa33'
+        run: |
+          curl -sSLO "https://github.com/norwoodj/helm-docs/releases/download/v${HELM_DOCS_VERSION}/helm-docs_${HELM_DOCS_VERSION}_Linux_x86_64.tar.gz"
+          echo "${HELM_DOCS_SHA256}  helm-docs_${HELM_DOCS_VERSION}_Linux_x86_64.tar.gz" | sha256sum -c --quiet --strict
+          tar -xzf "helm-docs_${HELM_DOCS_VERSION}_Linux_x86_64.tar.gz" -C /tmp helm-docs
+          rm "helm-docs_${HELM_DOCS_VERSION}_Linux_x86_64.tar.gz"
+
+      - name: Run helm-docs
+        # --chart-search-root=charts matches lint.yaml so local, lint, and release output are identical
+        run: /tmp/helm-docs --chart-search-root=charts
+
+      - name: Commit regenerated README(s)
+        run: |
+          if git diff --quiet -- 'charts/*/README.md'; then
+            echo "helm-docs README already up to date; nothing to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add charts/*/README.md
+          git commit -s -m "docs: regenerate helm-docs README for release"
+          git push origin "HEAD:${{ github.event.pull_request.head.ref }}"
