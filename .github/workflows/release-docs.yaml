@@ -33,6 +33,8 @@ jobs:
         with:
           app-id: "${{ secrets.APP_ID }}"
           private-key: "${{ secrets.AUTOMATION_KEY }}"
+          # Scope the token to only what this workflow needs: push regenerated READMEs.
+          permission-contents: write
 
       - name: Checkout release branch
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
@@ -58,6 +60,10 @@ jobs:
         run: /tmp/helm-docs --chart-search-root=charts
 
       - name: Commit regenerated README(s)
+        # Pass the untrusted branch name through env, never inline in the shell script,
+        # to avoid template-expansion code injection from a crafted branch name.
+        env:
+          HEAD_REF: "${{ github.event.pull_request.head.ref }}"
         run: |
           if git diff --quiet -- 'charts/*/README.md'; then
             echo "helm-docs README already up to date; nothing to commit."
@@ -67,4 +73,4 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add charts/*/README.md
           git commit -s -m "docs: regenerate helm-docs README for release"
-          git push origin "HEAD:${{ github.event.pull_request.head.ref }}"
+          git push origin "HEAD:${HEAD_REF}"
