@@ -1,6 +1,6 @@
 # platform
 
-![Version: 0.14.0](https://img.shields.io/badge/Version-0.14.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.8.1](https://img.shields.io/badge/AppVersion-v0.8.1-informational?style=flat-square)
+![Version: 0.15.0](https://img.shields.io/badge/Version-0.15.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.8.1](https://img.shields.io/badge/AppVersion-v0.8.1-informational?style=flat-square)
 
 A Helm Chart for OpenTDF Platform
 
@@ -169,8 +169,8 @@ Download the [keycloak_data.yaml](https://raw.githubusercontent.com/opentdf/plat
 | server.cors.additionalheaders | list | `[]` | Additional allowed headers to append to the default list (additive) |
 | server.cors.additionalmethods | list | `[]` | Additional HTTP methods to append to the default list (additive) |
 | server.cors.allowcredentials | bool | `true` | Allow credentials |
-| server.cors.allowedheaders | list | `["Accept","Authorization","Content-Type","X-CSRF-Token","X-Request-ID"]` | The allowed request headers |
-| server.cors.allowedmethods | list | `["GET","POST","PUT","DELETE","OPTIONS"]` | The allowed request methods |
+| server.cors.allowedheaders | list | `["Accept","Accept-Encoding","Authorization","Connect-Protocol-Version","Content-Length","Content-Type","Dpop","X-CSRF-Token","X-Requested-With","X-Rewrap-Additional-Context"]` | The allowed request headers |
+| server.cors.allowedmethods | list | `["GET","POST","PATCH","PUT","DELETE","OPTIONS"]` | The allowed request methods |
 | server.cors.allowedorigins | list | `[]` | The allowed origins |
 | server.cors.enabled | bool | `false` | Enable CORS (default: false) |
 | server.cors.exposedheaders | list | `["Link"]` | List of response headers that browsers are allowed to access |
