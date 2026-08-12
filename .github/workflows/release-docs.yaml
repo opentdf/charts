@@ -61,16 +61,76 @@ jobs:
 
       - name: Commit regenerated README(s)
         # Pass the untrusted branch name through env, never inline in the shell script,
-        # to avoid template-expansion code injection from a crafted branch name.
+        # to avoid template-expansion code injection from a crafted branch name. The
+        # GraphQL mutation creates one atomic commit that GitHub signs and verifies.
         env:
+          DCO_SIGNOFF: >-
+            Signed-off-by: opentdf-automation[bot]
+            <149537512+opentdf-automation[bot]@users.noreply.github.com>
+          GH_TOKEN: "${{ steps.generate_token.outputs.token }}"
           HEAD_REF: "${{ github.event.pull_request.head.ref }}"
         run: |
-          if git diff --quiet -- 'charts/*/README.md'; then
+          mapfile -d '' changed_readmes < <(
+            git diff --name-only --diff-filter=AM -z -- 'charts/*/README.md'
+          )
+          if (( ${#changed_readmes[@]} == 0 )); then
             echo "helm-docs README already up to date; nothing to commit."
             exit 0
           fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add charts/*/README.md
-          git commit -s -m "docs: regenerate helm-docs README for release"
-          git push origin "HEAD:${HEAD_REF}"
+
+          additions='[]'
+          for file in "${changed_readmes[@]}"; do
+            contents=$(base64 -w 0 -- "$file")
+            additions=$(jq -c \
+              --arg path "$file" \
+              --arg contents "$contents" \
+              '. + [{path: $path, contents: $contents}]' \
+              <<< "$additions")
+          done
+
+          query='mutation CreateCommit($input: CreateCommitOnBranchInput!) {
+            createCommitOnBranch(input: $input) {
+              commit {
+                oid
+                url
+                signature {
+                  isValid
+                  wasSignedByGitHub
+                }
+              }
+            }
+          }'
+
+          response=$(jq -n \
+            --arg query "$query" \
+            --arg repository "$GITHUB_REPOSITORY" \
+            --arg branch "$HEAD_REF" \
+            --arg head "$(git rev-parse HEAD)" \
+            --arg body "$DCO_SIGNOFF" \
+            --argjson additions "$additions" \
+            '{
+              query: $query,
+              variables: {
+                input: {
+                  branch: {
+                    repositoryNameWithOwner: $repository,
+                    branchName: $branch
+                  },
+                  expectedHeadOid: $head,
+                  message: {
+                    headline: "docs: regenerate helm-docs README for release",
+                    body: $body
+                  },
+                  fileChanges: {additions: $additions}
+                }
+              }
+            }' | gh api graphql --input -)
+
+          jq -e '
+            .data.createCommitOnBranch.commit.signature
+            | .isValid and .wasSignedByGitHub
+          ' <<< "$response" > /dev/null
+          jq -r '
+            "Created verified commit \(.data.createCommitOnBranch.commit.oid): "
+            + .data.createCommitOnBranch.commit.url
+          ' <<< "$response"
