@@ -72,6 +72,7 @@ jobs:
         run: |
           mapfile -d '' changed_readmes < <(
             git diff --name-only --diff-filter=AM -z -- 'charts/*/README.md'
+            git ls-files --others --exclude-standard -z -- 'charts/*/README.md'
           )
           if (( ${#changed_readmes[@]} == 0 )); then
             echo "helm-docs README already up to date; nothing to commit."
