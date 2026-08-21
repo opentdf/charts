@@ -207,7 +207,7 @@ Download the [keycloak_data.yaml](https://raw.githubusercontent.com/opentdf/plat
 | services.entityresolution.url | string | `nil` | Identity Provider Entity Resolver |
 | services.extraServices | object | `{}` | Additional services |
 | services.kas.config | object | `{"key_management":false,"keyring":[{"alg":"ec:secp256r1","kid":"e1"},{"alg":"rsa:2048","kid":"r1"}],"preview":{"ec_tdf_enabled":false},"registered_kas_uri":null,"root_key":null}` | KAS service Configuration as yaml |
-| services.kas.config.key_management | bool | `false` | Whether stable, policy-backed key management is enabled. |
+| services.kas.config.key_management | bool | `false` | Whether key management is enabled. |
 | services.kas.config.keyring | list | `[{"alg":"ec:secp256r1","kid":"e1"},{"alg":"rsa:2048","kid":"r1"}]` | Default keys for clients to use |
 | services.kas.config.preview | object | `{"ec_tdf_enabled":false}` | Preview feature enablement. The deprecated preview.key_management value remains accepted for backwards compatibility. |
 | services.kas.config.preview.ec_tdf_enabled | bool | `false` | Whether tdf based ecc support is enabled. |
