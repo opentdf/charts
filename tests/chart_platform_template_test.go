@@ -904,54 +904,92 @@ func (s *PlatformChartTemplateSuite) Test_Two_SDK_Config_Connections_Are_Set_Whe
 	s.Require().IsType("", endpoint2, "sdk_config.core2.endpoint should be a string")
 }
 
-func (s *PlatformChartTemplateSuite) Test_KeyManagement_Enabled_Without_RootKeySecret_Expect_Error() {
-	releaseName := "key-management-no-secret"
-
-	namespaceName := "opentdf-" + strings.ToLower(random.UniqueId())
-
-	options := &helm.Options{
-		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
-		SetValues: map[string]string{
-			"services.kas.config.preview.key_management": "true",
-			"services.kas.root_key_secret.name":          "",
-			"services.kas.root_key_secret.key":           "",
-		},
+func (s *PlatformChartTemplateSuite) Test_KeyManagement_FlagCompatibility() {
+	tests := []struct {
+		name                string
+		stableValue         string
+		previewValue        string
+		keyManagementActive bool
+	}{
+		{name: "flags omitted", keyManagementActive: false},
+		{name: "both disabled", stableValue: "false", previewValue: "false", keyManagementActive: false},
+		{name: "preview enabled", stableValue: "false", previewValue: "true", keyManagementActive: true},
+		{name: "stable enabled", stableValue: "true", previewValue: "false", keyManagementActive: true},
+		{name: "both enabled", stableValue: "true", previewValue: "true", keyManagementActive: true},
 	}
 
-	_, err := helm.RenderTemplateE(s.T(), options, s.chartPath, releaseName, []string{})
-	s.Require().Error(err)
-	s.Require().ErrorContains(err, "When services.kas.config.preview.key_management is true, you must set both services.kas.root_key_secret.name and services.kas.root_key_secret.key")
+	for _, test := range tests {
+		s.Run(test.name, func() {
+			releaseName := "key-management-" + strings.ReplaceAll(test.name, " ", "-")
+			namespaceName := "opentdf-" + strings.ToLower(random.UniqueId())
+			setValues := map[string]string{
+				"services.kas.root_key_secret.name": "my-root-key-secret",
+				"services.kas.root_key_secret.key":  "my-root-key",
+			}
+			if test.stableValue != "" {
+				setValues["services.kas.config.key_management"] = test.stableValue
+			}
+			if test.previewValue != "" {
+				setValues["services.kas.config.preview.key_management"] = test.previewValue
+			}
+
+			options := &helm.Options{
+				KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
+				SetValues:      setValues,
+			}
+			output := helm.RenderTemplate(s.T(), options, s.chartPath, releaseName, []string{"templates/deployment.yaml"})
+			var deployment appv1.Deployment
+			helm.UnmarshalK8SYaml(s.T(), output, &deployment)
+
+			var rootKeyEnvVars []corev1.EnvVar
+			for _, container := range deployment.Spec.Template.Spec.Containers {
+				for _, envVar := range container.Env {
+					if envVar.Name == "OPENTDF_SERVICES_KAS_ROOT_KEY" {
+						rootKeyEnvVars = append(rootKeyEnvVars, envVar)
+					}
+				}
+			}
+
+			if test.keyManagementActive {
+				s.Require().Len(rootKeyEnvVars, 1)
+				s.Require().Equal("my-root-key-secret", rootKeyEnvVars[0].ValueFrom.SecretKeyRef.Name)
+				s.Require().Equal("my-root-key", rootKeyEnvVars[0].ValueFrom.SecretKeyRef.Key)
+			} else {
+				s.Require().Empty(rootKeyEnvVars)
+			}
+
+			setValues["services.kas.root_key_secret.name"] = ""
+			setValues["services.kas.root_key_secret.key"] = ""
+			_, err := helm.RenderTemplateE(s.T(), options, s.chartPath, releaseName, []string{})
+			if test.keyManagementActive {
+				s.Require().ErrorContains(err, "When key management is enabled through services.kas.config.key_management or services.kas.config.preview.key_management, you must set both services.kas.root_key_secret.name and services.kas.root_key_secret.key")
+			} else {
+				s.Require().NoError(err)
+			}
+		})
+	}
 }
 
-func (s *PlatformChartTemplateSuite) Test_KeyManagement_Enabled_With_RootKeySecret_Expect_EnvVar_Set() {
-	releaseName := "key-management-with-secret"
-
+func (s *PlatformChartTemplateSuite) Test_KeyManagement_Default_Config_Uses_Stable_Field() {
+	releaseName := "key-management-default-config"
 	namespaceName := "opentdf-" + strings.ToLower(random.UniqueId())
 
 	options := &helm.Options{
 		KubectlOptions: k8s.NewKubectlOptions("", "", namespaceName),
-		SetValues: map[string]string{
-			"services.kas.config.preview.key_management": "true",
-			"services.kas.root_key_secret.name":          "my-root-key-secret",
-			"services.kas.root_key_secret.key":           "my-root-key",
-		},
 	}
 
-	output := helm.RenderTemplate(s.T(), options, s.chartPath, releaseName, []string{"templates/deployment.yaml"})
-	var deployment appv1.Deployment
-	helm.UnmarshalK8SYaml(s.T(), output, &deployment)
+	output := helm.RenderTemplate(s.T(), options, s.chartPath, releaseName, []string{"templates/config.yaml"})
+	var configMap corev1.ConfigMap
+	helm.UnmarshalK8SYaml(s.T(), output, &configMap)
 
-	envVarFound := false
-	for _, container := range deployment.Spec.Template.Spec.Containers {
-		for _, envVar := range container.Env {
-			if envVar.Name == "OPENTDF_SERVICES_KAS_ROOT_KEY" {
-				s.Require().Equal("my-root-key-secret", envVar.ValueFrom.SecretKeyRef.Name)
-				s.Require().Equal("my-root-key", envVar.ValueFrom.SecretKeyRef.Key)
-				envVarFound = true
-			}
-		}
-	}
-	s.Require().True(envVarFound)
+	var config map[string]interface{}
+	s.Require().NoError(yaml3.Unmarshal([]byte(configMap.Data["opentdf.yaml"]), &config))
+
+	services := config["services"].(map[string]interface{})
+	kas := services["kas"].(map[string]interface{})
+	s.Require().Equal(false, kas["key_management"])
+	preview := kas["preview"].(map[string]interface{})
+	s.Require().NotContains(preview, "key_management")
 }
 
 func (s *PlatformChartTemplateSuite) Test_Kas_PrivateKeySecret_Coalesce_NewValueTakesPrecedence() {

@@ -90,9 +90,13 @@ Create the name of the service account to use
 {{- end }}
 {{- end -}}
 
+{{- define "platform.kas.keyManagementEnabled" -}}
+{{- or (dig "key_management" false .Values.services.kas.config) (dig "preview" "key_management" false .Values.services.kas.config) -}}
+{{- end -}}
+
 {{- define "platform.kas.validate" -}}
-{{- if and .Values.services.kas.config.preview.key_management (not (and .Values.services.kas.root_key_secret.name .Values.services.kas.root_key_secret.key)) }}
-{{- fail "When services.kas.config.preview.key_management is true, you must set both services.kas.root_key_secret.name and services.kas.root_key_secret.key" }}
+{{- if and (eq (include "platform.kas.keyManagementEnabled" .) "true") (not (and .Values.services.kas.root_key_secret.name .Values.services.kas.root_key_secret.key)) }}
+{{- fail "When key management is enabled through services.kas.config.key_management or services.kas.config.preview.key_management, you must set both services.kas.root_key_secret.name and services.kas.root_key_secret.key" }}
 {{- end -}}
 {{- end -}}
 

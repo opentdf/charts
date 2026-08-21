@@ -470,12 +470,12 @@ services:
       # -- The URI this KAS is registered with in the platform database.
       # -- Used by key management, if present.
       registered_kas_uri:
-      # -- Preview feature enablement
+      # -- Whether key management is enabled.
+      key_management: false
+      # -- Preview feature enablement. The deprecated preview.key_management value remains accepted for backwards compatibility.
       preview:
         # -- Whether tdf based ecc support is enabled.
         ec_tdf_enabled: false
-        # -- Whether new key management features are enabled.
-        key_management: false
 
       root_key:
       # -- Default keys for clients to use
