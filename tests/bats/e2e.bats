@@ -520,8 +520,14 @@ setup() {
 
 
 @test "Create and Decrypt with External KAS" {
-  # Check we can reach kas.opentdf.local
-  run curl -f -sS https://kas.opentdf.local:9443/kas/v2/kas_public_key
+  # Check we can reach the unauthenticated Connect RPC public-key endpoint.
+  # The legacy /kas/v2/kas_public_key HTTP route requires authentication in
+  # current Platform releases.
+  run curl -f -sS \
+    -H "Content-Type: application/json" \
+    -H "Connect-Protocol-Version: 1" \
+    --data '{}' \
+    https://kas.opentdf.local:9443/kas.AccessService/PublicKey
   if [ "$status" -ne 0 ]; then
     echo "Error: 'curl kas public key' failed with status $status." >&2
     echo "Output: $output" >&2
