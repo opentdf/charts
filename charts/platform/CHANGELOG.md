@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.17.0](https://github.com/opentdf/charts/compare/platform-0.16.0...platform-0.17.0) (2026-08-26)
+
+
+### Features
+
+* **core:** Make key_management stable. ([#203](https://github.com/opentdf/charts/issues/203)) ([1020b81](https://github.com/opentdf/charts/commit/1020b81273986f8fcd482ea98f552e740eb301f6))
+
 ## [0.16.0](https://github.com/opentdf/charts/compare/platform-0.15.0...platform-0.16.0) (2026-08-03)
 
 
