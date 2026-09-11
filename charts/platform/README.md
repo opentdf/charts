@@ -202,6 +202,7 @@ Download the [keycloak_data.yaml](https://raw.githubusercontent.com/opentdf/plat
 | services.authorization | object | `{}` |  |
 | services.entityresolution.clientid | string | `nil` | Client Id for Entity Resolver |
 | services.entityresolution.clientsecret | string | `nil` | Client Secret for Entity Resolver |
+| services.entityresolution.mode | string | `nil` | Entity resolution mode: keycloak (default), claims, or multi-strategy |
 | services.entityresolution.realm | string | `nil` | Entity Resolver Realm |
 | services.entityresolution.subgroups | bool | `false` | Subgroups |
 | services.entityresolution.url | string | `nil` | Identity Provider Entity Resolver |
