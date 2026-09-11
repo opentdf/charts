@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.18.0](https://github.com/opentdf/charts/compare/platform-0.17.0...platform-0.18.0) (2026-09-11)
+
+
+### Bug Fixes
+
+* **platform:** render entityresolution config for claims and multi-strategy modes ([#206](https://github.com/opentdf/charts/issues/206)) ([0ca2f00](https://github.com/opentdf/charts/commit/0ca2f00e11f9a3528acbe03962119e959286fd19))
+
 ## [0.17.0](https://github.com/opentdf/charts/compare/platform-0.16.0...platform-0.17.0) (2026-08-26)
 
 
