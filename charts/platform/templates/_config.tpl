@@ -11,7 +11,8 @@ services:
 services:
   {{- if or (contains "all" .Values.mode ) (contains "core" .Values.mode ) }}
   {{- with (.Values.services).entityresolution }}
-  {{- if .url }}
+  {{- /* claims and multi-strategy modes have no url */}}
+  {{- if or .url .mode }}
   entityresolution:
   {{ . | toYaml | nindent 8 }}
   {{- end }}

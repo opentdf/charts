@@ -453,6 +453,8 @@ sdk_config:
 configTemplate: "platform.configurationEmpty.tpl"
 services:
   entityresolution:
+    # -- Entity resolution mode: keycloak (default), claims, or multi-strategy
+    mode:
     # -- Identity Provider Entity Resolver
     url:
     # -- Client Id for Entity Resolver

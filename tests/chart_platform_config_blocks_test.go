@@ -14,7 +14,7 @@ import (
 // "fix(platform): suppress empty service blocks and fix auth.enabled bool rendering":
 //   - server.auth.enabled honors an explicit `false` (Helm's `default true` used to coerce it back to true)
 //   - server.cryptoProvider is omitted when standard.keys is empty
-//   - services.entityresolution is omitted unless a url is configured
+//   - services.entityresolution is omitted unless a url or mode is configured
 //   - services.authorization is omitted when left as the default empty map
 
 // renderOpentdfConfig renders templates/config.yaml and returns the parsed opentdf.yaml document.
@@ -114,11 +114,11 @@ func (s *PlatformChartTemplateSuite) Test_Mode_Core_Renders_Valid_Config_With_Se
 	s.Require().True(ok, "server.auth should still render for mode=core")
 }
 
-func (s *PlatformChartTemplateSuite) Test_EntityResolution_Absent_When_Url_Empty() {
+func (s *PlatformChartTemplateSuite) Test_EntityResolution_Absent_When_Unconfigured() {
 	config := s.renderOpentdfConfig(s.configOptions(nil, nil), "er-default")
 
 	_, ok := s.servicesBlock(config)["entityresolution"]
-	s.Require().False(ok, "services.entityresolution should be omitted when url is empty")
+	s.Require().False(ok, "services.entityresolution should be omitted when neither url nor mode is set")
 }
 
 func (s *PlatformChartTemplateSuite) Test_EntityResolution_Rendered_When_Url_Set() {
@@ -128,6 +128,37 @@ func (s *PlatformChartTemplateSuite) Test_EntityResolution_Rendered_When_Url_Set
 	er, ok := s.servicesBlock(config)["entityresolution"].(map[string]interface{})
 	s.Require().True(ok, "services.entityresolution should render when url is set")
 	s.Require().Equal("https://idp.example.com", er["url"], "entityresolution.url should match the configured value")
+}
+func (s *PlatformChartTemplateSuite) Test_EntityResolution_Rendered_For_MultiStrategy_Without_Url() {
+	options := s.configOptions(
+		map[string]string{
+			"services.entityresolution.mode":             "multi-strategy",
+			"services.entityresolution.failure_strategy": "fail-fast",
+		},
+		map[string]string{
+			"services.entityresolution.providers": `{"jwt_claims":{"type":"claims"}}`,
+		},
+	)
+	config := s.renderOpentdfConfig(options, "er-multi-strategy")
+
+	er, ok := s.servicesBlock(config)["entityresolution"].(map[string]interface{})
+	s.Require().True(ok, "services.entityresolution should render for multi-strategy mode without a url")
+	s.Require().Equal("multi-strategy", er["mode"])
+	s.Require().Equal("fail-fast", er["failure_strategy"])
+	s.Require().Equal(
+		map[string]interface{}{"jwt_claims": map[string]interface{}{"type": "claims"}},
+		er["providers"],
+		"multi-strategy providers should survive rendering intact",
+	)
+}
+
+func (s *PlatformChartTemplateSuite) Test_EntityResolution_Rendered_For_Claims_Mode_Without_Url() {
+	options := s.configOptions(map[string]string{"services.entityresolution.mode": "claims"}, nil)
+	config := s.renderOpentdfConfig(options, "er-claims")
+
+	er, ok := s.servicesBlock(config)["entityresolution"].(map[string]interface{})
+	s.Require().True(ok, "services.entityresolution should render for claims mode without a url")
+	s.Require().Equal("claims", er["mode"])
 }
 
 func (s *PlatformChartTemplateSuite) Test_Authorization_Absent_When_Default_Empty() {
