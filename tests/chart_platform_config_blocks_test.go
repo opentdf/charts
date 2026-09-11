@@ -145,7 +145,11 @@ func (s *PlatformChartTemplateSuite) Test_EntityResolution_Rendered_For_MultiStr
 	s.Require().True(ok, "services.entityresolution should render for multi-strategy mode without a url")
 	s.Require().Equal("multi-strategy", er["mode"])
 	s.Require().Equal("fail-fast", er["failure_strategy"])
-	s.Require().Contains(er, "providers", "multi-strategy providers should survive rendering")
+	s.Require().Equal(
+		map[string]interface{}{"jwt_claims": map[string]interface{}{"type": "claims"}},
+		er["providers"],
+		"multi-strategy providers should survive rendering intact",
+	)
 }
 
 func (s *PlatformChartTemplateSuite) Test_EntityResolution_Rendered_For_Claims_Mode_Without_Url() {
