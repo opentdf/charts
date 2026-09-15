@@ -207,7 +207,8 @@ Download the [keycloak_data.yaml](https://raw.githubusercontent.com/opentdf/plat
 | services.entityresolution.subgroups | bool | `false` | Subgroups |
 | services.entityresolution.url | string | `nil` | Identity Provider Entity Resolver |
 | services.extraServices | object | `{}` | Additional services |
-| services.kas.config | object | `{"key_management":false,"keyring":[{"alg":"ec:secp256r1","kid":"e1"},{"alg":"rsa:2048","kid":"r1"}],"preview":{"ec_tdf_enabled":false},"registered_kas_uri":null,"root_key":null}` | KAS service Configuration as yaml |
+| services.kas.config | object | `{"kas_uri_from_kao":true,"key_management":false,"keyring":[{"alg":"ec:secp256r1","kid":"e1"},{"alg":"rsa:2048","kid":"r1"}],"preview":{"ec_tdf_enabled":false},"registered_kas_uri":null,"root_key":null}` | KAS service Configuration as yaml |
+| services.kas.config.kas_uri_from_kao | bool | `true` | Use the key access object's KAS URI for rewrap key lookups. An absent or empty URI uses the indexer's default registration. Set false as a compatibility override to always use the default registration, normally selected by registered_kas_uri (or the service's KAS URL when unset). |
 | services.kas.config.key_management | bool | `false` | Whether key management is enabled. |
 | services.kas.config.keyring | list | `[{"alg":"ec:secp256r1","kid":"e1"},{"alg":"rsa:2048","kid":"r1"}]` | Default keys for clients to use |
 | services.kas.config.preview | object | `{"ec_tdf_enabled":false}` | Preview feature enablement. The deprecated preview.key_management value remains accepted for backwards compatibility. |
