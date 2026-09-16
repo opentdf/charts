@@ -186,7 +186,7 @@ func (s *PlatformChartTemplateSuite) Test_KAS_URI_From_KAO() {
 			value string
 			want  bool
 		}{
-			{name: "default", want: true},
+			{name: "default", want: false},
 			{name: "enabled", value: "true", want: true},
 			{name: "disabled", value: "false", want: false},
 		} {

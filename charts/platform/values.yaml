@@ -474,11 +474,11 @@ services:
       registered_kas_uri:
       # -- Whether key management is enabled.
       key_management: false
-      # -- Use the key access object's KAS URI for rewrap key lookups.
-      # An absent or empty URI uses the indexer's default registration.
-      # Set false as a compatibility override to always use the default registration,
+      # -- Use the key access object's KAS URI for rewrap key lookups when true.
+      # Defaults to false, using the indexer's default registration,
       # normally selected by registered_kas_uri (or the service's KAS URL when unset).
-      kas_uri_from_kao: true
+      # An absent or empty KAO URI also uses the default registration when enabled.
+      kas_uri_from_kao: false
       # -- Preview feature enablement. The deprecated preview.key_management value remains accepted for backwards compatibility.
       preview:
         # -- Whether tdf based ecc support is enabled.
