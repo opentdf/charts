@@ -178,3 +178,36 @@ func (s *PlatformChartTemplateSuite) Test_Authorization_Rendered_When_Set() {
 	s.Require().True(ok, "authorization.rego should be a map")
 	s.Require().Equal("/etc/platform/entitlements.rego", rego["path"], "authorization.rego.path should match the configured value")
 }
+
+func (s *PlatformChartTemplateSuite) Test_KAS_URI_From_KAO() {
+	for _, mode := range []string{"default", "kas", "all"} {
+		for _, tc := range []struct {
+			name  string
+			value string
+			want  bool
+		}{
+			{name: "default", want: false},
+			{name: "enabled", value: "true", want: true},
+			{name: "disabled", value: "false", want: false},
+		} {
+			s.Run(mode+"/"+tc.name, func() {
+				values := map[string]string{
+					"sdk_config.client_id":                   "test",
+					"sdk_config.client_secret":               "test",
+					"services.kas.config.registered_kas_uri": "https://replacement-kas.example.com",
+				}
+				if mode != "default" {
+					values["mode"] = mode
+				}
+				if tc.value != "" {
+					values["services.kas.config.kas_uri_from_kao"] = tc.value
+				}
+				config := s.renderOpentdfConfig(s.configOptions(values, nil), "kas-uri")
+				kas, ok := s.servicesBlock(config)["kas"].(map[string]interface{})
+				s.Require().True(ok, "services should contain kas as a map")
+				s.Equal(tc.want, kas["kas_uri_from_kao"], "KAS URI selection must render as a boolean")
+				s.Equal("https://replacement-kas.example.com", kas["registered_kas_uri"])
+			})
+		}
+	}
+}
