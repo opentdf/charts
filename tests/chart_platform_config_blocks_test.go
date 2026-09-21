@@ -200,12 +200,15 @@ func (s *PlatformChartTemplateSuite) Test_KAS_URI_From_KAO() {
 					values["mode"] = mode
 				}
 				if tc.value != "" {
-					values["services.kas.config.kas_uri_from_kao"] = tc.value
+					values["services.kas.config.preview.kas_uri_from_kao"] = tc.value
 				}
 				config := s.renderOpentdfConfig(s.configOptions(values, nil), "kas-uri")
 				kas, ok := s.servicesBlock(config)["kas"].(map[string]interface{})
 				s.Require().True(ok, "services should contain kas as a map")
-				s.Equal(tc.want, kas["kas_uri_from_kao"], "KAS URI selection must render as a boolean")
+				s.NotContains(kas, "kas_uri_from_kao", "KAS URI selection must only render under preview")
+				preview, ok := kas["preview"].(map[string]interface{})
+				s.Require().True(ok, "kas should contain preview as a map")
+				s.Equal(tc.want, preview["kas_uri_from_kao"], "KAS URI selection must render as a boolean")
 				s.Equal("https://replacement-kas.example.com", kas["registered_kas_uri"])
 			})
 		}
