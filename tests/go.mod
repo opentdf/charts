@@ -1,6 +1,6 @@
 module github.com/opentdf/charts/tests
 
-go 1.25.0
+go 1.26.10
 
 require (
 	github.com/gruntwork-io/terratest v0.48.2
